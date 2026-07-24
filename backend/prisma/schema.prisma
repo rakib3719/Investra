@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,8 +6,171 @@ datasource db {
   provider = "postgresql"
 }
 
-// ENUMS DEFINITION
+model User {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  firstName           String?                @map("first_name") @db.VarChar
+  lastName            String?                @map("last_name") @db.VarChar
+  username            String?                @unique @map("username") @db.VarChar
+  email               String                 @unique @map("email") @db.VarChar
+  phone               String?                @unique @map("phone") @db.VarChar
+  password            String                 @map("password") @db.VarChar
+  image               String?                @map("image")
+  role                UserRole               @map("role")
+  gender              Gender?                @map("gender")
+  dateOfBirth         DateTime?              @map("date_of_birth") @db.Date
+  bio                 String?                @map("bio")
+  country             String?                @map("country") @db.VarChar
+  city                String?                @map("city") @db.VarChar
+  professionalType    ProfessionalType?      @map("professional_type")
+  website             String?                @map("website")
+  isEmailVerified     Boolean                @default(false) @map("is_email_verified")
+  isPhoneVerified     Boolean                @default(false) @map("is_phone_verified")
+  isTwoFactorEnabled  Boolean                @default(false) @map("is_two_factor_enabled")
+  accountStatus       AccountStatus          @default(PENDING) @map("account_status")
+  lastLoginAt         DateTime?              @map("last_login_at") @db.Timestamp(6)
+  createdAt           DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime               @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt           DateTime?              @map("deleted_at") @db.Timestamp(6)
+  categoriesCreated   Category[]
+  consultantProfile   ConsultantProfile?
+  entrepreneurProfile EntrepreneurProfile?
+  investorProfile     InvestorProfile?
+  interests           UserInterestCategory[]
+  socialLinks         UserSocialLink[]
+  verification        UserVerification?
 
+  @@map("users")
+}
+
+model InvestorProfile {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @map("user_id") @db.Uuid
+  headline           String?            @map("headline") @db.VarChar
+  investmentRangeMin Decimal?           @map("investment_range_min") @db.Decimal
+  investmentRangeMax Decimal?           @map("investment_range_max") @db.Decimal
+  preferredCurrency  String?            @map("preferred_currency") @db.VarChar
+  yearsOfExperience  Int?               @map("years_of_experience")
+  companyName        String?            @map("company_name") @db.VarChar
+  designation        String?            @map("designation") @db.VarChar
+  businessName       String?            @map("business_name") @db.VarChar
+  businessIndustry   String?            @map("business_industry") @db.VarChar
+  accreditedInvestor Boolean?           @map("accredited_investor")
+  preferredStage     BusinessStage?     @map("preferred_stage")
+  profileVisibility  Boolean?           @map("profile_visibility")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investor_profiles")
+}
+
+model EntrepreneurProfile {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @map("user_id") @db.Uuid
+  headline           String?            @map("headline") @db.VarChar
+  companyName        String?            @map("company_name") @db.VarChar
+  designation        String?            @map("designation") @db.VarChar
+  yearsOfExperience  Int?               @map("years_of_experience")
+  website            String?            @map("website")
+  linkedin           String?            @map("linkedin")
+  facebook           String?            @map("facebook")
+  twitter            String?            @map("twitter")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  profileVisibility  Boolean?           @map("profile_visibility")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("entrepreneur_profiles")
+}
+
+model ConsultantProfile {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @map("user_id") @db.Uuid
+  headline           String?            @map("headline") @db.VarChar
+  specialization     String?            @map("specialization") @db.VarChar
+  consultantLevel    ConsultantLevel?   @map("consultant_level")
+  yearsOfExperience  Int?               @map("years_of_experience")
+  companyName        String?            @map("company_name") @db.VarChar
+  designation        String?            @map("designation") @db.VarChar
+  consultationFee    Decimal?           @map("consultation_fee") @db.Decimal
+  sessionFee         Decimal?           @map("session_fee") @db.Decimal
+  workshopFee        Decimal?           @map("workshop_fee") @db.Decimal
+  courseFee          Decimal?           @map("course_fee") @db.Decimal
+  averageRating      Decimal?           @map("average_rating") @db.Decimal
+  totalReviews       Int?               @map("total_reviews")
+  profileVisibility  Boolean?           @map("profile_visibility")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("consultant_profiles")
+}
+
+model UserSocialLink {
+  id        String         @id @default(uuid()) @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  platform  SocialPlatform @map("platform")
+  url       String         @map("url")
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_social_links")
+}
+
+model UserVerification {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @map("user_id") @db.Uuid
+  nidNumber          String?            @map("nid_number") @db.VarChar
+  passportNumber     String?            @map("passport_number") @db.VarChar
+  documentFront      String?            @map("document_front")
+  documentBack       String?            @map("document_back")
+  selfieImage        String?            @map("selfie_image")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  reviewedBy         String?            @map("reviewed_by") @db.Uuid
+  reviewedAt         DateTime?          @map("reviewed_at") @db.Timestamp(6)
+  rejectionReason    String?            @map("rejection_reason")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_verifications")
+}
+
+model Category {
+  id          String                 @id @default(uuid()) @db.Uuid
+  name        String                 @unique @map("name") @db.VarChar
+  slug        String                 @unique @map("slug") @db.VarChar
+  description String?                @map("description")
+  icon        String?                @map("icon")
+  image       String?                @map("image")
+  color       String?                @map("color") @db.VarChar
+  sortOrder   Int?                   @map("sort_order")
+  isFeatured  Boolean?               @map("is_featured")
+  status      CategoryStatus         @map("status")
+  createdBy   String?                @map("created_by") @db.Uuid
+  createdAt   DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime               @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt   DateTime?              @map("deleted_at") @db.Timestamp(6)
+  creator     User?                  @relation(fields: [createdBy], references: [id])
+  interest    UserInterestCategory[]
+
+  @@map("categories")
+}
+
+model UserInterestCategory {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId])
+  @@map("user_interest_categories")
+}
 
 enum UserRole {
   INVESTOR
@@ -96,189 +256,4 @@ enum CategoryStatus {
   INACTIVE
 
   @@map("category_status")
-}
-
-// MODELS DEFINITION
-
-
-model User {
-  id                 String            @id @default(uuid()) @db.Uuid
-  firstName          String?           @map("first_name") @db.VarChar
-  lastName           String?           @map("last_name") @db.VarChar
-  username           String?           @unique @map("username") @db.VarChar
-  email              String            @unique @map("email") @db.VarChar
-  phone              String?           @unique @map("phone") @db.VarChar
-  password           String            @map("password") @db.VarChar
-  image              String?           @map("image") @db.Text
-  role               UserRole          @map("role")
-  gender             Gender?           @map("gender")
-  dateOfBirth        DateTime?         @map("date_of_birth") @db.Date
-  bio                String?           @map("bio") @db.Text
-  country            String?           @map("country") @db.VarChar
-  city               String?           @map("city") @db.VarChar
-  professionalType   ProfessionalType? @map("professional_type")
-  website            String?           @map("website") @db.Text
-  isEmailVerified    Boolean           @default(false) @map("is_email_verified")
-  isPhoneVerified    Boolean           @default(false) @map("is_phone_verified")
-  isTwoFactorEnabled Boolean           @default(false) @map("is_two_factor_enabled")
-  accountStatus      AccountStatus     @default(PENDING) @map("account_status")
-  lastLoginAt        DateTime?         @map("last_login_at") @db.Timestamp
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamp
-  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamp
-  deletedAt          DateTime?         @map("deleted_at") @db.Timestamp
-
-  // Relations
-  investorProfile     InvestorProfile?
-  entrepreneurProfile EntrepreneurProfile?
-  consultantProfile   ConsultantProfile?
-  socialLinks         UserSocialLink[]
-  verification        UserVerification?
-  categoriesCreated   Category[]
-  interests           UserInterestCategory[]
-
-  @@map("users")
-}
-
-model InvestorProfile {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  headline           String?            @map("headline") @db.VarChar
-  investmentRangeMin Decimal?           @map("investment_range_min") @db.Decimal
-  investmentRangeMax Decimal?           @map("investment_range_max") @db.Decimal
-  preferredCurrency  String?            @map("preferred_currency") @db.VarChar
-  yearsOfExperience  Int?               @map("years_of_experience")
-  companyName        String?            @map("company_name") @db.VarChar
-  designation        String?            @map("designation") @db.VarChar
-  businessName       String?            @map("business_name") @db.VarChar
-  businessIndustry   String?            @map("business_industry") @db.VarChar
-  accreditedInvestor Boolean?           @map("accredited_investor")
-  preferredStage     BusinessStage?     @map("preferred_stage")
-  profileVisibility  Boolean?           @map("profile_visibility")
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("investor_profiles")
-}
-
-model EntrepreneurProfile {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  headline           String?            @map("headline") @db.VarChar
-  companyName        String?            @map("company_name") @db.VarChar
-  designation        String?            @map("designation") @db.VarChar
-  yearsOfExperience  Int?               @map("years_of_experience")
-  website            String?            @map("website") @db.Text
-  linkedin           String?            @map("linkedin") @db.Text
-  facebook           String?            @map("facebook") @db.Text
-  twitter            String?            @map("twitter") @db.Text
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  profileVisibility  Boolean?           @map("profile_visibility")
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("entrepreneur_profiles")
-}
-
-model ConsultantProfile {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  headline           String?            @map("headline") @db.VarChar
-  specialization     String?            @map("specialization") @db.VarChar
-  consultantLevel    ConsultantLevel?   @map("consultant_level")
-  yearsOfExperience  Int?               @map("years_of_experience")
-  companyName        String?            @map("company_name") @db.VarChar
-  designation        String?            @map("designation") @db.VarChar
-  consultationFee    Decimal?           @map("consultation_fee") @db.Decimal
-  sessionFee         Decimal?           @map("session_fee") @db.Decimal
-  workshopFee        Decimal?           @map("workshop_fee") @db.Decimal
-  courseFee          Decimal?           @map("course_fee") @db.Decimal
-  averageRating      Decimal?           @map("average_rating") @db.Decimal
-  totalReviews       Int?               @map("total_reviews")
-  profileVisibility  Boolean?           @map("profile_visibility")
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("consultant_profiles")
-}
-
-model UserSocialLink {
-  id        String         @id @default(uuid()) @db.Uuid
-  userId    String         @map("user_id") @db.Uuid
-  platform  SocialPlatform @map("platform")
-  url       String         @map("url") @db.Text
-  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamp
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_social_links")
-}
-
-model UserVerification {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  nidNumber          String?            @map("nid_number") @db.VarChar
-  passportNumber     String?            @map("passport_number") @db.VarChar
-  documentFront      String?            @map("document_front") @db.Text
-  documentBack       String?            @map("document_back") @db.Text
-  selfieImage        String?            @map("selfie_image") @db.Text
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  reviewedBy         String?            @map("reviewed_by") @db.Uuid
-  reviewedAt         DateTime?          @map("reviewed_at") @db.Timestamp
-  rejectionReason    String?            @map("rejection_reason") @db.Text
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_verifications")
-}
-
-model Category {
-  id          String         @id @default(uuid()) @db.Uuid
-  name        String         @unique @map("name") @db.VarChar
-  slug        String         @unique @map("slug") @db.VarChar
-  description String?        @map("description") @db.Text
-  icon        String?        @map("icon") @db.Text
-  image       String?        @map("image") @db.Text
-  color       String?        @map("color") @db.VarChar
-  sortOrder   Int?           @map("sort_order")
-  isFeatured  Boolean?       @map("is_featured")
-  status      CategoryStatus @map("status")
-  createdBy   String?        @map("created_by") @db.Uuid
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp
-  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp
-  deletedAt   DateTime?      @map("deleted_at") @db.Timestamp
-
-  // Relations
-  creator  User?                  @relation(fields: [createdBy], references: [id], onDelete: SetNull)
-  interest UserInterestCategory[]
-
-  @@map("categories")
-}
-
-model UserInterestCategory {
-  id         String   @id @default(uuid()) @db.Uuid
-  userId     String   @map("user_id") @db.Uuid
-  categoryId String   @map("category_id") @db.Uuid
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp
-
-  // Relations
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, categoryId])
-  @@map("user_interest_categories")
 }
