@@ -155,7 +155,7 @@ export class AuthService {
   async verifyEmail(dto: VerifyEmailDto) {
     try {
       const payload = this.jwtService.verify(dto.token, { secret: env.JWT_SECRET });
-      
+
       if (payload.type !== 'email-verification') {
         throw new BadRequestException('Invalid token type');
       }
@@ -242,9 +242,8 @@ export class AuthService {
     }
   }
 
-  // ==========================================
   // HELPER METHODS
-  // ==========================================
+
 
   private generateTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
