@@ -56,3 +56,25 @@ export class RegistrationResponseDto {
   verificationToken: string;
 }
 
+export class RegisterResponseDataDto {
+  @ApiProperty({ type: () => UserResponseDto })
+  user: UserResponseDto;
+
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5...', description: 'Email verification JWT token (stateless)' })
+  verificationToken: string;
+}
+
+export class ForgotPasswordResponseDataDto {
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5...', description: 'Password reset token' })
+  resetToken: string;
+}
+
+export class RefreshResponseDataDto {
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5...', description: 'Short-lived JWT access token' })
+  accessToken: string;
+
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5...', description: 'Long-lived JWT refresh token' })
+  refreshToken: string;
+}
+
+
