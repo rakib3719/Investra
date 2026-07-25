@@ -46,7 +46,7 @@
 }
 
 /* ==========================================================================
-   1. SEMANTIC COLOR DESIGN SYSTEM TOKENS (CONCEPT #7)
+   1. SEMANTIC COLOR DESIGN SYSTEM TOKENS (LIGHT MODE ONLY)
    ========================================================================== */
 :root {
   /* Light Mode Colors (Ivory White Background, Pine Forest Green Primary, Slate Gray Secondary) */
@@ -85,42 +85,6 @@
 
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* Dark Mode Color Overrides (Sleek Charcoal Slate-Black Background) */
-.dark {
-  --background: #090e17;
-  --foreground: #f8fafc;
-  
-  --primary: #10b981; /* High contrast Mint Green primary for dark background */
-  --primary-foreground: #064e3b;
-  
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  
-  --accent: #064e3b;
-  --accent-foreground: #10b981;
-  
-  --muted: #131a26;
-  --muted-foreground: #94a3b8;
-  
-  --popover: #0c121e;
-  --popover-foreground: #f8fafc;
-  
-  --card: #0c121e;
-  --card-foreground: #f8fafc;
-  
-  --border: #1a2333;
-  --input: #1a2333;
-  --ring: #10b981;
-
-  --success: #22c55e;
-  --warning: #f97316;
-  --error: #ef4444;
-  --info: #3b82f6;
-
-  --hover-overlay: rgba(16, 185, 129, 0.06);
-  --selection: rgba(6, 78, 59, 0.35);
 }
 
 /* ==========================================================================
@@ -211,7 +175,7 @@
 
 /* Cards & Widgets */
 @utility glass-card {
-  @apply bg-white/80 dark:bg-card/85 backdrop-blur-md border border-slate-200/80 dark:border-border/80 rounded-xl shadow-sm;
+  @apply bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-xl shadow-sm;
 }
 
 @utility dashboard-card {
