@@ -1,26 +1,272 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   INVESTRA GLOBAL DESIGN SYSTEM (CONCEPTS #7: FOREST GREEN & SLATE GRAY)
+   ========================================================================== */
 
-@theme inline {
+@theme {
+  /* Brand Core Colors mapped to CSS Variables for Easy Switching */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Status Colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  /* Hover & Selection Overlays */
+  --color-hover-overlay: var(--hover-overlay);
+
+  /* Fonts */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==========================================================================
+   1. SEMANTIC COLOR DESIGN SYSTEM TOKENS (CONCEPT #7)
+   ========================================================================== */
+:root {
+  /* Light Mode Colors (Ivory White Background, Pine Forest Green Primary, Slate Gray Secondary) */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  
+  --primary: #064e3b;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #1e293b;
+  --secondary-foreground: #ffffff;
+  
+  --accent: #10b981;
+  --accent-foreground: #064e3b;
+  
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #064e3b;
+
+  --success: #16a34a;
+  --warning: #ea580c;
+  --error: #dc2626;
+  --info: #2563eb;
+
+  --hover-overlay: rgba(6, 78, 59, 0.04);
+  --selection: rgba(16, 185, 129, 0.12);
+
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Dark Mode Color Overrides (Sleek Charcoal Slate-Black Background) */
+.dark {
+  --background: #090e17;
+  --foreground: #f8fafc;
+  
+  --primary: #10b981; /* High contrast Mint Green primary for dark background */
+  --primary-foreground: #064e3b;
+  
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  
+  --accent: #064e3b;
+  --accent-foreground: #10b981;
+  
+  --muted: #131a26;
+  --muted-foreground: #94a3b8;
+  
+  --popover: #0c121e;
+  --popover-foreground: #f8fafc;
+  
+  --card: #0c121e;
+  --card-foreground: #f8fafc;
+  
+  --border: #1a2333;
+  --input: #1a2333;
+  --ring: #10b981;
+
+  --success: #22c55e;
+  --warning: #f97316;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  --hover-overlay: rgba(16, 185, 129, 0.06);
+  --selection: rgba(6, 78, 59, 0.35);
+}
+
+/* ==========================================================================
+   2. LAYER BASE RESETS & ACCESSIBILITY
+   ========================================================================== */
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-body transition-colors duration-200 overflow-x-hidden;
+  }
+
+  ::selection {
+    background-color: var(--selection);
+    color: inherit;
+  }
+
+  /* Accessible Focus Rings */
+  *:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-ring;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   3. REUSABLE TAILWIND UTILITY CLASSES (Autocompletable via @utility)
+   ========================================================================== */
+
+/* Layout & Containers */
+@utility container-width {
+  @apply w-full max-w-7xl mx-auto px-6;
+}
+
+@utility section-spacing {
+  @apply py-20;
+}
+
+/* Typography Scale */
+@utility hero-title {
+  @apply font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight text-secondary leading-tight;
+}
+
+@utility hero-subtitle {
+  @apply font-body font-light text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed;
+}
+
+@utility page-title {
+  @apply font-heading font-extrabold text-3xl md:text-4xl tracking-tight text-secondary;
+}
+
+@utility page-subtitle {
+  @apply font-body text-sm md:text-base text-muted-foreground;
+}
+
+@utility section-title {
+  @apply font-heading font-bold text-2xl md:text-3xl tracking-tight text-secondary;
+}
+
+@utility section-subtitle {
+  @apply font-heading font-bold text-xs tracking-wider uppercase text-primary;
+}
+
+@utility gradient-text {
+  @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+}
+
+/* Reusable Interactive Buttons */
+@utility primary-button {
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-semibold bg-primary text-primary-foreground shadow-sm transition-all duration-200 hover:opacity-95 hover:-translate-y-0.5 active:scale-98 cursor-pointer border border-transparent;
+}
+
+@utility secondary-button {
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-semibold bg-muted text-foreground border border-border transition-all duration-150 hover:bg-hover-overlay cursor-pointer;
+}
+
+@utility outline-button {
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-semibold bg-transparent text-foreground border border-border transition-all duration-150 hover:bg-muted hover:border-primary cursor-pointer;
+}
+
+@utility ghost-button {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium bg-transparent text-foreground transition-all duration-150 hover:bg-muted hover:text-primary cursor-pointer;
+}
+
+@utility danger-button {
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-semibold bg-error text-white transition-all duration-200 hover:opacity-90 active:scale-98 cursor-pointer;
+}
+
+/* Cards & Widgets */
+@utility glass-card {
+  @apply bg-white/80 dark:bg-card/85 backdrop-blur-md border border-slate-200/80 dark:border-border/80 rounded-xl shadow-sm;
+}
+
+@utility dashboard-card {
+  @apply bg-card border border-border rounded-xl p-5 transition-all duration-200 hover:border-accent hover:shadow-sm;
+}
+
+@utility stats-card {
+  @apply bg-card border border-border rounded-lg p-4;
+}
+
+@utility investment-card {
+  @apply bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-accent hover:shadow-md;
+}
+
+/* Form Fields */
+@utility input-primary {
+  @apply w-full px-3.5 py-2.5 text-sm rounded-lg bg-background border border-border text-foreground transition-all duration-150 focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none;
+}
+
+/* Semantic Status Badges */
+@utility badge-primary {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-xs bg-primary/10 text-primary;
+}
+
+@utility badge-success {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-xs bg-success/10 text-success;
+}
+
+@utility badge-warning {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-xs bg-warning/10 text-warning;
+}
+
+@utility badge-danger {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-xs bg-error/10 text-error;
+}
+
+/* Reusable Financial Tables */
+@utility table-header {
+  @apply bg-muted text-xs font-bold uppercase tracking-wider text-muted-foreground text-left p-3;
+}
+
+@utility table-row {
+  @apply border-b border-border transition-colors duration-150 hover:bg-hover-overlay;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full border border-background;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary;
 }
