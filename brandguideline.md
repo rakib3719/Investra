@@ -1,35 +1,41 @@
 # Investra Brand Identity & Visual Design Guidelines
 
-This document establishes the official visual identity and brand design guidelines for **Investra**—a premium platform connecting Investors, Entrepreneurs, and Consultants. 
+This document establishes the official visual identity and brand design guidelines for **Investra**—a premium platform connecting Investors, Venture Capitalists, and Elite Entrepreneurs.
 
 ---
 
 ## 🎨 1. Brand Identity & Visual Preview
 
-Below is the design system preview for **Investra**, including the official application logo concept, the primary color palette swatches with HEX values, and a live rendering of a UI card showing how these colors combine on a dark-mode dashboard.
+Below is the design system preview for **Investra**, demonstrating the official logo layout and dashboard preview showcasing how the new brand color palette combines in a dark-mode dashboard.
 
-![Investra Visual Branding Preview](./investra_brand_preview.png)
+### A. Brand Logo Concept
+- The letter **I** is fused with a growing financial line chart and an upward-pointing arrow.
+- Flowing with the new steel blue, midnight navy, and forest green accents, symbolizing premium quality and corporate growth.
 
-### Logo Design Intent
-- The letter **I** is fused with a growing line chart and an upward-pointing arrow.
-- The gradient flows from **Investra Emerald** to **Champagne Gold**, symbolizing the journey from launching an idea (green) to realizing maximum value (gold).
+![Investra Brand Logo](./investra_new_logo.png)
+
+### B. UI Section Overview
+- Demonstrating the core layouts of the dark-themed dashboard, detailing card components, active/inactive states, borders, and graphs.
+
+![Investra UI Design Preview](./investra_ui_preview.png)
 
 ---
 
-## 🎨 2. The Color Palette: "Emerald Wealth & Deep Obsidian"
+## 🎨 2. The Color Palette: "Venture Navy & Forest Growth"
 
-### 🌑 A. Primary Backgrounds & Neutrals (Obsidian & Platinum)
-*   **Obsidian Dark (Deepest dark mode bg):** `#0C0C0C` | `hsl(220, 20%, 4%)`
-*   **Carbon Gray (Card & surface bg):** `#2D2D2D` | `hsl(220, 18%, 9%)`
-*   **Platinum Light (Text & light mode bg):** `#F8FAFC` | `hsl(210, 40%, 98%)`
-*   **Muted Slate (Subtitles & borders):** `#64748B` | `hsl(215, 16%, 47%)`
+Our four-color design system is engineered for a premium corporate aesthetic, balancing high-trust blues with growth-focused green.
 
-### ❇️ B. Brand Signatures (Emerald & Gold Accent)
-*   **Investra Emerald (Primary/Growth/Success):** `#00C853` | `hsl(161, 94%, 30%)`
-    *   *Represents: Wealth, investment, green-lit opportunities, stable growth.*
-*   **Champagne Gold (Accent/Premium Status/Highlights):** `#FFC107` | `hsl(35, 92%, 44%)`
-    *   *Represents: High quality, premium tier, valuable connections, prestige.*
-*   **Electric Teal (Interactivity/Hover states):** `#10B981` | `hsl(162, 76%, 41%)`
+### 🌑 A. Primary Backgrounds & Canvas (Midnight Navy & Steel Blue)
+*   **Midnight Navy (Core Dark BG):** `#182B45` | `hsl(215, 49%, 18%)`
+    *   *Represents: Security, institutional trust, and structural stability.*
+*   **Steel Blue (Primary/Active Brand Accent):** `#263F6A` | `hsl(218, 47%, 28%)`
+    *   *Represents: Premium status, active interfaces, focus borders, and interactive states.*
+
+### ❇️ B. Brand Signatures & Accents (Forest Green & Slate Gray)
+*   **Forest Green (Growth & Yields):** `#193725` | `hsl(144, 38%, 16%)`
+    *   *Represents: Venture capital yields, wealth growth, positive analytics, and success metrics.*
+*   **Slate Gray (Muted & Structural Utility):** `#606061` | `hsl(240, 1%, 38%)`
+    *   *Represents: Borders (with low opacity), secondary text, placeholders, and inactive states.*
 
 ---
 
@@ -37,21 +43,20 @@ Below is the design system preview for **Investra**, including the official appl
 
 Investra's typography balances a modern tech-startup aesthetic with corporate reliability:
 
-*   **Primary Headings (`h1`, `h2`, `h3`):** **Outfit** or **Plus Jakarta Sans** (Google Fonts)
-*   **Body & UI Text:** **Inter** or **Satoshi**
+*   **Primary Headings (`h1`, `h2`, `h3`):** **Outfit** (Google Fonts) - Clean, round geometric letterforms.
+*   **Body & UI Text:** **Plus Jakarta Sans** (Google Fonts) - highly legible at smaller dashboard sizes.
 
 ---
 
 ## 💎 4. Visual Language & UI Components
 
 ### A. Glassmorphism (Card UI)
-For dashboards and profiles, use semi-transparent surfaces with a strong blur filter to create depth:
+For dashboards and profiles, use semi-transparent surfaces with a strong blur filter to create depth over the Midnight Navy background:
 ```css
-.premium-card {
-  background: rgba(45, 45, 45, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+.glass-panel {
+  background: rgba(38, 63, 106, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(96, 96, 97, 0.2);
 }
 ```
 
@@ -59,66 +64,26 @@ For dashboards and profiles, use semi-transparent surfaces with a strong blur fi
 Use smooth, tactile transitions. Avoid linear movements; use a premium `cubic-bezier`:
 ```css
 .interactive-element {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .interactive-element:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 20px -8px rgba(0, 200, 83, 0.3);
+  box-shadow: 0 12px 30px -10px rgba(24, 43, 69, 0.5);
+  border-color: rgba(96, 96, 97, 0.4);
 }
 ```
 
-### C. Spacing & Borders
-*   **Border Radii:** Card containers must use `12px` or `16px`. Buttons use pill shape (`9999px`) or `8px` for crisp actions.
-*   **Inner Gradients:** Subtly overlay borders with a linear gradient of Emerald to Gold at 15% opacity to make elements pop.
-
 ---
 
-## ⚙️ 5. CSS Variable Setup (`globals.css`)
+## ⚙️ 5. Tailwind CSS Configuration Setup (`globals.css`)
 
-Copy this code into your CSS stylesheet to apply these values globally:
+Copy this code into your CSS stylesheet (Tailwind v4) to apply these colors globally:
 
 ```css
-@layer base {
-  :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 47.5% 11.2%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47.5% 11.2%;
-    
-    --primary: 161 94% 30%;
-    --primary-foreground: 210 40% 98%;
-    
-    --secondary: 35 92% 44%;
-    --secondary-foreground: 222.2 47.5% 11.2%;
-    
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    
-    --accent: 162 76% 41%;
-    --accent-foreground: 222.2 47.5% 11.2%;
-    
-    --border: 214.3 31.8% 91.4%;
-    --radius: 12px;
-  }
-
-  .dark {
-    --background: 220 20% 4%;
-    --foreground: 210 40% 98%;
-    
-    --card: 220 18% 9%;
-    --card-foreground: 210 40% 98%;
-    
-    --primary: 161 94% 30%;
-    --primary-foreground: 210 40% 98%;
-    
-    --secondary: 35 92% 44%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 16% 47%;
-    
-    --border: 217.2 32.6% 17.5%;
-  }
+@theme {
+  --color-brand-navy: #182b45;
+  --color-brand-blue: #263f6a;
+  --color-brand-green: #193725;
+  --color-brand-gray: #606061;
 }
 ```
