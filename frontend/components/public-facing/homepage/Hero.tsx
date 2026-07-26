@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import React from "react";
+import ShinyText from "@/components/ui/ShinyText";
 
 export default function Hero() {
   return (
@@ -11,7 +13,7 @@ export default function Hero() {
           <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] xl:text-[56px] text-[#064e3b] leading-[1.1] tracking-tight">
             Invest in a Greener Future.<br />
             Secure Your Wealth,<br />
-            Sustain the Planet.
+            <ShinyText text="Sustain the Planet." speed={4.5} />
           </h1>
 
           <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">

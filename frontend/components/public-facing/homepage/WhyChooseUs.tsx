@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 
 const WhyChooseUs = () => {
   return (
@@ -28,14 +29,14 @@ const WhyChooseUs = () => {
 
         </div>
 
-        {/* Bottom Section - Animated Cards Grid */}
+        {/* Bottom Section - Animated Spotlight Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           
           {/* Card 1: Filled Primary Brand Color */}
-          <section className="bg-[#064e3b] p-6 rounded-2xl h-[360px] relative overflow-hidden transition-all duration-500 group shadow-xs hover:shadow-md cursor-pointer">
-            {/* Ambient inner glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent pointer-events-none" />
-
+          <SpotlightCard 
+            spotlightColor="rgba(255, 255, 255, 0.12)"
+            className="bg-[#064e3b] p-6 rounded-2xl h-[360px] transition-all duration-500 group shadow-xs hover:shadow-md cursor-pointer"
+          >
             {/* Card Number */}
             <h1 className="text-4xl font-heading font-black text-emerald-400">
               01
@@ -50,7 +51,7 @@ const WhyChooseUs = () => {
             </div>
 
             {/* Text content container */}
-            <div className="absolute bottom-6 left-6 right-6">
+            <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-white transition-transform duration-500 group-hover:-translate-y-28">
                 100% Regulated & Secure
               </h3>
@@ -60,13 +61,13 @@ const WhyChooseUs = () => {
                 All investments are fully compliant with financial regulations, protected by bank-grade encryption and regular compliance checks.
               </p>
             </div>
-          </section>
+          </SpotlightCard>
 
           {/* Card 2: Border outline style */}
-          <section className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] relative overflow-hidden transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer">
-            {/* Green Gradient Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#064e3b]/5 to-[#10b981]/5 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
-
+          <SpotlightCard
+            spotlightColor="rgba(16, 185, 129, 0.08)"
+            className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer"
+          >
             {/* Card Number */}
             <h1 className="text-4xl font-heading font-black text-[#064e3b]/30 group-hover:text-[#064e3b] transition-colors duration-300">
               02
@@ -81,7 +82,7 @@ const WhyChooseUs = () => {
             </div>
 
             {/* Text content container */}
-            <div className="absolute bottom-6 left-6 right-6">
+            <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
                 Fractional Eco-Investing
               </h3>
@@ -91,13 +92,13 @@ const WhyChooseUs = () => {
                 Start with as little as $100. Diversify your wealth seamlessly across forestry, wind, solar, and other vetted ESG initiatives.
               </p>
             </div>
-          </section>
+          </SpotlightCard>
 
           {/* Card 3: Border outline style */}
-          <section className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] relative overflow-hidden transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer">
-            {/* Green Gradient Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#064e3b]/5 to-[#10b981]/5 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
-
+          <SpotlightCard
+            spotlightColor="rgba(16, 185, 129, 0.08)"
+            className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer"
+          >
             {/* Card Number */}
             <h1 className="text-4xl font-heading font-black text-[#064e3b]/30 group-hover:text-[#064e3b] transition-colors duration-300">
               03
@@ -112,7 +113,7 @@ const WhyChooseUs = () => {
             </div>
 
             {/* Text content container */}
-            <div className="absolute bottom-6 left-6 right-6">
+            <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
                 Real-Time Yield Tracking
               </h3>
@@ -122,13 +123,13 @@ const WhyChooseUs = () => {
                 Monitor your project dividends, cash payouts, and audited carbon offset certificates directly through a real-time investor dashboard.
               </p>
             </div>
-          </section>
+          </SpotlightCard>
 
           {/* Card 4: Border outline style */}
-          <section className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] relative overflow-hidden transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer">
-            {/* Green Gradient Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#064e3b]/5 to-[#10b981]/5 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
-
+          <SpotlightCard
+            spotlightColor="rgba(16, 185, 129, 0.08)"
+            className="border border-slate-200 p-6 bg-white rounded-2xl h-[360px] transition-all duration-500 group hover:border-[#064e3b]/30 shadow-xs hover:shadow-md cursor-pointer"
+          >
             {/* Card Number */}
             <h1 className="text-4xl font-heading font-black text-[#064e3b]/30 group-hover:text-[#064e3b] transition-colors duration-300">
               04
@@ -143,7 +144,7 @@ const WhyChooseUs = () => {
             </div>
 
             {/* Text content container */}
-            <div className="absolute bottom-6 left-6 right-6">
+            <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
                 Expert ESG Stewardship
               </h3>
@@ -153,7 +154,7 @@ const WhyChooseUs = () => {
                 Our environmental analysts manage capital stewardship and audit project cycles to optimize return-on-investment profiles.
               </p>
             </div>
-          </section>
+          </SpotlightCard>
 
         </div>
 

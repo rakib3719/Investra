@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { FiUser, FiArrowRight } from "react-icons/fi";
+import ShinyText from "@/components/ui/ShinyText";
 
 const ConsultantSection = () => {
   return (
@@ -34,7 +35,7 @@ const ConsultantSection = () => {
                 Expert Advisory
               </span>
               <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight">
-                Empowering <span className="text-[#064e3b] italic">Sustainability</span>, One Investment at a Time
+                Empowering <ShinyText text="Sustainability" speed={3.5} className="italic font-black text-[#064e3b]" />, One Investment at a Time
               </h2>
               <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
                 Navigating sustainable finance requires deep sector expertise. Our dedicated environmental and financial advisors work alongside you, tailoring carbon-smart portfolios that maximize yield while securing a greener future.
