@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 
 export default function Hero() {
@@ -14,11 +13,11 @@ export default function Hero() {
             Secure Your Wealth,<br />
             Sustain the Planet.
           </h1>
-          
+
           <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
             Impactful investment opportunities driving positive environmental and financial growth.
           </p>
-          
+
           <div className="pt-2">
             <Link href="/funds" className="inline-block bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-xs">
               Explore Sustainable Investments
@@ -28,8 +27,8 @@ export default function Hero() {
 
         {/* Right Column - Hero Image */}
         <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[480px] xl:h-[540px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
-          <img 
-            src="/hero_sustainable_investing.png" 
+          <img
+            src="/hero_sustainable_investing.png"
             alt="Investra Sustainable Investments"
             className="w-full h-full object-cover"
           />

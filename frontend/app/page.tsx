@@ -8,6 +8,12 @@ import InvestmentOpportunities from "../components/public-facing/homepage/Invest
 import InvestWithPurpose from "../components/public-facing/homepage/InvestWithPurpose";
 import ImpactStats from "../components/public-facing/homepage/ImpactStats";
 import CTASection from "../components/public-facing/homepage/CTASection";
+import WhyChooseUs from "../components/public-facing/homepage/WhyChooseUs";
+import PlatformPillars from "../components/public-facing/homepage/PlatformPillars";
+import ConsultantSection from "../components/public-facing/homepage/ConsultantSection";
+import Testimonials from "../components/public-facing/homepage/Testimonials";
+import FAQAccordion from "../components/public-facing/homepage/FAQAccordion";
+import BlogHome from "../components/public-facing/homepage/BlogHome";
 import Footer from "../components/public-facing/shared/Footer";
 
 export default function Home() {
@@ -41,6 +47,24 @@ export default function Home() {
           
         </div>
       </main>
+
+      {/* Why Choose Investra Section */}
+      <WhyChooseUs />
+
+      {/* Sustainable Pillars (Forestry, Solar, Wind, etc.) */}
+      <PlatformPillars />
+
+      {/* Expert Consultant & Advisory Team */}
+      <ConsultantSection />
+
+      {/* Client Testimonials Section */}
+      <Testimonials />
+
+      {/* FAQ Accordion Section */}
+      <FAQAccordion />
+
+      {/* Insights & Blog Section */}
+      <BlogHome />
 
       {/* Footer Navigation */}
       <Footer />
