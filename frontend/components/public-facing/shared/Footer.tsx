@@ -39,12 +39,12 @@ export default function Footer() {
                 <path d="M12 13c2-.8 3.5-.8 5.5 0" stroke="currentColor" />
               </svg>
               <span className="font-heading font-extrabold text-xl tracking-tight text-white">
-                Investra
+                InvestConnect
               </span>
             </Link>
             
             <p className="text-[11px] leading-relaxed text-slate-400 font-body max-w-sm">
-              Sed quaerat cupiditate ut aspernatur pariatur quo facere dolores et natus quisque.
+              Connecting Investors, Entrepreneurs, and Consultants in a secure subscription-based ecosystem.
             </p>
 
             <div className="space-y-3">
@@ -143,7 +143,7 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5 text-slate-400 font-body grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5">
               <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
-              <li><Link href="/pricing" className="hover:text-accent transition-colors">Pricing Plan</Link></li>
+              <li><Link href="/subscription" className="hover:text-accent transition-colors">Pricing Plan</Link></li>
               <li><Link href="/contact" className="hover:text-accent transition-colors">Contact</Link></li>
               <li><Link href="/market" className="hover:text-accent transition-colors">Market Overview</Link></li>
               <li><Link href="/transact" className="hover:text-accent transition-colors">Deposit & Withdrawals</Link></li>
@@ -155,7 +155,7 @@ export default function Footer() {
 
         {/* Bottom Bar: Copyright and Scroll To Top */}
         <div className="pt-8 border-t border-slate-900/60 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-body relative">
-          <p>© {new Date().getFullYear()} Investra. All Rights Reserved</p>
+          <p>© {new Date().getFullYear()} InvestConnect. All Rights Reserved</p>
           
           <div className="flex items-center gap-8">
             <div className="flex gap-4">
