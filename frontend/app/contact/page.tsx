@@ -43,7 +43,7 @@ export default function ContactPage() {
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-secondary leading-tight tracking-tight">
               Get in Touch with <br />
-              <ShinyText text="InvestConnect Support" speed={4} />
+              <ShinyText text="Investra Support" speed={4} />
             </h1>
             <p className="text-sm md:text-base text-muted-foreground font-body max-w-2xl mx-auto leading-relaxed">
               Have questions about our platform, subscriptions, or partnership opportunities? Reach out to us below.
@@ -71,7 +71,7 @@ export default function ContactPage() {
             <div className="bg-white border border-slate-100 rounded-2xl p-5 flex justify-between items-center group shadow-xs">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold font-heading text-slate-400 uppercase tracking-wider">You Can Email Here</span>
-                <p className="text-xs font-bold text-slate-700 font-body">support@investconnect.com</p>
+                <p className="text-xs font-bold text-slate-700 font-body">support@investra.com</p>
               </div>
               <button className="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-primary text-slate-700 group-hover:text-white flex items-center justify-center transition-all shrink-0 cursor-pointer">
                 <FiArrowUpRight className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function ContactPage() {
                 <div className="relative w-full h-[320px] md:h-[400px] rounded-[24px] overflow-hidden bg-slate-50 border border-slate-100">
                   <Image
                     src="/hands_connecting.png"
-                    alt="InvestConnect Partnerships"
+                    alt="Investra Partnerships"
                     fill
                     sizes="(max-w-768px) 100vw, 40vw"
                     className="object-cover"
@@ -124,7 +124,7 @@ export default function ContactPage() {
                 <div className="bg-slate-50 border border-slate-100 rounded-[20px] p-5 flex justify-between items-center group">
                   <div className="space-y-1">
                     <span className="text-[10px] font-bold font-heading text-slate-400 uppercase tracking-wider">Partnerships and Collaborations</span>
-                    <p className="text-xs font-bold text-slate-800 font-body">collabs@investconnect.com</p>
+                    <p className="text-xs font-bold text-slate-800 font-body">collabs@investra.com</p>
                   </div>
                   <button className="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-primary text-slate-700 group-hover:text-white flex items-center justify-center transition-all shrink-0 cursor-pointer">
                     <FiArrowUpRight className="w-4 h-4" />
@@ -267,7 +267,7 @@ export default function ContactPage() {
               {/* Description & Socials Column */}
               <div className="lg:col-span-6 space-y-6">
                 <p className="text-xs md:text-sm text-slate-500 font-body leading-relaxed">
-                  Thank you for your interest in InvestConnect and our mission to match seed capital with vetted entrepreneur initiatives. We value your thoughts, questions, and feedback. Please don't hesitate to reach out to us. Our dedicated team is here to assist you.
+                  Thank you for your interest in Investra and our mission to match seed capital with vetted entrepreneur initiatives. We value your thoughts, questions, and feedback. Please don't hesitate to reach out to us. Our dedicated team is here to assist you.
                 </p>
                 
                 {/* Social Circles */}

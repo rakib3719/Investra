@@ -93,7 +93,7 @@ export default function SubscriptionPage() {
               Monetization & Plans
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-secondary leading-tight tracking-tight">
-              InvestConnect <br />
+              Investra <br />
               <ShinyText text="Subscription Packages" speed={4} />
             </h1>
             <p className="text-sm md:text-base text-muted-foreground font-body max-w-2xl mx-auto leading-relaxed">

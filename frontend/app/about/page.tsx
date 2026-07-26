@@ -28,7 +28,7 @@ export default function AboutPage() {
               <ShinyText text="Venture Ambition" speed={4} />
             </h1>
             <p className="text-sm md:text-base text-muted-foreground font-body max-w-2xl mx-auto leading-relaxed">
-              InvestConnect is a next-generation investment networking platform designed to bring together Investors, Entrepreneurs, and Consultants in a highly secure, subscription-driven ecosystem.
+              Investra is a next-generation investment networking platform designed to bring together Investors, Entrepreneurs, and Consultants in a highly secure, subscription-driven ecosystem.
             </p>
           </div>
         </section>

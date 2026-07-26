@@ -13,7 +13,7 @@ const WhyChooseUs = () => {
           
           <div className="md:col-span-6 space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-[#064e3b] font-heading">
-              Why InvestConnect
+              Why Investra
             </span>
             <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight">
               We’re Dedicated Partners in <br />
@@ -23,7 +23,7 @@ const WhyChooseUs = () => {
 
           <div className="md:col-span-6">
             <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
-              At InvestConnect, we merge high-yield investment discovery with verified entrepreneur vetting. We do not compromise on security, compliance, or transparency, ensuring investors and entrepreneurs grow together.
+              At Investra, we merge high-yield investment discovery with verified entrepreneur vetting. We do not compromise on security, compliance, or transparency, ensuring investors and entrepreneurs grow together.
             </p>
           </div>
 

@@ -46,7 +46,7 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Portfolio",
-    href: "/funds",
+    href: "/portfolio",
     icon: Briefcase,
     image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80"
   },

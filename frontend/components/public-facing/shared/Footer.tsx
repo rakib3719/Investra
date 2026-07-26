@@ -39,7 +39,7 @@ export default function Footer() {
                 <path d="M12 13c2-.8 3.5-.8 5.5 0" stroke="currentColor" />
               </svg>
               <span className="font-heading font-extrabold text-xl tracking-tight text-white">
-                InvestConnect
+                Investra
               </span>
             </Link>
             
@@ -129,7 +129,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-slate-400 font-body">
               <li><Link href="/story" className="hover:text-accent transition-colors">Our Story</Link></li>
               <li><Link href="/advisors" className="hover:text-accent transition-colors">Our Team</Link></li>
-              <li><Link href="/funds" className="hover:text-accent transition-colors">Portfolio</Link></li>
+              <li><Link href="/portfolio" className="hover:text-accent transition-colors">Portfolio</Link></li>
               <li><Link href="/careers" className="hover:text-accent transition-colors">Career</Link></li>
               <li><Link href="/testimonials" className="hover:text-accent transition-colors">Client Testimonials</Link></li>
               <li><Link href="/security" className="hover:text-accent transition-colors">Security Promise</Link></li>
@@ -155,7 +155,7 @@ export default function Footer() {
 
         {/* Bottom Bar: Copyright and Scroll To Top */}
         <div className="pt-8 border-t border-slate-900/60 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-body relative">
-          <p>© {new Date().getFullYear()} InvestConnect. All Rights Reserved</p>
+          <p>© {new Date().getFullYear()} Investra. All Rights Reserved</p>
           
           <div className="flex items-center gap-8">
             <div className="flex gap-4">

@@ -6,12 +6,14 @@ interface SpotlightCardProps {
   children: React.ReactNode;
   className?: string;
   spotlightColor?: string;
+  onClick?: () => void;
 }
 
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(16, 185, 129, 0.08)" // Soft Emerald Green Glow
+  spotlightColor = "rgba(16, 185, 129, 0.08)", // Soft Emerald Green Glow
+  onClick
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -31,6 +33,7 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsFocused(true)}
       onMouseLeave={() => setIsFocused(false)}
+      onClick={onClick}
       className={`relative overflow-hidden ${className}`}
     >
       {/* Spotlight Effect Layer */}

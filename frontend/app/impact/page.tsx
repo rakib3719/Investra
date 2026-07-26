@@ -109,7 +109,7 @@ export default function ImpactPage() {
               <ShinyText text="Verified Venture Statistics" speed={4.5} />
             </h1>
             <p className="text-sm md:text-base text-muted-foreground font-body max-w-2xl mx-auto leading-relaxed">
-              Every connection and dollar deployed on InvestConnect drives business expansion. Through strict entrepreneur vetting, independent audits, and real-time dashboard analytics, we ensure complete ecosystem transparency.
+              Every connection and dollar deployed on Investra drives business expansion. Through strict entrepreneur vetting, independent audits, and real-time dashboard analytics, we ensure complete ecosystem transparency.
             </p>
           </div>
         </section>
@@ -288,7 +288,7 @@ export default function ImpactPage() {
               </h2>
             </div>
             <p className="text-xs md:text-sm text-slate-500 font-body max-w-sm leading-relaxed">
-              Below are the active startup campaigns funded on InvestConnect. Statuses represent underwriting milestones.
+              Below are the active startup campaigns funded on Investra. Statuses represent underwriting milestones.
             </p>
           </div>
 

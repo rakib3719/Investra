@@ -16,7 +16,7 @@ interface Testimonial {
 const testimonialsColumn1: Testimonial[] = [
   {
     id: 1,
-    text: "InvestConnect's comparison engine provided us with verified metrics that made matching with seed capital incredibly straightforward.",
+    text: "Investra's comparison engine provided us with verified metrics that made matching with seed capital incredibly straightforward.",
     author: "Editha Kristin",
     role: "CEO, FinTech Ventures",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
@@ -40,7 +40,7 @@ const testimonialsColumn1: Testimonial[] = [
 const testimonialsColumn2: Testimonial[] = [
   {
     id: 4,
-    text: "Partnering with InvestConnect helped us secure funding for our SaaS scaling phase in record time. Excellent communication and transparency.",
+    text: "Partnering with Investra helped us secure funding for our SaaS scaling phase in record time. Excellent communication and transparency.",
     author: "Mario Pascal",
     role: "SaaS Project Manager",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
