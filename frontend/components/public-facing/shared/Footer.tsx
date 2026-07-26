@@ -44,7 +44,7 @@ export default function Footer() {
             </Link>
             
             <p className="text-[11px] leading-relaxed text-slate-400 font-body max-w-sm">
-              Sed quaerat cupiditate ut aspernatur pariatur quo facere dolores et natus quisque.
+              Connecting Investors, Entrepreneurs, and Consultants in a secure subscription-based ecosystem.
             </p>
 
             <div className="space-y-3">
@@ -129,7 +129,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-slate-400 font-body">
               <li><Link href="/story" className="hover:text-accent transition-colors">Our Story</Link></li>
               <li><Link href="/advisors" className="hover:text-accent transition-colors">Our Team</Link></li>
-              <li><Link href="/funds" className="hover:text-accent transition-colors">Portfolio</Link></li>
+              <li><Link href="/portfolio" className="hover:text-accent transition-colors">Portfolio</Link></li>
               <li><Link href="/careers" className="hover:text-accent transition-colors">Career</Link></li>
               <li><Link href="/testimonials" className="hover:text-accent transition-colors">Client Testimonials</Link></li>
               <li><Link href="/security" className="hover:text-accent transition-colors">Security Promise</Link></li>
@@ -143,7 +143,7 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5 text-slate-400 font-body grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5">
               <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
-              <li><Link href="/pricing" className="hover:text-accent transition-colors">Pricing Plan</Link></li>
+              <li><Link href="/subscription" className="hover:text-accent transition-colors">Pricing Plan</Link></li>
               <li><Link href="/contact" className="hover:text-accent transition-colors">Contact</Link></li>
               <li><Link href="/market" className="hover:text-accent transition-colors">Market Overview</Link></li>
               <li><Link href="/transact" className="hover:text-accent transition-colors">Deposit & Withdrawals</Link></li>

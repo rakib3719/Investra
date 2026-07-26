@@ -46,7 +46,7 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Portfolio",
-    href: "/funds",
+    href: "/portfolio",
     icon: Briefcase,
     image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80"
   },
@@ -412,11 +412,14 @@ export default function Navbar() {
           <Link href="/impact" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
             Impact
           </Link>
-          <Link href="/resources" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
-            Resources
+          <Link href="/subscription" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+            Subscription
           </Link>
           <Link href="/about" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
             About
+          </Link>
+          <Link href="/contact" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+            Contact
           </Link>
         </div>
 
@@ -471,11 +474,11 @@ export default function Navbar() {
             Impact
           </Link>
           <Link
-            href="/resources"
+            href="/subscription"
             onClick={() => setIsOpen(false)}
             className="block text-xs font-bold text-slate-600 hover:text-primary"
           >
-            Resources
+            Subscription
           </Link>
           <Link
             href="/about"
@@ -483,6 +486,13 @@ export default function Navbar() {
             className="block text-xs font-bold text-slate-600 hover:text-primary"
           >
             About
+          </Link>
+          <Link
+            href="/contact"
+            onClick={() => setIsOpen(false)}
+            className="block text-xs font-bold text-slate-600 hover:text-primary"
+          >
+            Contact
           </Link>
           <hr className="border-slate-100" />
           <div className="flex flex-col gap-2 pt-2">

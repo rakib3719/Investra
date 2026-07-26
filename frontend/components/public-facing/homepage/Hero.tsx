@@ -11,18 +11,18 @@ export default function Hero() {
         {/* Left Column - Content */}
         <div className="lg:col-span-6 space-y-6 text-left">
           <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] xl:text-[56px] text-[#064e3b] leading-[1.1] tracking-tight">
-            Invest in a Greener Future.<br />
-            Secure Your Wealth,<br />
-            <ShinyText text="Sustain the Planet." speed={4.5} />
+            Empower Startup Ambition.<br />
+            Secure Elite Yields,<br />
+            <ShinyText text="Connect & Scale." speed={4.5} />
           </h1>
 
           <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
-            Impactful investment opportunities driving positive environmental and financial growth.
+            The elite network matching institutional investors, high-growth entrepreneurs, and certified advisors under a single visual ecosystem.
           </p>
 
           <div className="pt-2">
             <Link href="/funds" className="inline-block bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-xs">
-              Explore Sustainable Investments
+              Explore Opportunities
             </Link>
           </div>
         </div>

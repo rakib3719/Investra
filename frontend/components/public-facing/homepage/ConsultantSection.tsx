@@ -35,10 +35,10 @@ const ConsultantSection = () => {
                 Expert Advisory
               </span>
               <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight">
-                Empowering <ShinyText text="Sustainability" speed={3.5} className="italic font-black text-[#064e3b]" />, One Investment at a Time
+                Empowering <ShinyText text="Venture Growth" speed={3.5} className="italic font-black text-[#064e3b]" />, One Session at a Time
               </h2>
               <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
-                Navigating sustainable finance requires deep sector expertise. Our dedicated environmental and financial advisors work alongside you, tailoring carbon-smart portfolios that maximize yield while securing a greener future.
+                Navigating startup fundraising and business growth requires deep sector expertise. Our certified consultants work alongside you, tailoring business models, refining pitches, and maximizing revenue potential.
               </p>
             </div>
 
@@ -84,10 +84,10 @@ const ConsultantSection = () => {
               {/* Styled Branding Text next to photos */}
               <div className="sm:col-span-4 pl-0 sm:pl-2">
                 <p className="font-heading font-extrabold text-sm md:text-base text-[#064e3b] leading-tight border-l-2 border-[#064e3b] pl-3">
-                  Your Partners In Sustainable Growth
+                  Your Partners In Startup Success
                 </p>
                 <p className="text-[10px] text-slate-500 font-body mt-2 leading-relaxed">
-                  Certified carbon-markets analysts ready to design your asset roadmap.
+                  Experienced business strategists ready to design your scaling roadmap.
                 </p>
               </div>
 
@@ -96,7 +96,7 @@ const ConsultantSection = () => {
             {/* Bottom Section */}
             <div className="pt-4 border-t border-slate-100 space-y-4">
               <p className="text-xs text-slate-600 font-body leading-relaxed">
-                Connect with our expert team to understand compliance metrics, green tax credits, and the detailed environmental performance of our active funds.
+                Connect with our expert team to understand business metrics, transaction structures, and the detailed performance of our active modules.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <button className="bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors font-heading shadow-xs flex items-center gap-2">
