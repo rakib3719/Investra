@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/components/providers/QueryProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -29,7 +31,11 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${jakarta.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </QueryProvider>
       </body>
     </html>
   );
