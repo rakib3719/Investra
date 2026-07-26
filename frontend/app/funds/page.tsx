@@ -37,97 +37,98 @@ interface Campaign {
 const mockCampaigns: Campaign[] = [
   {
     id: 1,
-    title: "Boreal Carbon Capture Initiative",
-    category: "Forestry",
+    title: "Apex FinTech Core Banking API",
+    category: "FinTech",
     risk: "Low",
-    pitch: "Sustaining biodiversity while capturing 15,000 tons of carbon dioxide per year in forest reserves.",
+    pitch: "Next-gen banking infrastructure API and transaction processing layer for micro-merchants in emerging markets.",
     entrepreneur: "Tariqul Islam",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    image: "/forest_fund.png",
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80",
     target: 1200000,
     raised: 780000,
-    irr: 10.8,
+    irr: 18.5,
     minInvest: 2500,
-    impactMetric: "15,000 Tons CO2 offset/yr"
+    impactMetric: "40K Active Merchants"
   },
   {
     id: 2,
-    title: "Apex Off-Grid Solar Networks",
-    category: "Solar",
+    title: "ProDocs SaaS HR Automation",
+    category: "SaaS",
     risk: "Medium",
-    pitch: "Scaling off-grid decentralised solar power systems to 14 rural communities, optimizing power yield.",
+    pitch: "Automated compliance, custom payroll pipelines, and healthcare benefits for remote-first borderless workforces.",
     entrepreneur: "Mominul Haque",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80",
     target: 850000,
     raised: 612000,
-    irr: 12.5,
+    irr: 22.4,
     minInvest: 5000,
-    impactMetric: "14 Communities Solarized"
+    impactMetric: "120 Active Accounts"
   },
   {
     id: 3,
-    title: "Smart Grid Power Distribution",
-    category: "Eco-Tech",
+    title: "MedVitals Telehealth Node Network",
+    category: "HealthTech",
     risk: "High",
-    pitch: "AI-driven grid balancer reducing energy transmission waste by 18% across industrial zones.",
+    pitch: "AI-driven remote patient monitoring, vitals streaming hardware, and instant specialist consultations.",
     entrepreneur: "Lina Chowdhury",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-    image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80",
     target: 2000000,
     raised: 400000,
-    irr: 14.2,
+    irr: 24.2,
     minInvest: 10000,
-    impactMetric: "18% Grid Energy Saved"
+    impactMetric: "18% Care Speed Boost"
   },
   {
     id: 4,
-    title: "Bio-Circular Soil Enriched Farms",
-    category: "Agriculture",
+    title: "Bio-Circular Agri Supply Chain",
+    category: "AgriTech",
     risk: "Low",
-    pitch: "Developing regenerative microbial bio-organic soil conditioners to restore crop health.",
+    pitch: "Connecting independent organic growers directly to regional retail pipelines, minimizing food waste.",
     entrepreneur: "Rafiq Hasan",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
     image: "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80",
     target: 450000,
     raised: 382500,
-    irr: 9.6,
+    irr: 15.6,
     minInvest: 1000,
-    impactMetric: "120 Hectares Restored"
+    impactMetric: "1.2K Farms Linked"
   },
   {
     id: 5,
-    title: "Zephyr Coastal Wind Turbine Farm",
-    category: "Wind",
+    title: "Zephyr CleanTech Smart Grid",
+    category: "CleanTech",
     risk: "Medium",
-    pitch: "Installing next-gen low-wind speed turbines along offshore zones generating clean industrial power.",
+    pitch: "Power transmission grid monitoring software dynamically balancing load anomalies to reduce overheads.",
     entrepreneur: "Elena Petrova",
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80",
-    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=80",
     target: 3500000,
     raised: 2800000,
-    irr: 11.5,
+    irr: 16.5,
     minInvest: 25000,
-    impactMetric: "8.4 MW Power Capacity"
+    impactMetric: "8.4 MW Power Balanced"
   },
   {
     id: 6,
-    title: "HydroLoop Industrial Water Recycling",
-    category: "Eco-Tech",
+    title: "CargoSwift Automated Logistics",
+    category: "Logistics",
     risk: "Medium",
-    pitch: "Zero-liquid-discharge water filtering units for manufacturing facilities saving millions of gallons.",
+    pitch: "Real-time shipping route optimization engine and empty cargo sharing model for heavy logistics carriers.",
     entrepreneur: "Rahim Al-Mansoori",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    image: "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80",
     target: 1100000,
     raised: 495000,
-    irr: 13.0,
+    irr: 19.0,
     minInvest: 5000,
-    impactMetric: "1.2M Gallons Recycled/mo"
+    impactMetric: "1.2M Miles Saved/mo"
   }
 ];
 
-const categories = ["All", "Forestry", "Solar", "Wind", "Eco-Tech", "Agriculture"];
+const categories = ["All", "FinTech", "SaaS", "AgriTech", "HealthTech", "CleanTech", "Logistics"];
+
 
 export default function FundsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");

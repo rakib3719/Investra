@@ -16,21 +16,21 @@ interface Testimonial {
 const testimonialsColumn1: Testimonial[] = [
   {
     id: 1,
-    text: "Investra's forestry fund provided us with stable yields that hedged against inflation while offsetting our corporate carbon footprint.",
+    text: "InvestConnect's comparison engine provided us with verified metrics that made matching with seed capital incredibly straightforward.",
     author: "Editha Kristin",
-    role: "CEO, GreenTech Ventures",
+    role: "CEO, FinTech Ventures",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
   },
   {
     id: 2,
-    text: "The real-time carbon tracking dashboard is game-changing. It makes ESG reporting incredibly simple for our board.",
+    text: "The real-time business metrics dashboard is game-changing. It makes tracking entrepreneur engagement stats simple for our founders.",
     author: "Alvaro M.",
-    role: "Sustainability Director",
+    role: "Entrepreneur Support Lead",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80"
   },
   {
     id: 3,
-    text: "Starting with a fractional allocation in the wind farm projects allowed us to comfortably scale our sustainable assets.",
+    text: "Starting with a basic allocation in the comparison tools allowed us to comfortably find high-yield seed rounds.",
     author: "Elena Rostova",
     role: "Asset Manager",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
@@ -40,21 +40,21 @@ const testimonialsColumn1: Testimonial[] = [
 const testimonialsColumn2: Testimonial[] = [
   {
     id: 4,
-    text: "Partnering with Investra helped us secure funding for our 50MW solar grid in record time. Excellent communication and transparency.",
+    text: "Partnering with InvestConnect helped us secure funding for our SaaS scaling phase in record time. Excellent communication and transparency.",
     author: "Mario Pascal",
-    role: "Solar Grid Project Manager",
+    role: "SaaS Project Manager",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
   },
   {
     id: 5,
-    text: "Transparent quarterly dividends paired with certified carbon offset certificates. They are our trusted partners.",
+    text: "Transparent messaging pipelines paired with expert advisor sessions. They are our trusted partners.",
     author: "Edelgard Gisa",
     role: "Operations Director",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
   },
   {
     id: 6,
-    text: "Securing capital with secondary market liquidity options makes long-term forestry funds very attractive.",
+    text: "Securing capital with premium features like side-by-side comparison makes discovering seed funds very attractive.",
     author: "Marcus Vance",
     role: "Ventures Lead",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80"

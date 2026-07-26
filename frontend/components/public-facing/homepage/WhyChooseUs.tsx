@@ -13,17 +13,17 @@ const WhyChooseUs = () => {
           
           <div className="md:col-span-6 space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-[#064e3b] font-heading">
-              Why Investra
+              Why InvestConnect
             </span>
             <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight">
               We’re Dedicated Partners in <br />
-              <span className="text-[#064e3b] italic">Your Sustainable Success</span>
+              <span className="text-[#064e3b] italic">Your Venture Success</span>
             </h2>
           </div>
 
           <div className="md:col-span-6">
             <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
-              At Investra, we merge high-yield investment strategies with verified environmental stewardship. We do not compromise on security, compliance, or transparency, ensuring your wealth grows alongside a healthier planet.
+              At InvestConnect, we merge high-yield investment discovery with verified entrepreneur vetting. We do not compromise on security, compliance, or transparency, ensuring investors and entrepreneurs grow together.
             </p>
           </div>
 
@@ -58,7 +58,7 @@ const WhyChooseUs = () => {
 
               {/* Paragraph moves up on hover */}
               <p className="absolute bottom-0 left-0 w-full text-slate-100 text-xs md:text-sm opacity-0 translate-y-8 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 font-body leading-relaxed">
-                All investments are fully compliant with financial regulations, protected by bank-grade encryption and regular compliance checks.
+                All portfolios are fully compliant with financial regulations, protected by secure KYC check-ins and structured subscription limits.
               </p>
             </div>
           </SpotlightCard>
@@ -84,12 +84,12 @@ const WhyChooseUs = () => {
             {/* Text content container */}
             <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
-                Fractional Eco-Investing
+                Side-by-Side Comparison
               </h3>
 
               {/* Paragraph moves up on hover */}
               <p className="absolute bottom-0 left-0 w-full text-slate-600 text-xs md:text-sm opacity-0 translate-y-8 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 font-body leading-relaxed">
-                Start with as little as $100. Diversify your wealth seamlessly across forestry, wind, solar, and other vetted ESG initiatives.
+                Compare multiple business opportunities side-by-side using ROI projections, growth stage, capital requirements, and locations.
               </p>
             </div>
           </SpotlightCard>
@@ -115,12 +115,12 @@ const WhyChooseUs = () => {
             {/* Text content container */}
             <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
-                Real-Time Yield Tracking
+                Direct Chat Requests
               </h3>
 
               {/* Paragraph moves up on hover */}
               <p className="absolute bottom-0 left-0 w-full text-slate-600 text-xs md:text-sm opacity-0 translate-y-8 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 font-body leading-relaxed">
-                Monitor your project dividends, cash payouts, and audited carbon offset certificates directly through a real-time investor dashboard.
+                Connect with entrepreneurs directly. Submit message requests, and engage in real-time encrypted chats once approved.
               </p>
             </div>
           </SpotlightCard>
@@ -146,12 +146,12 @@ const WhyChooseUs = () => {
             {/* Text content container */}
             <div className="absolute bottom-6 left-6 right-6 z-20">
               <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] group-hover:text-[#064e3b] transition-all duration-500 group-hover:-translate-y-28">
-                Expert ESG Stewardship
+                Consultant Monetization
               </h3>
 
               {/* Paragraph moves up on hover */}
               <p className="absolute bottom-0 left-0 w-full text-slate-600 text-xs md:text-sm opacity-0 translate-y-8 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 font-body leading-relaxed">
-                Our environmental analysts manage capital stewardship and audit project cycles to optimize return-on-investment profiles.
+                Advisors and experts monetize knowledge. Host video courses, live sessions, and workshops with custom platform splits.
               </p>
             </div>
           </SpotlightCard>

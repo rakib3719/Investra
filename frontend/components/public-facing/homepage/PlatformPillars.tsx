@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Zap, Trees, RefreshCw, Droplet, Check, ArrowRight } from "lucide-react";
+import { Zap, Briefcase, UserCheck, ShieldCheck, Check, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PillarItem {
@@ -21,59 +21,59 @@ const PlatformPillars = () => {
   const pillarsData: PillarItem[] = [
     {
       id: 0,
-      title: "Renewable Energy",
-      heading: "Solar & Wind Power Infrastructure",
-      image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
-      details: "Harnessing natural resources to build clean energy capacity. We invest in high-yield solar grids and onshore wind farms that generate steady utility revenues while permanently displacing fossil fuel reliance.",
+      title: "Vetted Startups",
+      heading: "Discover High-Growth Opportunities",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+      details: "Connecting investors with pre-screened startup pitches. We target scalable SaaS, FinTech, and logistics ventures that have clear product-market fit and audited transaction volumes.",
       points: [
-        "Grid-scale solar installations and storage",
-        "Onshore and offshore wind energy systems",
-        "Long-term energy purchasing agreements (PPAs)",
-        "Consistent quarterly dividends driven by energy sales"
+        "Pre-vetted pitch decks and compliance records",
+        "Complete financial modeling and traction stats",
+        "Opportunities spanning SaaS, FinTech, and AgriTech",
+        "Secure investment pledges routed directly"
+      ],
+      icon: Briefcase
+    },
+    {
+      id: 1,
+      title: "Entrepreneur Hub",
+      heading: "Showcase Pitch Decks & Get Backed",
+      image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+      details: "Allowing entrepreneurs (Uddoktas) to publish business plans, track investor views and bookmark metrics, and secure growth capital efficiently.",
+      points: [
+        "Custom pitch deck showcase builders",
+        "Real-time visitor analytics and dashboard tracking",
+        "Gated premium visibility upgrades",
+        "Direct match-making queues"
       ],
       icon: Zap
     },
     {
-      id: 1,
-      title: "Regenerative Forestry",
-      heading: "Sustainable Timberlands & Reforestation",
-      image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=800&q=80",
-      details: "Unlocking the ecological and material value of standing forests. Our funds acquire commercial forests managed with strict FSC guidelines, blending carbon credit production with sustainable logging.",
-      points: [
-        "Biodiversity-focused native tree planting",
-        "Regulated FSC-certified sustainable timber harvesting",
-        "High-value carbon offset certificate generation",
-        "Resilient asset valuation hedging against inflation"
-      ],
-      icon: Trees
-    },
-    {
       id: 2,
-      title: "Circular Economy",
-      heading: "Zero-Waste & Regenerative Materials",
-      image: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&w=800&q=80",
-      details: "Redesigning industrial systems to eliminate waste. We support enterprises converting agricultural residues, recycling plastics, and deploying bio-packaging alternatives to secure long-term value.",
+      title: "Expert Mentorship",
+      heading: "Certified Consultants & Live Training",
+      image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80",
+      details: "Certified business consultants host paid Q&A sessions, deadline-based cohorts, and pre-recorded training videos, keeping an 80/20 platform split.",
       points: [
-        "Industrial recycling and upcycling facilities",
-        "Bio-based materials and biodegradable packaging",
-        "Waste-to-energy technologies and systems",
-        "Investing in companies driving closed-loop production"
+        "Scheduled Zoom & Google Meet integrations",
+        "Paid workshop enrollment and course delivery",
+        "Secure Stripe-tracked billing",
+        "Direct mentoring loops with entrepreneurs"
       ],
-      icon: RefreshCw
+      icon: UserCheck
     },
     {
       id: 3,
-      title: "Clean Water & Oceans",
-      heading: "Aqua Preservation & Purification Solutions",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-      details: "Securing clean water resources for communities and ecosystems. Our investments target advanced filtration technologies, marine biodiversity preservation, and sustainable inland aquaculture projects.",
+      title: "Subscription Engine",
+      heading: "Feature-Based Gating & Packages",
+      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+      details: "Admin-configured subscription plans enabling customizable access boundaries. Investors and entrepreneurs purchase packages to lift bookmark and chat limits.",
       points: [
-        "Smart water conservation and purification tech",
-        "Marine ecosystem protection and restoration",
-        "Eco-certified sustainable aquaculture farms",
-        "Long-term contracts with regional water utilities"
+        "Feature gating verified by custom middleware",
+        "Unlimited bookmark options for Pro members",
+        "Premium chat unlocks with messaging request queues",
+        "Flexible monthly and annual Stripe plans"
       ],
-      icon: Droplet
+      icon: ShieldCheck
     }
   ];
 
@@ -87,14 +87,14 @@ const PlatformPillars = () => {
             {/* Pill tag style */}
             <div className="inline-flex items-center gap-2 text-xs font-bold text-slate-800 font-heading">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
-              <span>Sustainable Pillars</span>
+              <span>Core Modules</span>
               <span className="text-slate-400 font-normal">➔</span>
               <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
             </div>
             
             <h2 className="text-3xl md:text-[42px] font-heading font-black text-slate-900 leading-tight">
               Our Four Pillars of <br className="hidden md:block" />
-              Ecological Wealth.
+              Venture Connection.
             </h2>
           </div>
 
@@ -103,7 +103,7 @@ const PlatformPillars = () => {
               href="/funds"
               className="inline-flex items-center gap-2 bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-6 py-3 rounded-xl transition-all duration-300 font-heading shadow-xs hover:shadow-md"
             >
-              <span>View All Funds</span>
+              <span>View All Campaigns</span>
               <ArrowRight className="w-4 h-4 text-white" />
             </a>
           </div>
