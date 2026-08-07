@@ -16,7 +16,11 @@ import {
   Phone,
   Mail,
   Scale,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  ArrowRight,
+  Menu,
+  X
 } from "lucide-react";
 import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 
@@ -98,6 +102,7 @@ const menuItems: MenuItem[] = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mobileMegaOpen, setMobileMegaOpen] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [hoveredImage, setHoveredImage] = useState<string>(menuItems[0].image);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -175,7 +180,7 @@ export default function Navbar() {
               onClick={() => {
                 toggleDropdown("platform");
               }}
-              className={`text-xs font-bold flex items-center gap-1 transition-colors h-full ${
+              className={`text-xs font-bold flex items-center gap-1 transition-colors h-full cursor-pointer ${
                 activeDropdown === "platform" ? "text-[#064e3b]" : "text-slate-600 hover:text-primary"
               }`}
             >
@@ -229,127 +234,16 @@ export default function Navbar() {
 
                     </div>
 
-                    {/* HORIZONTAL PARTNERS TICKER (Infinite scroll with real vector-like SVG logos) */}
-                    <div className="border-t border-slate-200/50 pt-5 flex items-center gap-6 overflow-hidden select-none">
-                      <span className="text-[10px] font-heading font-black tracking-wider uppercase text-slate-400 shrink-0">
-                        Our Partners:
-                      </span>
-                      
-                      <div className="relative w-full overflow-hidden">
-                        <div className="animate-scroll-x gap-10 items-center whitespace-nowrap">
-                          {/* Vector SVG logos for Acme, Hertz, Terra, BioVest, CarbonFlow, SolArray */}
-                          {/* Logo 1 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M12 2L2 22h20L12 2zm0 4l6.5 13H5.5L12 6z" fill="#064e3b" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">ACME</text>
-                            </svg>
-                          </div>
-                          
-                          {/* Logo 2 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M4 2v20h4V13h8v9h4V2h-4v7H8V2H4z" fill="#10b981" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">HERTZ</text>
-                            </svg>
-                          </div>
-
-                          {/* Logo 3 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <circle cx="10" cy="12" r="8" fill="none" stroke="#064e3b" strokeWidth="2.5" />
-                              <circle cx="10" cy="12" r="4" fill="#10b981" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">TERRA</text>
-                            </svg>
-                          </div>
-
-                          {/* Logo 4 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M10 2a8 8 0 00-8 8c0 4.4 8 12 8 12s8-7.6 8-12a8 8 0 00-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z" fill="#10b981" />
-                              <text x="26" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="11">BIOVEST</text>
-                            </svg>
-                          </div>
-
-                          {/* Logo 5 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M17 12a5 5 0 10-5 5h5v-2h-5a3 3 0 113-3v3h2v-3z" fill="#064e3b" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">CARBON</text>
-                            </svg>
-                          </div>
-
-                          {/* Logo 6 */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <circle cx="10" cy="12" r="5" fill="#10b981" />
-                              <path d="M10 2v3M10 19v3M2 12h3M19 12h3" stroke="#064e3b" strokeWidth="2" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">SOLAR</text>
-                            </svg>
-                          </div>
-
-                          {/* Duplicate set for seamless infinite scroll */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M12 2L2 22h20L12 2zm0 4l6.5 13H5.5L12 6z" fill="#064e3b" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">ACME</text>
-                            </svg>
-                          </div>
-                          
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M4 2v20h4V13h8v9h4V2h-4v7H8V2H4z" fill="#10b981" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">HERTZ</text>
-                            </svg>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <circle cx="10" cy="12" r="8" fill="none" stroke="#064e3b" strokeWidth="2.5" />
-                              <circle cx="10" cy="12" r="4" fill="#10b981" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">TERRA</text>
-                            </svg>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M10 2a8 8 0 00-8 8c0 4.4 8 12 8 12s8-7.6 8-12a8 8 0 00-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z" fill="#10b981" />
-                              <text x="26" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="11">BIOVEST</text>
-                            </svg>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <path d="M17 12a5 5 0 10-5 5h5v-2h-5a3 3 0 113-3v3h2v-3z" fill="#064e3b" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">CARBON</text>
-                            </svg>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
-                              <circle cx="10" cy="12" r="5" fill="#10b981" />
-                              <path d="M10 2v3M10 19v3M2 12h3M19 12h3" stroke="#064e3b" strokeWidth="2" />
-                              <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">SOLAR</text>
-                            </svg>
-                          </div>
-
-                        </div>
-                      </div>
-
-                    </div>
-
                   </div>
 
-                  {/* Right Section (1/3 width, solid white card) */}
+                  {/* Right Section (1/3 width) */}
                   <div className="lg:col-span-4 bg-white p-8 flex flex-col justify-between gap-8">
-                    
                     <div className="space-y-6">
                       <h3 className="text-xs font-heading font-black text-slate-800 uppercase tracking-widest">
                         Locate Us
                       </h3>
                       
                       <div className="space-y-4">
-                        {/* Phone Info */}
                         <div className="flex items-center gap-4">
                           <span className="p-3 rounded-2xl bg-[#10b981]/15 text-[#064e3b] shrink-0">
                             <Phone className="w-5 h-5" />
@@ -361,13 +255,9 @@ export default function Navbar() {
                             <p className="text-[10px] text-slate-500 font-body">
                               +00-123-456789
                             </p>
-                            <p className="text-[10px] text-slate-500 font-body">
-                              +000-1234-56789
-                            </p>
                           </div>
                         </div>
 
-                        {/* Email Info */}
                         <div className="flex items-center gap-4">
                           <span className="p-3 rounded-2xl bg-[#10b981]/15 text-[#064e3b] shrink-0">
                             <Mail className="w-5 h-5" />
@@ -379,32 +269,93 @@ export default function Navbar() {
                             <p className="text-[10px] text-slate-500 font-body">
                               Info@Investra.Com
                             </p>
-                            <p className="text-[10px] text-slate-500 font-body">
-                              Support@Investra.Com
-                            </p>
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Social links */}
-                    <div className="space-y-4 pt-4 border-t border-slate-100">
-                      <h3 className="text-xs font-heading font-black text-slate-800 uppercase tracking-widest">
-                        Follow Us
-                      </h3>
-                      <div className="flex gap-3">
-                        <a href="#" className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:border-slate-400 transition-colors">
-                          <FaTwitter className="w-4 h-4" />
-                        </a>
-                        <a href="#" className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:border-slate-400 transition-colors">
-                          <FaYoutube className="w-4 h-4" />
-                        </a>
-                        <a href="#" className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:border-slate-400 transition-colors">
-                          <FaInstagram className="w-4 h-4" />
-                        </a>
-                        <a href="#" className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:border-slate-400 transition-colors">
-                          <FaGlobe className="w-4 h-4" />
-                        </a>
+                  {/* FULL-WIDTH HORIZONTAL PARTNERS TICKER (Spans across all 12 columns at bottom) */}
+                  <div className="lg:col-span-12 border-t border-slate-200/60 bg-[#064e3b]/5 px-8 py-4 flex items-center gap-6 overflow-hidden select-none">
+                    <span className="text-[10px] font-heading font-black tracking-wider uppercase text-slate-400 shrink-0">
+                      Our Partners:
+                    </span>
+                    
+                    <div className="relative w-full overflow-hidden">
+                      <div className="animate-scroll-x gap-12 items-center whitespace-nowrap">
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M12 2L2 22h20L12 2zm0 4l6.5 13H5.5L12 6z" fill="#064e3b" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">ACME</text>
+                          </svg>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M4 2v20h4V13h8v9h4V2h-4v7H8V2H4z" fill="#10b981" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">HERTZ</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <circle cx="10" cy="12" r="8" fill="none" stroke="#064e3b" strokeWidth="2.5" />
+                            <circle cx="10" cy="12" r="4" fill="#10b981" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">TERRA</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M10 2a8 8 0 00-8 8c0 4.4 8 12 8 12s8-7.6 8-12a8 8 0 00-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z" fill="#10b981" />
+                            <text x="26" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="11">BIOVEST</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M17 12a5 5 0 10-5 5h5v-2h-5a3 3 0 113-3v3h2v-3z" fill="#064e3b" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">CARBON</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <circle cx="10" cy="12" r="5" fill="#10b981" />
+                            <path d="M10 2v3M10 19v3M2 12h3M19 12h3" stroke="#064e3b" strokeWidth="2" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">SOLAR</text>
+                          </svg>
+                        </div>
+
+                        {/* Duplicate set for seamless infinite scroll */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M12 2L2 22h20L12 2zm0 4l6.5 13H5.5L12 6z" fill="#064e3b" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">ACME</text>
+                          </svg>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M4 2v20h4V13h8v9h4V2h-4v7H8V2H4z" fill="#10b981" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">HERTZ</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <circle cx="10" cy="12" r="8" fill="none" stroke="#064e3b" strokeWidth="2.5" />
+                            <circle cx="10" cy="12" r="4" fill="#10b981" />
+                            <text x="28" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="12">TERRA</text>
+                          </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
+                            <path d="M10 2a8 8 0 00-8 8c0 4.4 8 12 8 12s8-7.6 8-12a8 8 0 00-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z" fill="#10b981" />
+                            <text x="26" y="17" fontFamily="sans-serif" fontWeight="900" fontSize="11">BIOVEST</text>
+                          </svg>
+                        </div>
                       </div>
                     </div>
 
@@ -448,90 +399,124 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-slate-600 hover:text-primary focus:outline-none"
+          className="md:hidden p-2 text-slate-700 hover:text-[#064e3b] focus:outline-none rounded-xl bg-slate-100 border border-slate-200 transition-colors"
           aria-label="Toggle menu"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-            )}
-          </svg>
+          {isOpen ? <X className="w-6 h-6 text-[#064e3b]" /> : <Menu className="w-6 h-6 text-[#064e3b]" />}
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* MOBILE DRAWER WITH CLEAN 'PLATFORM' ACCORDION */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white px-6 py-4 space-y-3 animate-fade-in">
-          <Link
-            href="/platform"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Platform
-          </Link>
-          <Link
-            href="/funds"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Investment Funds
-          </Link>
-          <Link
-            href="/compare"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Compare
-          </Link>
-          <Link
-            href="/consultants"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Consultants
-          </Link>
-          <Link
-            href="/impact"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Impact
-          </Link>
-          <Link
-            href="/subscription"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Subscription
-          </Link>
-          <Link
-            href="/about"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setIsOpen(false)}
-            className="block text-xs font-bold text-slate-600 hover:text-primary"
-          >
-            Contact
-          </Link>
-          <hr className="border-slate-100" />
-          <div className="flex flex-col gap-2 pt-2">
-            <Link href="/login" onClick={() => setIsOpen(false)} className="text-center text-xs font-bold text-slate-600 border border-slate-200 py-2 rounded-lg">
-              Client Login
+        <div className="md:hidden border-t border-slate-100 bg-white px-6 py-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl max-h-[85vh] overflow-y-auto">
+          
+          {/* Collapsible Mobile Platform Section */}
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+            <button
+              onClick={() => setMobileMegaOpen(!mobileMegaOpen)}
+              className="w-full flex items-center justify-between font-heading font-black text-xs uppercase tracking-wider text-[#064e3b] cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#10b981]" />
+                <span>Platform</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-[#064e3b] transition-transform duration-300 ${
+                mobileMegaOpen ? "rotate-180" : ""
+              }`} />
+            </button>
+
+            {mobileMegaOpen && (
+              <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-200/60 animate-in fade-in duration-200">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-100 hover:border-[#10b981] text-slate-700 hover:text-[#064e3b] transition-all shadow-2xs"
+                    >
+                      <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#064e3b] shrink-0">
+                        <Icon className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="text-[11px] font-bold font-heading truncate">
+                        {item.name}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* General Links Grid */}
+          <div className="grid grid-cols-2 gap-2.5 text-xs font-bold font-heading text-slate-700">
+            <Link
+              href="/funds"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              Investment Funds
             </Link>
-            <Link href="/register" onClick={() => setIsOpen(false)} className="text-center bg-[#064e3b] text-white text-xs font-bold py-2 rounded-lg">
-              Get Started
+            <Link
+              href="/compare"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              Compare Deals
+            </Link>
+            <Link
+              href="/consultants"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              Consultants
+            </Link>
+            <Link
+              href="/subscription"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              Subscription
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              About Investra
+            </Link>
+            <Link
+              href="/faq"
+              onClick={() => setIsOpen(false)}
+              className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300"
+            >
+              FAQ Hub
             </Link>
           </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-col gap-2.5 pt-2">
+            <Link 
+              href="/login" 
+              onClick={() => setIsOpen(false)} 
+              className="w-full text-center text-xs font-extrabold font-heading text-slate-800 border border-slate-200 py-3 rounded-xl hover:bg-slate-50 transition-colors"
+            >
+              Client Login
+            </Link>
+            <Link 
+              href="/register" 
+              onClick={() => setIsOpen(false)} 
+              className="w-full text-center bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-extrabold font-heading py-3 rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>Get Started Now</span>
+              <ArrowRight className="w-4 h-4 text-[#10b981]" />
+            </Link>
+          </div>
+
         </div>
       )}
     </nav>

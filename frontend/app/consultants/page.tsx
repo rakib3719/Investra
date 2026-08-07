@@ -128,8 +128,8 @@ export default function ConsultantMarketplacePage() {
           {/* Right Column - Hero Visual Image */}
           <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[440px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
             <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80"
-              alt="Investra Consultants"
+              src="/consultants-hero.png"
+              alt="Investra Consultant Marketplace"
               className="w-full h-full object-cover"
             />
           </div>

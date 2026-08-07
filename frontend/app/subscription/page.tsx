@@ -5,73 +5,138 @@ import Navbar from "@/components/public-facing/shared/Navbar";
 import Footer from "@/components/public-facing/shared/Footer";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import ShinyText from "@/components/ui/ShinyText";
-import { Check, Info, ShieldAlert, Award, Star, ToggleLeft, ToggleRight } from "lucide-react";
+import Link from "next/link";
+import { 
+  Check, 
+  Info, 
+  ShieldAlert, 
+  Award, 
+  Star, 
+  Sparkles, 
+  DollarSign, 
+  ShieldCheck, 
+  Zap, 
+  CreditCard, 
+  ArrowRight,
+  HelpCircle,
+  Building2,
+  Briefcase,
+  Crown,
+  CheckCircle2,
+  Lock,
+  ChevronRight
+} from "lucide-react";
 
-export default function SubscriptionPage() {
+export default function MasterpieceSubscriptionPage() {
   const [role, setRole] = useState<"investor" | "entrepreneur">("investor");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
 
   const plans = {
     investor: [
       {
-        name: "Basic Investor",
+        id: "starter",
+        name: "Free Explorer",
+        badge: "Standard Access",
         price: { monthly: 0, yearly: 0 },
-        description: "Explore the platform, browse ideas, and attend public sessions.",
+        description: "Explore startup directories, inspect public pitch decks, and follow market trends.",
         features: [
-          "Browse business opportunities",
-          "Advanced filter & search tools",
-          "Bookmark up to 50 posts",
-          "Access basic consultant sessions",
-          "Standard support response times"
+          "Browse verified startup campaigns",
+          "Advanced category & yield filtering",
+          "Bookmark up to 50 opportunity posts",
+          "Access free consultant webinars",
+          "Community forum access",
+          "Standard email support desk"
         ],
         popular: false,
-        buttonText: "Start Free",
+        buttonText: "Get Started Free",
       },
       {
-        name: "Premium Investor",
+        id: "pro",
+        name: "Investor Pro",
+        badge: "Most Popular",
         price: { monthly: 39, yearly: 375 },
-        description: "Unlock advanced comparison tools, premium chats, and infinite bookmarks.",
+        description: "Side-by-side business comparison, unlimited bookmarks, and direct founder chat.",
         features: [
-          "All Basic Investor features",
-          "Unlimited bookmarks",
-          "Request premium chat access",
-          "Compare businesses side-by-side",
-          "Direct consultant booking & recordings",
-          "Priority support (24/7)"
+          "All Free Explorer features included",
+          "Unlimited deal matrix bookmarks",
+          "Side-by-side deal comparison tool",
+          "Real-time founder chat (Socket.IO)",
+          "Direct consultant booking & course downloads",
+          "ESG audit telemetry breakdown",
+          "24/7 Priority support hotline"
         ],
         popular: true,
-        buttonText: "Upgrade to Premium",
+        buttonText: "Unlock Investor Pro",
+      },
+      {
+        id: "institutional",
+        name: "Institutional LP",
+        badge: "Enterprise & Funds",
+        price: { monthly: 99, yearly: 950 },
+        description: "Dedicated account management, custom CSV data exports, and legal audit logs.",
+        features: [
+          "All Investor Pro features included",
+          "Custom CSV/Excel deal data exports",
+          "Multi-seat team account access",
+          "Private LP deal syndication room",
+          "Direct due diligence file downloads",
+          "Dedicated venture relationship partner",
+          "Bespoke legal term sheet templates"
+        ],
+        popular: false,
+        buttonText: "Contact Syndicate Desk",
       }
     ],
     entrepreneur: [
       {
-        name: "Basic Entrepreneur",
+        id: "starter-uddokta",
+        name: "Starter Uddokta",
+        badge: "Free Pitch",
         price: { monthly: 0, yearly: 0 },
-        description: "Post your startup idea and monitor public visitor metrics.",
+        description: "Publish your initial startup proposal and monitor public visitor metrics.",
         features: [
-          "Post business ideas (Standard visibility)",
-          "Track total post views",
-          "Standard dashboard access",
-          "Access consultant courses",
+          "Publish 1 active business pitch post",
+          "Track total page views & impressions",
+          "Standard founder dashboard access",
+          "Access consultant video courses",
           "Standard support response times"
         ],
         popular: false,
-        buttonText: "Start Free",
+        buttonText: "Publish Free Pitch",
       },
       {
-        name: "Pro Entrepreneur",
+        id: "pro-uddokta",
+        name: "Pro Accelerator",
+        badge: "Recommended Founder",
         price: { monthly: 49, yearly: 470 },
-        description: "Boost pitch deck visibility, get deep investor analytics, and appear in comparisons.",
+        description: "Priority homepage placement, investor telemetry insights, and comparison matrix.",
         features: [
-          "Post business ideas (Premium/Priority visibility)",
-          "Deep dashboard metrics (Bookmarks, Unique investors)",
+          "Featured top position in deal directory",
+          "Deep investor telemetry (Bookmarks, Unique LPs)",
           "Appear in side-by-side comparison system",
           "Direct message response capability",
-          "Featured listing on the homepage directory",
-          "Priority support & legal advice logs"
+          "Legal due diligence compliance badge",
+          "Priority 1-on-1 consultant booking desk"
         ],
         popular: true,
-        buttonText: "Go Pro",
+        buttonText: "Accelerate Fundraising",
+      },
+      {
+        id: "syndicate-uddokta",
+        name: "Syndicate Growth",
+        badge: "Scaleup & Series A",
+        price: { monthly: 119, yearly: 1100 },
+        description: "Dedicated pitch video production support, investor matchmaking, and PR boost.",
+        features: [
+          "All Pro Accelerator features included",
+          "Custom video pitch production guidance",
+          "Direct introduction to syndicate investors",
+          "Press & newsletter feature placement",
+          "Unlimited deal updates & cap-table tools",
+          "Dedicated startup legal manager"
+        ],
+        popular: false,
+        buttonText: "Get Syndicate Growth",
       }
     ]
   };
@@ -79,215 +144,289 @@ export default function SubscriptionPage() {
   const activePlans = plans[role];
 
   return (
-    <div className="min-h-screen bg-slate-50 w-full flex flex-col justify-between">
-      
-      {/* Navigation */}
+    <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
 
-      <main className="w-full pb-20">
-        
-        {/* Page Hero */}
-        <section className="bg-white border-b border-slate-100 py-16 md:py-24">
-          <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] space-y-6 text-center max-w-4xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/5 px-3 py-1.5 rounded-full font-heading">
-              Monetization & Plans
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-secondary leading-tight tracking-tight">
-              Investra <br />
-              <ShinyText text="Subscription Packages" speed={4} />
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground font-body max-w-2xl mx-auto leading-relaxed">
-              Find the perfect plan mapped to your objectives. Choose whether you are searching for capital to scale or looking to back premium business ideas.
-            </p>
-          </div>
-        </section>
-
-        {/* Pricing Selection Controls */}
-        <section className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] mt-12 flex flex-col items-center gap-8">
+      {/* Hero Banner - Unified Design System (White & Green 2-Column Layout) */}
+      <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
+        <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
-          {/* Role Tab Switches */}
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50">
+          {/* Left Column - Content */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#10b981]/15 text-[#064e3b] text-xs font-extrabold uppercase tracking-wider font-heading">
+              <Crown className="w-3.5 h-3.5 text-[#064e3b]" />
+              <span>Investra Tiered Packages</span>
+            </div>
+
+            <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
+              Transparent Pricing.<br />
+              Accelerate Growth,<br />
+              <ShinyText text="Unlock High-Yield Deals." speed={4.5} />
+            </h1>
+
+            <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
+              Tailored subscription tiers designed for institutional investors, angel syndicates, and scaling Uddokta entrepreneurs.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064e3b] bg-[#10b981]/15 px-3.5 py-2 rounded-xl font-heading">
+                <ShieldCheck className="w-4 h-4 text-[#10b981]" /> Stripe & SSLCommerz Instant Activation
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column - Hero Visual Image Showcase */}
+          <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[440px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
+            <img
+              src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80"
+              alt="Investra Subscription Tiers"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+        </div>
+      </section>
+
+      {/* Main Pricing Section */}
+      <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-16 flex-1 space-y-16">
+        
+        {/* Role & Billing Switcher */}
+        <div className="flex flex-col items-center gap-6 text-center">
+          
+          {/* Role Switcher Pills */}
+          <div className="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 shadow-xs">
             <button
               onClick={() => setRole("investor")}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer ${
-                role === "investor" 
-                  ? "bg-white text-secondary shadow-sm" 
-                  : "text-slate-500 hover:text-slate-800"
+              className={`px-6 py-3 rounded-xl text-xs font-bold font-heading transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                role === "investor"
+                  ? "bg-[#064e3b] text-white shadow-sm scale-102"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              I am an Investor
+              <Building2 className="w-4 h-4" />
+              <span>Investor Tiers</span>
             </button>
+
             <button
               onClick={() => setRole("entrepreneur")}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer ${
-                role === "entrepreneur" 
-                  ? "bg-white text-secondary shadow-sm" 
-                  : "text-slate-500 hover:text-slate-800"
+              className={`px-6 py-3 rounded-xl text-xs font-bold font-heading transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                role === "entrepreneur"
+                  ? "bg-[#064e3b] text-white shadow-sm scale-102"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              I am an Entrepreneur (Uddokta)
+              <Briefcase className="w-4 h-4" />
+              <span>Entrepreneur (Uddokta) Tiers</span>
             </button>
           </div>
 
-          {/* Billing Switch Controls */}
-          <div className="flex items-center gap-3">
-            <span className={`text-xs font-bold font-heading ${billingPeriod === "monthly" ? "text-secondary" : "text-slate-400"}`}>
-              Monthly
+          {/* Billing Cycle Switcher */}
+          <div className="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-xs">
+            <span className={`text-xs font-bold font-heading transition-colors ${billingPeriod === "monthly" ? "text-slate-900" : "text-slate-400"}`}>
+              Monthly Billing
             </span>
+
             <button
               onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
-              className="focus:outline-none cursor-pointer"
+              className="focus:outline-none cursor-pointer group"
             >
               {billingPeriod === "monthly" ? (
-                <div className="w-11 h-6 bg-slate-200 rounded-full p-0.5 flex items-center justify-start transition-all">
-                  <div className="w-5 h-5 bg-white rounded-full shadow-xs border border-slate-300" />
+                <div className="w-13 h-7 bg-slate-200 rounded-full p-1 flex items-center justify-start transition-all group-hover:bg-slate-300">
+                  <div className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
                 </div>
               ) : (
-                <div className="w-11 h-6 bg-primary rounded-full p-0.5 flex items-center justify-end transition-all">
-                  <div className="w-5 h-5 bg-white rounded-full shadow-xs border border-slate-300" />
+                <div className="w-13 h-7 bg-[#064e3b] rounded-full p-1 flex items-center justify-end transition-all">
+                  <div className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
                 </div>
               )}
             </button>
-            <div className="flex items-center gap-1.5">
-              <span className={`text-xs font-bold font-heading ${billingPeriod === "yearly" ? "text-secondary" : "text-slate-400"}`}>
-                Yearly
+
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-bold font-heading transition-colors ${billingPeriod === "yearly" ? "text-slate-900" : "text-slate-400"}`}>
+                Annual Billing
               </span>
-              <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-heading">
+              <span className="bg-[#10b981]/20 text-[#064e3b] text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider font-heading">
                 Save 20%
               </span>
             </div>
           </div>
 
-        </section>
+        </div>
 
-        {/* Pricing Cards Grid */}
-        <section className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] mt-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {activePlans.map((plan, idx) => {
-              const currentPrice = billingPeriod === "monthly" ? plan.price.monthly : plan.price.yearly;
-              
-              return (
-                <SpotlightCard
-                  key={idx}
-                  spotlightColor={plan.popular ? "rgba(16, 185, 129, 0.08)" : "rgba(16, 185, 129, 0.04)"}
-                  className={`bg-white border rounded-[32px] p-8 space-y-8 flex flex-col justify-between relative ${
-                    plan.popular ? "border-2 border-primary shadow-md" : "border-slate-200/60"
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-8 -translate-y-1/2 bg-primary text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider font-heading shadow-xs">
-                      Popular
-                    </div>
-                  )}
+        {/* 3-Column Masterclass Pricing Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
+          {activePlans.map((plan) => {
+            const currentPrice = billingPeriod === "monthly" ? plan.price.monthly : plan.price.yearly;
+            const isPopular = plan.popular;
 
+            return (
+              <div
+                key={plan.id}
+                className={`bg-white rounded-[28px] border overflow-hidden flex flex-col justify-between transition-all duration-300 relative group hover:-translate-y-1.5 hover:shadow-xl ${
+                  isPopular
+                    ? "border-2 border-[#10b981] shadow-lg ring-1 ring-[#10b981]/20 lg:-translate-y-2"
+                    : "border-slate-200 shadow-xs hover:border-slate-300"
+                }`}
+              >
+                {/* Popular Gradient Decorative Accent Bar */}
+                {isPopular && (
+                  <div className="w-full h-2 bg-gradient-to-r from-[#064e3b] via-[#10b981] to-[#064e3b]" />
+                )}
+
+                <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
+                  
+                  {/* Card Header & Badges */}
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className={`text-xs font-bold uppercase tracking-wider font-heading ${plan.popular ? "text-primary" : "text-slate-400"}`}>
-                        {plan.name}
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full font-heading ${
+                        isPopular ? "bg-[#10b981]/15 text-[#064e3b] border border-[#10b981]/30" : "bg-slate-100 text-slate-500"
+                      }`}>
+                        {plan.badge}
                       </span>
-                      {plan.popular && <Star className="w-4 h-4 text-emerald-600 fill-emerald-600 shrink-0" />}
-                    </div>
-
-                    <div>
-                      <h3 className="text-4xl font-heading font-black text-secondary">
-                        ${currentPrice}
-                        <span className="text-xs font-normal text-slate-400">
-                          {billingPeriod === "monthly" ? "/mo" : "/yr"}
+                      {isPopular && (
+                        <span className="flex items-center gap-1 text-[10px] font-black text-[#064e3b] uppercase tracking-wider font-heading bg-[#10b981]/20 px-2.5 py-0.5 rounded-md">
+                          <Star className="w-3 h-3 text-[#10b981] fill-[#10b981]" />
+                          <span>Featured</span>
                         </span>
-                      </h3>
-                      <p className="text-[10px] text-slate-400 font-body leading-relaxed mt-1">{plan.description}</p>
+                      )}
                     </div>
 
-                    <hr className="border-slate-100" />
+                    <h3 className="text-2xl font-heading font-black text-slate-800">
+                      {plan.name}
+                    </h3>
 
-                    <ul className="space-y-3.5 text-xs text-slate-600 font-body">
+                    <p className="text-xs text-slate-500 font-body leading-relaxed min-h-[36px]">
+                      {plan.description}
+                    </p>
+
+                    {/* Price Display */}
+                    <div className="pt-2">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl md:text-5xl font-heading font-black text-[#064e3b]">
+                          ${currentPrice}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-400">
+                          {billingPeriod === "monthly" ? "/month" : "/year"}
+                        </span>
+                      </div>
+                      {billingPeriod === "yearly" && currentPrice > 0 && (
+                        <p className="text-[10px] font-bold mt-1 text-[#10b981] font-heading">
+                          Billed annually (${(currentPrice / 12).toFixed(0)}/month)
+                        </p>
+                      )}
+                    </div>
+
+                    <hr className="border-slate-100 my-4" />
+
+                    {/* Feature List */}
+                    <ul className="space-y-3.5 text-xs font-body">
                       {plan.features.map((feat, fidx) => (
-                        <li key={fidx} className="flex items-center gap-2.5">
-                          <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-                          <span>{feat}</span>
+                        <li key={fidx} className="flex items-start gap-3">
+                          <span className="w-5 h-5 rounded-full bg-[#10b981]/15 text-[#064e3b] flex items-center justify-center shrink-0 mt-0.5">
+                            <Check className="w-3.5 h-3.5 text-[#10b981] stroke-[3]" />
+                          </span>
+                          <span className="text-slate-700 font-medium leading-snug">
+                            {feat}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <button className={`w-full py-3 rounded-2xl text-xs font-bold font-heading transition-all cursor-pointer ${
-                    plan.popular 
-                      ? "bg-primary hover:opacity-95 text-white" 
-                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                  }`}>
-                    {plan.buttonText}
-                  </button>
+                  {/* CTA Button */}
+                  <div className="pt-8">
+                    <button
+                      onClick={() => alert(`Selected ${plan.name} (${billingPeriod})... Directing to checkout!`)}
+                      className={`w-full py-3.5 rounded-xl text-xs font-extrabold font-heading transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs group-hover:shadow-md ${
+                        isPopular
+                          ? "bg-[#064e3b] hover:bg-[#043c2e] text-white"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-800"
+                      }`}
+                    >
+                      <span>{plan.buttonText}</span>
+                      <ArrowRight className="w-4 h-4 text-[#10b981] group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
 
-                </SpotlightCard>
-              );
-            })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Feature Comparison Matrix Table */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-10 space-y-6 max-w-5xl mx-auto shadow-xs">
+          <div className="space-y-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#10b981] font-heading">
+              Technical Access Matrix
+            </span>
+            <h3 className="text-xl font-heading font-black text-slate-800">
+              Detailed Feature & Guard Breakdown
+            </h3>
+            <p className="text-xs text-slate-500 font-body leading-relaxed">
+              Enforced dynamically by NestJS backend Guards & PostgreSQL subscription state.
+            </p>
           </div>
-        </section>
 
-        {/* Feature Matrix Details */}
-        <section className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] mt-24">
-          <div className="bg-white border border-slate-200/60 rounded-[32px] p-6 md:p-8 space-y-6 max-w-4xl mx-auto shadow-xs">
-            <div className="space-y-2">
-              <h3 className="text-lg font-heading font-black text-secondary">Comparison Feature Details</h3>
-              <p className="text-xs text-slate-500 font-body leading-relaxed">
-                See exact feature permissions handled dynamically by our NestJS route guards and packages filters.
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-heading font-bold uppercase tracking-wider bg-slate-50">
+                  <th className="py-3.5 px-4">Ecosystem Feature</th>
+                  <th className="py-3.5 px-4">Free Explorer</th>
+                  <th className="py-3.5 px-4">Pro Tier</th>
+                  <th className="py-3.5 px-4">Institutional LP</th>
+                </tr>
+              </thead>
+              <tbody className="text-xs font-body text-slate-600 divide-y divide-slate-100">
+                <tr>
+                  <td className="py-4 px-4 font-bold text-slate-800">Deal Bookmark Limit</td>
+                  <td className="py-4 px-4">50 deals</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Unlimited</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Unlimited</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4 font-bold text-slate-800">Side-by-Side Comparison</td>
+                  <td className="py-4 px-4 text-slate-400">Locked</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">3 Deals Matrix</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Unlimited Matrix</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4 font-bold text-slate-800">Real-Time Founder Chat</td>
+                  <td className="py-4 px-4 text-slate-400">Locked</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Socket.IO Unlocked</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Priority Founder Desk</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4 font-bold text-slate-800">CSV/Excel Deal Exports</td>
+                  <td className="py-4 px-4 text-slate-400">Locked</td>
+                  <td className="py-4 px-4 text-slate-400">Locked</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Full CSV Telemetry</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4 font-bold text-slate-800">Legal Audit & Due Diligence</td>
+                  <td className="py-4 px-4 text-slate-400">Standard view</td>
+                  <td className="py-4 px-4 font-bold text-slate-800">Full Audit File</td>
+                  <td className="py-4 px-4 text-[#064e3b] font-bold">Bespoke Legal Support</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="bg-[#064e3b]/5 rounded-2xl border border-[#064e3b]/10 p-5 flex items-start gap-4 text-xs text-slate-700 font-body">
+            <ShieldCheck className="w-5 h-5 text-[#10b981] shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-heading font-bold text-slate-800 mb-0.5">Instant Webhook Activation</h4>
+              <p className="leading-relaxed text-slate-600">
+                Stripe and SSLCommerz webhooks process plan upgrades instantly. Upgrades apply immediately to your active dashboard workspace with zero downtime.
               </p>
             </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-heading font-bold uppercase tracking-wider">
-                    <th className="py-3 px-2">Ecosystem Feature</th>
-                    <th className="py-3 px-2">Basic Level</th>
-                    <th className="py-3 px-2">Premium / Pro Level</th>
-                  </tr>
-                </thead>
-                <tbody className="text-xs font-body text-slate-600 divide-y divide-slate-100">
-                  <tr>
-                    <td className="py-3.5 px-2 font-bold text-slate-800">Bookmark Limit</td>
-                    <td className="py-3.5 px-2">50 bookmarked posts</td>
-                    <td className="py-3.5 px-2 text-emerald-600 font-bold">Unlimited</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2 font-bold text-slate-800">Business Posts Visibility</td>
-                    <td className="py-3.5 px-2">Standard feed visibility</td>
-                    <td className="py-3.5 px-2 text-emerald-600 font-bold">Priority/Featured feed visibility</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2 font-bold text-slate-800">Side-by-Side Comparison</td>
-                    <td className="py-3.5 px-2 text-slate-400">Not included</td>
-                    <td className="py-3.5 px-2 text-emerald-600 font-bold">Included (Unlimited comparisons)</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2 font-bold text-slate-800">Direct Chat Requests</td>
-                    <td className="py-3.5 px-2 text-slate-400">Blocked</td>
-                    <td className="py-3.5 px-2 text-emerald-600 font-bold">Unlimited chat message requests</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2 font-bold text-slate-800">Consultant session fees</td>
-                    <td className="py-3.5 px-2">Standard pricing</td>
-                    <td className="py-3.5 px-2 text-emerald-600 font-bold">Priority booking & discounts</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="bg-[#064e3b]/5 rounded-2xl border border-slate-100 p-4 flex items-start gap-3 mt-4">
-              <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-slate-500 font-body leading-relaxed">
-                Stripe webhooks handle package lifecycles dynamically. Upgrading or cancelling takes effect immediately in your client dashboard workspace.
-              </p>
-            </div>
-
           </div>
-        </section>
+        </div>
 
       </main>
 
-      {/* Footer */}
       <Footer />
-
     </div>
   );
 }
