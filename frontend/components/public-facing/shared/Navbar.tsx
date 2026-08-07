@@ -14,7 +14,9 @@ import {
   TrendingUp, 
   AlertCircle,
   Phone,
-  Mail
+  Mail,
+  Scale,
+  GraduationCap
 } from "lucide-react";
 import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 
@@ -31,6 +33,18 @@ const menuItems: MenuItem[] = [
     href: "/about",
     icon: Info,
     image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    name: "Business Comparison",
+    href: "/compare",
+    icon: Scale,
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    name: "Consultants",
+    href: "/consultants",
+    icon: GraduationCap,
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80"
   },
   {
     name: "FAQ",
@@ -58,7 +72,7 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Pricing Plan",
-    href: "/pricing",
+    href: "/subscription",
     icon: DollarSign,
     image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80"
   },
@@ -145,7 +159,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-8 h-full">
+        <div className="hidden md:flex items-center gap-7 h-full">
           
           {/* Dropdown Link: Platform with Hover-to-Open Wrapper */}
           <div 
@@ -199,6 +213,7 @@ export default function Navbar() {
                               key={item.name} 
                               href={item.href} 
                               onMouseEnter={() => setHoveredImage(item.image)}
+                              onClick={() => setActiveDropdown(null)}
                               className="flex items-center gap-3 group"
                             >
                               <span className="p-2.5 rounded-xl bg-white text-[#064e3b] shadow-xs group-hover:bg-[#064e3b] group-hover:text-white transition-colors duration-300">
@@ -274,7 +289,6 @@ export default function Navbar() {
                           </div>
 
                           {/* Duplicate set for seamless infinite scroll */}
-                          {/* Logo 1 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <path d="M12 2L2 22h20L12 2zm0 4l6.5 13H5.5L12 6z" fill="#064e3b" />
@@ -282,7 +296,6 @@ export default function Navbar() {
                             </svg>
                           </div>
                           
-                          {/* Logo 2 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <path d="M4 2v20h4V13h8v9h4V2h-4v7H8V2H4z" fill="#10b981" />
@@ -290,7 +303,6 @@ export default function Navbar() {
                             </svg>
                           </div>
 
-                          {/* Logo 3 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <circle cx="10" cy="12" r="8" fill="none" stroke="#064e3b" strokeWidth="2.5" />
@@ -299,7 +311,6 @@ export default function Navbar() {
                             </svg>
                           </div>
 
-                          {/* Logo 4 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <path d="M10 2a8 8 0 00-8 8c0 4.4 8 12 8 12s8-7.6 8-12a8 8 0 00-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z" fill="#10b981" />
@@ -307,7 +318,6 @@ export default function Navbar() {
                             </svg>
                           </div>
 
-                          {/* Logo 5 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <path d="M17 12a5 5 0 10-5 5h5v-2h-5a3 3 0 113-3v3h2v-3z" fill="#064e3b" />
@@ -315,7 +325,6 @@ export default function Navbar() {
                             </svg>
                           </div>
 
-                          {/* Logo 6 */}
                           <div className="flex items-center gap-2 shrink-0">
                             <svg className="h-4.5 text-slate-400 hover:text-slate-800 transition-colors" viewBox="0 0 100 24" fill="currentColor">
                               <circle cx="10" cy="12" r="5" fill="#10b981" />
@@ -409,6 +418,12 @@ export default function Navbar() {
           <Link href="/funds" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
             Investment Funds
           </Link>
+          <Link href="/compare" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+            Compare
+          </Link>
+          <Link href="/consultants" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+            Consultants
+          </Link>
           <Link href="/impact" className="text-xs font-bold text-slate-600 hover:text-primary transition-colors">
             Impact
           </Link>
@@ -465,6 +480,20 @@ export default function Navbar() {
             className="block text-xs font-bold text-slate-600 hover:text-primary"
           >
             Investment Funds
+          </Link>
+          <Link
+            href="/compare"
+            onClick={() => setIsOpen(false)}
+            className="block text-xs font-bold text-slate-600 hover:text-primary"
+          >
+            Compare
+          </Link>
+          <Link
+            href="/consultants"
+            onClick={() => setIsOpen(false)}
+            className="block text-xs font-bold text-slate-600 hover:text-primary"
+          >
+            Consultants
           </Link>
           <Link
             href="/impact"
