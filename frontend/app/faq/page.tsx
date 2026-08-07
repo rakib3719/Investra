@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/public-facing/shared/Navbar";
 import Footer from "@/components/public-facing/shared/Footer";
 import Link from "next/link";
+import ShinyText from "@/components/ui/ShinyText";
 import { 
   HelpCircle, 
   ChevronDown, 
@@ -117,67 +118,72 @@ export default function MasterpieceFAQPage() {
   const spotlightFaqs = faqData.filter((item) => item.isSpotlight);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-[#10b981]/20">
+    <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
 
-      {/* Hero Header Section */}
-      <section className="bg-gradient-to-b from-[#064e3b] via-[#085a45] to-[#064e3b] text-white py-20 px-6 relative overflow-hidden">
-        {/* Background Visual Mesh */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#10b981]/20 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-[1200px] mx-auto relative z-10 text-center space-y-6">
+      {/* Hero Banner - Unified Design System */}
+      <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
+        <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#10b981] text-xs font-extrabold uppercase tracking-widest font-heading shadow-md">
-            <Sparkles className="w-4 h-4" />
-            <span>Investra Help Center & Knowledge Base</span>
+          {/* Left Column - Content */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#10b981]/15 text-[#064e3b] text-xs font-extrabold uppercase tracking-wider font-heading">
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>Help & Knowledge Center</span>
+            </div>
+
+            <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
+              Investra Knowledge.<br />
+              Instant Answers,<br />
+              <ShinyText text="Verified Guidance." speed={4.5} />
+            </h1>
+
+            <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
+              Find answers regarding role permissions, subscription packages, consultant revenue payouts, and deal discovery.
+            </p>
+
+            {/* Live Search */}
+            <div className="pt-2">
+              <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl p-1 max-w-md">
+                <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search questions..."
+                  className="w-full px-3 py-2 text-xs text-slate-800 bg-transparent focus:outline-none placeholder:text-slate-400 font-body"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery("")} className="p-1 text-slate-400 hover:text-slate-600 mr-2">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
-          <h1 className="font-heading text-4xl md:text-6xl font-black tracking-tight max-w-4xl mx-auto leading-tight">
-            How can we assist your venture journey today?
-          </h1>
-
-          <p className="font-body text-slate-200 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-            Find answers regarding role-based access control, subscription gates, consultant 80/20 revenue payouts, and business comparison matrices.
-          </p>
-
-          {/* Interactive Search Box */}
-          <div className="max-w-2xl mx-auto relative pt-4">
-            <div className="relative flex items-center bg-white p-2.5 rounded-2xl border border-white/30 shadow-2xl">
-              <Search className="w-5 h-5 text-slate-400 ml-3 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search questions (e.g. comparison, 80/20 share, Stripe, chat)..."
-                className="w-full px-4 py-2.5 text-sm text-slate-800 bg-transparent focus:outline-none placeholder:text-slate-400 font-body"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full mr-2"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-              <span className="bg-[#064e3b] text-white text-xs font-extrabold px-4 py-2.5 rounded-xl font-heading shrink-0 hidden sm:block">
-                Search FAQ
-              </span>
-            </div>
+          {/* Right Column - Hero Visual Image */}
+          <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[440px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
+            <img
+              src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80"
+              alt="Investra Knowledge Base"
+              className="w-full h-full object-cover"
+            />
           </div>
 
         </div>
       </section>
 
-      {/* Main FAQ Section */}
-      <main className="max-w-[1200px] mx-auto w-full px-6 py-16 flex-1 space-y-16">
+      {/* Main Content Area */}
+      <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-12 flex-1 space-y-12">
         
-        {/* Spotlight Top Questions */}
+        {/* Spotlight Questions */}
         {!searchQuery && activeCategory === "All" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#10b981]" />
               <h2 className="font-heading font-black text-xs uppercase tracking-widest text-slate-400">
-                Spotlight Top Inquiries
+                Spotlight Popular Questions
               </h2>
             </div>
 
@@ -186,7 +192,7 @@ export default function MasterpieceFAQPage() {
                 <div
                   key={faq.id}
                   onClick={() => toggleAccordion(faq.id)}
-                  className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#10b981] transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group"
+                  className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-[#10b981] transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group"
                 >
                   <div className="space-y-2">
                     <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-[#10b981]/15 text-[#064e3b]">
@@ -210,8 +216,6 @@ export default function MasterpieceFAQPage() {
         {/* Category Pills & Count Bar */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-            
-            {/* Category Pills */}
             <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
               {[
                 { name: "All", count: faqData.length },
@@ -225,8 +229,8 @@ export default function MasterpieceFAQPage() {
                   onClick={() => setActiveCategory(cat.name)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold font-heading transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
                     activeCategory === cat.name
-                      ? "bg-[#064e3b] text-white shadow-sm"
-                      : "bg-slate-100/80 text-slate-600 hover:bg-slate-200"
+                      ? "bg-[#064e3b] text-white shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
                   <span>{cat.name}</span>
@@ -240,163 +244,61 @@ export default function MasterpieceFAQPage() {
             </div>
 
             <div className="text-xs text-slate-500 font-body shrink-0">
-              Showing <span className="font-bold text-slate-800">{filteredFaqs.length}</span> verified topics
+              Showing <span className="font-bold text-slate-800">{filteredFaqs.length}</span> topics
             </div>
-
           </div>
 
           {/* Accordion List */}
           <div className="space-y-4">
-            {filteredFaqs.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 space-y-3">
-                <HelpCircle className="w-12 h-12 text-slate-300 mx-auto" />
-                <h3 className="font-heading font-bold text-lg text-slate-700">No matching questions found</h3>
-                <p className="text-xs text-slate-500 font-body max-w-md mx-auto">
-                  We couldn't find any questions matching "{searchQuery}". Try selecting another category pill or reach out to our advisory desk.
-                </p>
-              </div>
-            ) : (
-              filteredFaqs.map((faq) => {
-                const isOpen = openIndexes.includes(faq.id);
-                const feedback = feedbackState[faq.id];
+            {filteredFaqs.map((faq) => {
+              const isOpen = openIndexes.includes(faq.id);
+              const feedback = feedbackState[faq.id];
 
-                return (
-                  <div
-                    key={faq.id}
-                    className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
-                      isOpen ? "border-[#10b981] shadow-md ring-1 ring-[#10b981]/20" : "border-slate-200/80 shadow-xs hover:border-slate-300"
-                    }`}
+              return (
+                <div
+                  key={faq.id}
+                  className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    isOpen ? "border-[#10b981] shadow-sm" : "border-slate-200 shadow-xs hover:border-slate-300"
+                  }`}
+                >
+                  <button
+                    onClick={() => toggleAccordion(faq.id)}
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer"
                   >
-                    {/* Question Row */}
-                    <button
-                      onClick={() => toggleAccordion(faq.id)}
-                      className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3.5">
-                        <span className="p-2 rounded-xl bg-[#064e3b]/10 text-[#064e3b] shrink-0 font-heading font-extrabold text-xs">
-                          {faq.category === "Investor" && <Building2 className="w-4 h-4" />}
-                          {faq.category === "Entrepreneur" && <Briefcase className="w-4 h-4" />}
-                          {faq.category === "Consultant" && <GraduationCap className="w-4 h-4" />}
-                          {faq.category === "Subscriptions & Billing" && <CreditCard className="w-4 h-4" />}
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] font-extrabold uppercase px-2 py-0.2 rounded-md bg-slate-100 text-slate-600 font-heading">
-                              {faq.category}
-                            </span>
-                            {faq.isSpotlight && (
-                              <span className="text-[9px] font-extrabold uppercase px-2 py-0.2 rounded-md bg-[#10b981]/15 text-[#064e3b] font-heading">
-                                Featured
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="font-heading font-bold text-slate-800 text-sm md:text-base leading-snug">
-                            {faq.question}
-                          </h3>
+                    <div className="flex items-center gap-3.5">
+                      <span className="p-2 rounded-xl bg-[#064e3b]/10 text-[#064e3b] shrink-0 font-heading font-extrabold text-xs">
+                        {faq.category === "Investor" && <Building2 className="w-4 h-4" />}
+                        {faq.category === "Entrepreneur" && <Briefcase className="w-4 h-4" />}
+                        {faq.category === "Consultant" && <GraduationCap className="w-4 h-4" />}
+                        {faq.category === "Subscriptions & Billing" && <CreditCard className="w-4 h-4" />}
+                      </span>
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.2 rounded-md bg-slate-100 text-slate-600 font-heading">
+                            {faq.category}
+                          </span>
                         </div>
+                        <h3 className="font-heading font-bold text-slate-800 text-sm md:text-base leading-snug">
+                          {faq.question}
+                        </h3>
                       </div>
+                    </div>
 
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                        isOpen ? "bg-[#064e3b] text-white rotate-180" : "bg-slate-100 text-slate-500"
-                      }`}>
-                        <ChevronDown className="w-4 h-4" />
-                      </div>
-                    </button>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                      isOpen ? "bg-[#064e3b] text-white rotate-180" : "bg-slate-100 text-slate-500"
+                    }`}>
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </button>
 
-                    {/* Answer Expanded Area */}
-                    {isOpen && (
-                      <div className="px-6 pb-6 pt-2 border-t border-slate-100 text-slate-600 font-body text-xs md:text-sm leading-relaxed space-y-4 animate-in fade-in duration-200 bg-slate-50/50">
-                        <p>{faq.answer}</p>
-
-                        {/* Helpful Feedback Bar */}
-                        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-200/60 text-xs">
-                          <span className="text-slate-400 font-body">Was this answer helpful?</span>
-                          
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleFeedback(faq.id, "up")}
-                              className={`px-3 py-1.5 rounded-lg border text-xs font-bold font-heading flex items-center gap-1.5 transition-colors ${
-                                feedback === "up"
-                                  ? "bg-[#10b981] text-white border-[#10b981]"
-                                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
-                              }`}
-                            >
-                              <ThumbsUp className="w-3.5 h-3.5" />
-                              <span>Yes</span>
-                            </button>
-
-                            <button
-                              onClick={() => handleFeedback(faq.id, "down")}
-                              className={`px-3 py-1.5 rounded-lg border text-xs font-bold font-heading flex items-center gap-1.5 transition-colors ${
-                                feedback === "down"
-                                  ? "bg-slate-800 text-white border-slate-800"
-                                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
-                              }`}
-                            >
-                              <ThumbsDown className="w-3.5 h-3.5" />
-                              <span>No</span>
-                            </button>
-                          </div>
-                        </div>
-
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* World-Class Concierge Support Desk */}
-        <div className="bg-gradient-to-br from-[#064e3b] via-[#085a45] to-[#064e3b] rounded-3xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden border border-white/10">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-            
-            <div className="lg:col-span-8 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10b981]/20 text-[#10b981] text-[11px] font-extrabold uppercase font-heading">
-                <span className="w-2 h-2 rounded-full bg-[#10b981] animate-ping" />
-                <span>Live Advisory Desk Online</span>
-              </div>
-
-              <h2 className="font-heading font-black text-2xl md:text-4xl leading-tight">
-                Need specialized assistance with cap-tables or due diligence?
-              </h2>
-
-              <p className="text-xs md:text-sm text-slate-200 max-w-xl font-body leading-relaxed">
-                Our venture partners are available 24/7 to assist institutional investors, Uddokta founders, and advisory consultants.
-              </p>
-
-              <div className="flex flex-wrap gap-6 pt-2 text-xs text-slate-200 font-body">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-[#10b981]" />
-                  <span>+880 (2) 881-9920</span>
+                  {isOpen && (
+                    <div className="px-6 pb-6 pt-2 border-t border-slate-100 text-slate-600 font-body text-xs md:text-sm leading-relaxed space-y-4 animate-in fade-in duration-200 bg-slate-50/50">
+                      <p>{faq.answer}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#10b981]" />
-                  <span>support@investra.io</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-4 flex flex-col gap-3">
-              <Link
-                href="/contact"
-                className="bg-[#10b981] hover:bg-[#0d9668] text-[#064e3b] font-heading font-extrabold py-3.5 px-6 rounded-2xl text-xs transition-all duration-200 shadow-lg text-center flex items-center justify-center gap-2"
-              >
-                <Headphones className="w-4 h-4" />
-                <span>Connect With Support Desk</span>
-              </Link>
-
-              <Link
-                href="/consultants"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-heading font-bold py-3.5 px-6 rounded-2xl text-xs transition-all duration-200 text-center flex items-center justify-center gap-2"
-              >
-                <GraduationCap className="w-4 h-4 text-[#10b981]" />
-                <span>Book Consultant Session</span>
-              </Link>
-            </div>
-
+              );
+            })}
           </div>
         </div>
 

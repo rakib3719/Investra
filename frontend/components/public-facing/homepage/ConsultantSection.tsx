@@ -16,7 +16,7 @@ const ConsultantSection = () => {
           {/* Left Column: Tall Large Representative Image */}
           <div className="lg:col-span-5 relative w-full h-[350px] sm:h-[450px] lg:h-[600px] rounded-2xl overflow-hidden shadow-xs border border-slate-100 group">
             <Image
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
+              src="/female-advisor.png"
               alt="Investra Lead Consultant"
               fill
               sizes="(max-w-768px) 100vw, 40vw"

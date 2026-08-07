@@ -50,7 +50,7 @@ const testimonialsColumn2: Testimonial[] = [
     text: "Transparent messaging pipelines paired with expert advisor sessions. They are our trusted partners.",
     author: "Edelgard Gisa",
     role: "Operations Director",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
+    image: "/female-advisor.png"
   },
   {
     id: 6,

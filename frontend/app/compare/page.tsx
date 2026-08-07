@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/public-facing/shared/Navbar";
 import Footer from "@/components/public-facing/shared/Footer";
 import Link from "next/link";
+import ShinyText from "@/components/ui/ShinyText";
 import { 
   Scale, 
   Check, 
@@ -112,34 +113,51 @@ export default function BusinessComparePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-[#10b981]/20">
+    <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
 
-      {/* Header Hero Section */}
-      <section className="bg-gradient-to-b from-[#064e3b] via-[#085a45] to-[#064e3b] text-white py-16 px-6 relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto relative z-10 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#10b981] text-xs font-extrabold uppercase tracking-widest font-heading">
-            <Scale className="w-3.5 h-3.5" />
-            <span>Side-by-Side Pitch Matrix</span>
-          </div>
-
-          <h1 className="font-heading text-3xl md:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto">
-            Advanced Business Opportunity Comparison
-          </h1>
+      {/* Header Hero Banner - High-End 2-Column Showcase */}
+      <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
+        <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
-          <p className="font-body text-slate-200 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-            Evaluate key financial yield metrics, valuation multiples, ESG ratings, and projected IRR side-by-side to make confident investment decisions.
-          </p>
+          {/* Left Column - Content */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#10b981]/15 text-[#064e3b] text-xs font-extrabold uppercase tracking-wider font-heading">
+              <Scale className="w-3.5 h-3.5" />
+              <span>Side-by-Side Pitch Matrix</span>
+            </div>
 
-          <div className="pt-2 flex items-center justify-center gap-2 text-xs font-bold text-[#10b981]">
-            <Lock className="w-3.5 h-3.5" />
-            <span>Unlocked by Active Investor Subscription Tier</span>
+            <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
+              Compare Opportunities.<br />
+              Analyze Financial Yields,<br />
+              <ShinyText text="Invest With Confidence." speed={4.5} />
+            </h1>
+
+            <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
+              Evaluate key financial yield metrics, valuation multiples, ESG ratings, and projected IRR side-by-side to make confident investment decisions.
+            </p>
+
+            <div className="pt-2">
+              <Link href="/subscription" className="inline-block bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-xs">
+                Unlock Pro Comparison
+              </Link>
+            </div>
           </div>
+
+          {/* Right Column - Image Card */}
+          <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[440px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
+            <img
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80"
+              alt="Business Comparison Matrix"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
         </div>
       </section>
 
       {/* Main Content Area */}
-      <main className="max-w-[1400px] mx-auto w-full px-6 py-12 flex-1 space-y-8">
+      <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-12 flex-1 space-y-8">
         
         {/* Deal Selector Bar */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
@@ -160,7 +178,7 @@ export default function BusinessComparePage() {
                   <button
                     key={b.id}
                     onClick={() => toggleSelect(b.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold font-heading transition-all duration-200 flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold font-heading transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
                       isSelected
                         ? "bg-[#064e3b] text-white shadow-xs"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -206,7 +224,7 @@ export default function BusinessComparePage() {
                           {selectedIds.length > 1 && (
                             <button
                               onClick={() => toggleSelect(b.id)}
-                              className="text-slate-400 hover:text-red-500 p-1"
+                              className="text-slate-400 hover:text-red-500 p-1 cursor-pointer"
                               title="Remove from comparison"
                             >
                               <Trash2 className="w-4 h-4" />

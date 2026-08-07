@@ -4,17 +4,13 @@ import React, { useState } from "react";
 import Navbar from "@/components/public-facing/shared/Navbar";
 import Footer from "@/components/public-facing/shared/Footer";
 import Link from "next/link";
+import ShinyText from "@/components/ui/ShinyText";
 import { 
   GraduationCap, 
   Star, 
   Clock, 
   Users, 
-  Video, 
-  Calendar, 
-  CheckCircle2, 
   Search, 
-  Filter, 
-  Sparkles, 
   ArrowRight,
   ShieldCheck,
   DollarSign
@@ -61,7 +57,7 @@ const mockConsultants: Consultant[] = [
     expertise: ["Financial Modeling", "Valuation", "AgriTech"],
     hourlyRate: "$150",
     nextAvailable: "Friday at 11:00 AM",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+    avatar: "/female-advisor.png",
     type: "Workshop",
     topic: "Live Workshop: Masterclass in Startup Financial Forecasts",
     enrolled: 35,
@@ -98,48 +94,60 @@ export default function ConsultantMarketplacePage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-[#10b981]/20">
+    <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="bg-gradient-to-b from-[#064e3b] via-[#085a45] to-[#064e3b] text-white py-16 px-6 relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto relative z-10 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#10b981] text-xs font-extrabold uppercase tracking-widest font-heading">
-            <GraduationCap className="w-3.5 h-3.5" />
-            <span>Consultant & Advisory Marketplace</span>
+      {/* Hero Banner - Unified Design System */}
+      <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
+        <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Left Column - Content */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#10b981]/15 text-[#064e3b] text-xs font-extrabold uppercase tracking-wider font-heading">
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>Consultant Marketplace</span>
+            </div>
+
+            <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
+              Advisory Marketplace.<br />
+              Masterclass Sessions,<br />
+              <ShinyText text="80/20 Revenue Share." speed={4.5} />
+            </h1>
+
+            <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
+              Accelerate your fundraising journey or refine your investment thesis with vetted venture partners, legal advisors, and financial modelers.
+            </p>
+
+            <div className="flex items-center gap-3 pt-2">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064e3b] bg-[#10b981]/15 px-3 py-1.5 rounded-lg font-heading">
+                <ShieldCheck className="w-4 h-4 text-[#10b981]" /> 80/20 Consultant Revenue Share
+              </span>
+            </div>
           </div>
 
-          <h1 className="font-heading text-3xl md:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto">
-            Book 1-on-1 Advisory, Workshops & Masterclasses
-          </h1>
-
-          <p className="font-body text-slate-200 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-            Accelerate your fundraising journey or refine your investment thesis with vetted venture partners, legal advisors, and financial modelers.
-          </p>
-
-          <div className="inline-flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl text-xs text-slate-200">
-            <span className="flex items-center gap-1 text-[#10b981] font-bold">
-              <ShieldCheck className="w-4 h-4" /> 80/20 Revenue Share
-            </span>
-            <span>•</span>
-            <span>Direct Stripe & SSLCommerz Payment Integration</span>
+          {/* Right Column - Hero Visual Image */}
+          <div className="lg:col-span-6 relative w-full h-[280px] md:h-[360px] lg:h-[440px] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
+            <img
+              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80"
+              alt="Investra Consultants"
+              className="w-full h-full object-cover"
+            />
           </div>
+
         </div>
       </section>
 
       {/* Main Content Area */}
-      <main className="max-w-[1400px] mx-auto w-full px-6 py-12 flex-1 space-y-8">
+      <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-12 flex-1 space-y-8">
         
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-          
-          {/* Tabs */}
           <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             {(["All", "Mentoring", "Workshop", "Course"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold font-heading transition-all duration-200 whitespace-nowrap ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold font-heading transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   activeTab === tab
                     ? "bg-[#064e3b] text-white shadow-xs"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -150,7 +158,6 @@ export default function ConsultantMarketplacePage() {
             ))}
           </div>
 
-          {/* Search Box */}
           <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -161,7 +168,6 @@ export default function ConsultantMarketplacePage() {
               className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#064e3b] font-body"
             />
           </div>
-
         </div>
 
         {/* Consultants Grid */}
@@ -172,8 +178,6 @@ export default function ConsultantMarketplacePage() {
               className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-[#10b981] transition-all duration-300 overflow-hidden flex flex-col justify-between group"
             >
               <div className="p-6 space-y-4">
-                
-                {/* Header Profile */}
                 <div className="flex items-start gap-4">
                   <img
                     src={c.avatar}
@@ -191,7 +195,6 @@ export default function ConsultantMarketplacePage() {
                   </div>
                 </div>
 
-                {/* Rating & Rate */}
                 <div className="flex items-center justify-between border-y border-slate-100 py-3 text-xs">
                   <div className="flex items-center gap-1 text-amber-500 font-bold font-heading">
                     <Star className="w-4 h-4 fill-amber-400" />
@@ -203,14 +206,12 @@ export default function ConsultantMarketplacePage() {
                   </div>
                 </div>
 
-                {/* Topic Title */}
                 <div>
                   <h4 className="font-heading font-bold text-sm text-slate-800 leading-snug">
                     {c.topic}
                   </h4>
                 </div>
 
-                {/* Expertise Badges */}
                 <div className="flex flex-wrap gap-1.5">
                   {c.expertise.map((exp, i) => (
                     <span key={i} className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold font-heading">
@@ -219,7 +220,6 @@ export default function ConsultantMarketplacePage() {
                   ))}
                 </div>
 
-                {/* Meta details */}
                 <div className="space-y-1.5 text-slate-500 text-[11px]">
                   <div className="flex items-center gap-2">
                     <Clock className="w-3.5 h-3.5 text-[#10b981]" />
@@ -230,15 +230,13 @@ export default function ConsultantMarketplacePage() {
                     <span>Enrolled: {c.enrolled} / {c.maxCapacity} seats</span>
                   </div>
                 </div>
-
               </div>
 
-              {/* Card Footer Action */}
               <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                 <span className="text-[10px] font-bold text-[#064e3b] uppercase">80% Consultant Yield</span>
                 <button
                   onClick={() => setSelectedConsultant(c)}
-                  className="bg-[#064e3b] hover:bg-[#043c2e] text-white px-4 py-2 rounded-xl text-xs font-bold font-heading transition-colors inline-flex items-center gap-1"
+                  className="bg-[#064e3b] hover:bg-[#043c2e] text-white px-4 py-2 rounded-xl text-xs font-bold font-heading transition-colors inline-flex items-center gap-1 cursor-pointer"
                 >
                   <span>Book Session</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#10b981]" />
@@ -248,11 +246,10 @@ export default function ConsultantMarketplacePage() {
           ))}
         </div>
 
-        {/* Booking Modal Simulation */}
+        {/* Checkout Modal */}
         {selectedConsultant && (
           <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-6 relative border border-slate-100">
-              
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#10b981]">
@@ -264,7 +261,7 @@ export default function ConsultantMarketplacePage() {
                 </div>
                 <button
                   onClick={() => setSelectedConsultant(null)}
-                  className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100"
+                  className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -278,28 +275,13 @@ export default function ConsultantMarketplacePage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100">
-                  <span className="text-slate-500">Session Rate</span>
-                  <span className="font-bold text-slate-800">{selectedConsultant.hourlyRate}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100">
-                  <span className="text-slate-500">Consultant Split (80%)</span>
-                  <span className="font-bold text-[#064e3b]">Calculated at payout</span>
-                </div>
-                <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100">
-                  <span className="text-slate-500">Payment Gateway</span>
-                  <span className="font-bold text-slate-800">Stripe / SSLCommerz</span>
-                </div>
-              </div>
-
               <div className="space-y-3 pt-2">
                 <button
                   onClick={() => {
                     alert(`Booking requested for ${selectedConsultant.name}! Directing to payment gateway...`);
                     setSelectedConsultant(null);
                   }}
-                  className="w-full bg-[#064e3b] hover:bg-[#043c2e] text-white font-heading font-bold py-3 rounded-xl text-xs transition-colors shadow-md flex items-center justify-center gap-2"
+                  className="w-full bg-[#064e3b] hover:bg-[#043c2e] text-white font-heading font-bold py-3 rounded-xl text-xs transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <DollarSign className="w-4 h-4 text-[#10b981]" />
                   <span>Proceed to Payment ({selectedConsultant.hourlyRate})</span>
@@ -307,12 +289,11 @@ export default function ConsultantMarketplacePage() {
 
                 <button
                   onClick={() => setSelectedConsultant(null)}
-                  className="w-full bg-slate-100 text-slate-600 font-heading font-bold py-2.5 rounded-xl text-xs transition-colors"
+                  className="w-full bg-slate-100 text-slate-600 font-heading font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
               </div>
-
             </div>
           </div>
         )}
