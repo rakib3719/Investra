@@ -11,7 +11,6 @@ import Navbar from '@/components/public-facing/shared/Navbar';
 import { getApiError } from '@/lib/api/client';
 import { useLoginMutation } from '@/lib/auth/auth-hooks';
 import { loginSchema, type LoginFormValues } from '@/lib/auth/schemas';
-import { getDashboardPath } from '@/lib/auth/role';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,8 +23,8 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (values: LoginFormValues) => {
-    const { user } = await login.mutateAsync(values);
-    router.replace(getDashboardPath(user.role));
+    await login.mutateAsync(values);
+    router.replace('/profile');
   };
 
   const apiError = login.error ? getApiError(login.error) : null;
