@@ -18,6 +18,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { getApiError } from '@/lib/api/client';
 import { useMyProfileQuery, useUpdateMyProfileMutation } from '@/lib/profile/profile-hooks';
 import type { MyProfile, UpdateProfileInput } from '@/lib/profile/types';
+import { InvestraInlineLoader, InvestraLoader } from '@/components/ui/InvestraLoader';
 
 const numberFields = new Set([
   'yearsOfExperience',
@@ -55,7 +56,7 @@ function ProfileWorkspace() {
   const updateProfile = useUpdateMyProfileMutation();
   const [step, setStep] = useState(0);
 
-  if (profileQuery.isLoading) return <div className="min-h-screen grid place-items-center text-sm text-slate-500">Loading your secure profile…</div>;
+  if (profileQuery.isLoading) return <main className="min-h-screen grid place-items-center bg-slate-50 px-6"><InvestraLoader label="Loading your secure profile" description="Bringing your investment identity into view." /></main>;
   if (!profileQuery.data) return <div className="min-h-screen grid place-items-center text-sm text-red-600">{getApiError(profileQuery.error).message}</div>;
 
   const { account, profile } = profileQuery.data;
@@ -105,7 +106,7 @@ function ProfileWorkspace() {
 
               {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError}</p>}
               {updateProfile.isSuccess && <p className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700">Profile saved securely.</p>}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100"><button type="button" disabled={step === 0} onClick={() => setStep((current) => current - 1)} className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 disabled:opacity-40"><ChevronLeft className="w-4 h-4" />Back</button><button type="submit" disabled={updateProfile.isPending} className="inline-flex items-center gap-2 bg-[#064e3b] text-white text-xs font-bold px-5 py-3 rounded-xl disabled:opacity-60">{updateProfile.isPending ? 'Saving…' : step === 2 ? 'Save profile' : 'Save and continue'}{step < 2 && <ChevronRight className="w-4 h-4 text-emerald-300" />}</button></div>
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100"><button type="button" disabled={step === 0} onClick={() => setStep((current) => current - 1)} className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 disabled:opacity-40"><ChevronLeft className="w-4 h-4" />Back</button><button type="submit" disabled={updateProfile.isPending} className="inline-flex items-center gap-2 bg-[#064e3b] text-white text-xs font-bold px-5 py-3 rounded-xl disabled:opacity-60">{updateProfile.isPending ? <InvestraInlineLoader label="Saving…" /> : <>{step === 2 ? 'Save profile' : 'Save and continue'}{step < 2 && <ChevronRight className="w-4 h-4 text-emerald-300" />}</>}</button></div>
             </form>
           </section>
         </section>

@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { ArrowRight, Briefcase, Building2, CheckCircle2, GraduationCap, LoaderCircle, Mail, UserCheck } from 'lucide-react';
+import { ArrowRight, Briefcase, Building2, CheckCircle2, GraduationCap, Mail, UserCheck } from 'lucide-react';
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
 import { getApiError } from '@/lib/api/client';
 import { useRegisterMutation } from '@/lib/auth/auth-hooks';
 import { registerSchema, type RegisterFormValues } from '@/lib/auth/schemas';
 import type { PublicUserRole } from '@/lib/auth/types';
+import { InvestraInlineLoader, InvestraLoader } from '@/components/ui/InvestraLoader';
 
 const roles: Array<{ value: PublicUserRole; label: string; description: string; icon: typeof Building2 }> = [
   { value: 'INVESTOR', label: 'Investor', description: 'Discover and compare vetted deals.', icon: Building2 },
@@ -44,14 +45,8 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       {registerAccount.isPending && (
         <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/35 px-6 backdrop-blur-sm" role="status" aria-live="polite">
-          <div className="w-full max-w-sm rounded-3xl border border-white/30 bg-white p-8 text-center shadow-2xl">
-            <div className="relative mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-[#064e3b] shadow-lg shadow-[#064e3b]/25">
-              <LoaderCircle className="h-8 w-8 animate-spin text-[#10b981]" />
-              <span className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-pulse rounded-full bg-emerald-400 ring-4 ring-white" />
-            </div>
-            <h2 className="font-heading text-xl font-black text-slate-800">Creating your account</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500">We are creating your secure profile and preparing your email verification link.</p>
-            <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-[#064e3b] to-[#10b981]" /></div>
+          <div className="w-full max-w-sm rounded-3xl border border-white/30 bg-white p-8 shadow-2xl">
+            <InvestraLoader label="Creating your account" description="We are creating your secure profile and preparing your email verification link." />
           </div>
         </div>
       )}
@@ -87,7 +82,7 @@ export default function RegisterPage() {
 
             <div className="p-4 bg-[#064e3b]/5 rounded-2xl border border-[#064e3b]/10 text-[11px] text-slate-600 flex gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" />Your account stays inactive until you verify the email we send.</div>
             {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError.message}</p>}
-            <button type="submit" disabled={registerAccount.isPending} className="w-full bg-[#064e3b] disabled:opacity-60 text-white font-heading font-extrabold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2"><span>{registerAccount.isPending ? 'Creating account…' : 'Create account and verify email'}</span><ArrowRight className="w-4 h-4 text-[#10b981]" /></button>
+            <button type="submit" disabled={registerAccount.isPending} className="w-full bg-[#064e3b] disabled:opacity-60 text-white font-heading font-extrabold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2">{registerAccount.isPending ? <InvestraInlineLoader label="Creating account…" /> : <><span>Create account and verify email</span><ArrowRight className="w-4 h-4 text-[#10b981]" /></>}</button>
           </form>
           <p className="text-center text-xs text-slate-500">Already verified? <Link href="/login" className="font-bold text-[#064e3b] hover:underline">Sign in</Link></p>
         </div>

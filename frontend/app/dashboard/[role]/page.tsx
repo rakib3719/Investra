@@ -7,6 +7,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { AuthProvider, useAuth } from '@/components/auth/AuthProvider';
 import { useLogoutMutation } from '@/lib/auth/auth-hooks';
 import { getDashboardPath } from '@/lib/auth/role';
+import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
 
 function DashboardContent() {
   const router = useRouter();
@@ -36,7 +37,7 @@ function DashboardContent() {
         <p className="text-xs font-bold text-emerald-700 uppercase tracking-widest">Verified {user.role.toLowerCase()} session</p>
         <h1 className="font-heading text-3xl font-black text-slate-800">Welcome, {user.firstName ?? user.email}</h1>
         <p className="text-slate-600">Your protected {user.role.toLowerCase()} dashboard is ready for the next feature modules.</p>
-        <button type="button" onClick={signOut} disabled={logout.isPending} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-700 disabled:opacity-60"><LogOut className="w-4 h-4" />{logout.isPending ? 'Signing out…' : 'Sign out'}</button>
+        <button type="button" onClick={signOut} disabled={logout.isPending} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-700 disabled:opacity-60">{logout.isPending ? <InvestraInlineLoader label="Signing out…" /> : <><LogOut className="w-4 h-4" />Sign out</>}</button>
       </section>
     </main>
   );

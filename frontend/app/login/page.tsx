@@ -11,6 +11,7 @@ import Navbar from '@/components/public-facing/shared/Navbar';
 import { getApiError } from '@/lib/api/client';
 import { useLoginMutation } from '@/lib/auth/auth-hooks';
 import { loginSchema, type LoginFormValues } from '@/lib/auth/schemas';
+import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -70,8 +71,7 @@ export default function LoginPage() {
             {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError.message}</p>}
 
             <button type="submit" disabled={login.isPending} className="w-full bg-[#064e3b] disabled:opacity-60 text-white font-heading font-extrabold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2">
-              <span>{login.isPending ? 'Signing in…' : 'Sign in securely'}</span>
-              <ArrowRight className="w-4 h-4 text-[#10b981]" />
+              {login.isPending ? <InvestraInlineLoader label="Signing in…" /> : <><span>Sign in securely</span><ArrowRight className="w-4 h-4 text-[#10b981]" /></>}
             </button>
           </form>
 

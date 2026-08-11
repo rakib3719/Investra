@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useLogoutMutation } from "@/lib/auth/auth-hooks";
 
 interface MenuItem {
@@ -628,9 +629,9 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           {isLoading ? (
             <div
-              className="h-10 w-28 animate-pulse rounded-xl bg-slate-100"
+              className="flex h-10 w-28 items-center justify-center rounded-xl border border-slate-100 bg-slate-50"
               aria-label="Loading account"
-            />
+            ><InvestraInlineLoader /></div>
           ) : user ? (
             <div ref={accountMenuRef} className="relative">
               <button
@@ -652,7 +653,7 @@ export default function Navbar() {
               {isAccountMenuOpen && (
                 <div role="menu" className="absolute right-0 top-[calc(100%+8px)] z-50 w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
                   <Link href="/profile" onClick={() => setIsAccountMenuOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem"><CircleUserRound className="w-4 h-4 text-[#064e3b]" />My profile</Link>
-                  <button type="button" onClick={handleLogout} disabled={logout.isPending} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-60" role="menuitem"><LogOut className="w-4 h-4" />{logout.isPending ? "Signing out…" : "Sign out"}</button>
+                  <button type="button" onClick={handleLogout} disabled={logout.isPending} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-60" role="menuitem">{logout.isPending ? <InvestraInlineLoader label="Signing out…" /> : <><LogOut className="w-4 h-4" />Sign out</>}</button>
                 </div>
               )}
             </div>
@@ -780,7 +781,7 @@ export default function Navbar() {
 
           {/* Action CTAs */}
           <div className="flex flex-col gap-2.5 pt-2">
-            {isLoading ? null : user ? (
+            {isLoading ? <div className="flex justify-center py-2 text-xs font-bold text-slate-500"><InvestraInlineLoader label="Checking account…" /></div> : user ? (
               <>
                 <Link
                   href="/profile"
@@ -790,7 +791,7 @@ export default function Navbar() {
                   <CircleUserRound className="w-4 h-4 text-[#10b981]" />
                   <span>My Profile</span>
                 </Link>
-                <button type="button" onClick={handleLogout} disabled={logout.isPending} className="w-full border border-red-100 text-red-600 text-xs font-extrabold font-heading py-3 rounded-xl disabled:opacity-60 flex items-center justify-center gap-2"><LogOut className="w-4 h-4" />{logout.isPending ? "Signing out…" : "Sign out"}</button>
+                <button type="button" onClick={handleLogout} disabled={logout.isPending} className="w-full border border-red-100 text-red-600 text-xs font-extrabold font-heading py-3 rounded-xl disabled:opacity-60 flex items-center justify-center gap-2">{logout.isPending ? <InvestraInlineLoader label="Signing out…" /> : <><LogOut className="w-4 h-4" />Sign out</>}</button>
               </>
             ) : (
               <>

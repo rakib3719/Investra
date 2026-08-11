@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCurrentUserQuery } from '@/lib/auth/auth-hooks';
 import type { PublicUserRole } from '@/lib/auth/types';
+import { InvestraLoader } from '@/components/ui/InvestraLoader';
 
 export function RequireAuth({
   children,
@@ -22,7 +23,7 @@ export function RequireAuth({
   }, [isLoading, router, user]);
 
   if (isLoading || !user || (allowedRoles && !allowedRoles.includes(user.role))) {
-    return <div className="min-h-screen grid place-items-center text-sm text-slate-500">Loading secure workspace…</div>;
+    return <main className="min-h-screen grid place-items-center bg-slate-50 px-6"><InvestraLoader label="Securing your workspace" description="Verifying your Investra session." /></main>;
   }
 
   return <>{children}</>;
