@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -29,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${jakarta.variable} antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
