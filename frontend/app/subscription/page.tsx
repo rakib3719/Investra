@@ -90,7 +90,7 @@ export default function MasterpieceSubscriptionPage() {
     entrepreneur: [
       {
         id: "starter-uddokta",
-        name: "Starter Uddokta",
+        name: "Starter Entrepreneur",
         badge: "Free Pitch",
         price: { monthly: 0, yearly: 0 },
         description: "Publish your initial startup proposal and monitor public visitor metrics.",
@@ -165,7 +165,7 @@ export default function MasterpieceSubscriptionPage() {
             </h1>
 
             <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
-              Tailored subscription tiers designed for institutional investors, angel syndicates, and scaling Uddokta entrepreneurs.
+              Tailored subscription tiers designed for institutional investors, angel syndicates, and scaling entrepreneurs.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -216,7 +216,7 @@ export default function MasterpieceSubscriptionPage() {
               }`}
             >
               <Briefcase className="w-4 h-4" />
-              <span>Entrepreneur (Uddokta) Tiers</span>
+              <span>Entrepreneur Tiers</span>
             </button>
           </div>
 

@@ -54,7 +54,7 @@ const advisorsList: Advisor[] = [
     role: "Head of Startup Due Diligence & ESG Audit",
     fund: "Investra Telemetry Governance",
     trackRecord: "120+ Vetted Startup Pitches",
-    bio: "Specializes in ESG telemetry frameworks, regulatory compliance, and cap-table structuring for Uddokta entrepreneurs seeking Series A growth rounds.",
+    bio: "Specializes in ESG telemetry frameworks, regulatory compliance, and cap-table structuring for entrepreneurs seeking Series A growth rounds.",
     avatar: "/female-advisor.png",
     specialization: "ESG Telemetry",
     stats: {

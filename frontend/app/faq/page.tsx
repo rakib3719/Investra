@@ -54,7 +54,7 @@ const faqData: FAQItem[] = [
   {
     id: "faq-3",
     category: "Investor",
-    question: "Can I directly message Uddokta entrepreneurs before committing capital?",
+    question: "Can I directly message entrepreneurs before committing capital?",
     answer: "Yes! Premium chat allows investors to send connection requests to business owners. Once approved by the entrepreneur, a secure real-time messaging room powered by Socket.IO is initialized for confidential discussions and file sharing.",
     isSpotlight: true
   },
@@ -62,7 +62,7 @@ const faqData: FAQItem[] = [
     id: "faq-4",
     category: "Entrepreneur",
     question: "What are the requirements for publishing a business opportunity on Investra?",
-    answer: "Entrepreneurs (Uddokta) can publish business posts detailing target raise capital, business model, pitch decks, and financial forecasts. Campaign visibility, featured directory placement, and investor telemetry tracking depend on your active subscription tier."
+    answer: "Entrepreneurs can publish business posts detailing target raise capital, business model, pitch decks, and financial forecasts. Campaign visibility, featured directory placement, and investor telemetry tracking depend on your active subscription tier."
   },
   {
     id: "faq-5",

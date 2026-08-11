@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import {
   ChevronDown,
@@ -22,9 +23,12 @@ import {
   Menu,
   X,
   CircleUserRound,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useLogoutMutation } from "@/lib/auth/auth-hooks";
 
 interface MenuItem {
   name: string;
@@ -115,11 +119,15 @@ const menuItems: MenuItem[] = [
 
 export default function Navbar() {
   const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const logout = useLogoutMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [mobileMegaOpen, setMobileMegaOpen] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [hoveredImage, setHoveredImage] = useState<string>(menuItems[0].image);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   // Toggle active dropdown
   const toggleDropdown = (menu: string) => {
@@ -135,9 +143,11 @@ export default function Navbar() {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        !accountMenuRef.current?.contains(event.target as Node)
       ) {
         setActiveDropdown(null);
+        setIsAccountMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -145,6 +155,16 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = async () => {
+    setIsAccountMenuOpen(false);
+    setIsOpen(false);
+    try {
+      await logout.mutateAsync();
+    } finally {
+      router.replace("/");
+    }
+  };
 
   return (
     <nav
@@ -612,35 +632,43 @@ export default function Navbar() {
               aria-label="Loading account"
             />
           ) : user ? (
-            <Link
-              href="/profile"
-              className="inline-flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-2.5 py-2 hover:border-[#064e3b]/40 transition-colors"
-            >
-              <span className="w-8 h-8 rounded-lg bg-[#064e3b] text-emerald-300 grid place-items-center text-xs font-black">
-                {(user.firstName?.[0] || user.email[0]).toUpperCase()}
-              </span>
-              <span className="text-left leading-tight">
-                <span className="block text-xs font-black text-slate-800">
-                  {user.firstName || "My profile"}
+            <div ref={accountMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setIsAccountMenuOpen((open) => !open)}
+                className="inline-flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-2.5 py-2 hover:border-[#064e3b]/40 transition-colors"
+                aria-expanded={isAccountMenuOpen}
+                aria-haspopup="menu"
+              >
+                <span className="w-8 h-8 rounded-lg bg-[#064e3b] text-emerald-300 grid place-items-center text-xs font-black">
+                  {(user.firstName?.[0] || user.email[0]).toUpperCase()}
                 </span>
-                <span className="block text-[10px] text-slate-500">
-                  View profile
+                <span className="text-left leading-tight">
+                  <span className="block text-xs font-black text-slate-800">{user.firstName || "My account"}</span>
+                  <span className="block text-[10px] text-slate-500">{user.role.toLowerCase()}</span>
                 </span>
-              </span>
-            </Link>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isAccountMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isAccountMenuOpen && (
+                <div role="menu" className="absolute right-0 top-[calc(100%+8px)] z-50 w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                  <Link href="/profile" onClick={() => setIsAccountMenuOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem"><CircleUserRound className="w-4 h-4 text-[#064e3b]" />My profile</Link>
+                  <button type="button" onClick={handleLogout} disabled={logout.isPending} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-60" role="menuitem"><LogOut className="w-4 h-4" />{logout.isPending ? "Signing out…" : "Sign out"}</button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link
                 href="/login"
-                className="text-xs font-bold text-slate-600 hover:text-primary transition-colors px-3 py-2"
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-[#064e3b] transition-colors px-3.5 py-2.5 rounded-lg hover:bg-slate-50"
               >
-                Client Login
+                <LogIn className="w-3.5 h-3.5" /> Sign in
               </Link>
               <Link
                 href="/register"
-                className="bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-colors shadow-xs"
+                className="inline-flex items-center gap-2 bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-colors shadow-sm hover:shadow-md"
               >
-                Get Started
+                Create account <ArrowRight className="w-3.5 h-3.5 text-[#10b981]" />
               </Link>
             </>
           )}
@@ -753,14 +781,17 @@ export default function Navbar() {
           {/* Action CTAs */}
           <div className="flex flex-col gap-2.5 pt-2">
             {isLoading ? null : user ? (
-              <Link
-                href="/profile"
-                onClick={() => setIsOpen(false)}
-                className="w-full bg-[#064e3b] text-white text-xs font-extrabold font-heading py-3 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
-              >
-                <CircleUserRound className="w-4 h-4 text-[#10b981]" />
-                <span>My Profile</span>
-              </Link>
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-[#064e3b] text-white text-xs font-extrabold font-heading py-3 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
+                >
+                  <CircleUserRound className="w-4 h-4 text-[#10b981]" />
+                  <span>My Profile</span>
+                </Link>
+                <button type="button" onClick={handleLogout} disabled={logout.isPending} className="w-full border border-red-100 text-red-600 text-xs font-extrabold font-heading py-3 rounded-xl disabled:opacity-60 flex items-center justify-center gap-2"><LogOut className="w-4 h-4" />{logout.isPending ? "Signing out…" : "Sign out"}</button>
+              </>
             ) : (
               <>
                 <Link
@@ -768,14 +799,14 @@ export default function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="w-full text-center text-xs font-extrabold font-heading text-slate-800 border border-slate-200 py-3 rounded-xl hover:bg-slate-50 transition-colors"
                 >
-                  Client Login
+                  <span className="inline-flex items-center gap-2"><LogIn className="w-4 h-4" />Sign in</span>
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setIsOpen(false)}
                   className="w-full text-center bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-extrabold font-heading py-3 rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <span>Get Started Now</span>
+                  <span>Create verified account</span>
                   <ArrowRight className="w-4 h-4 text-[#10b981]" />
                 </Link>
               </>

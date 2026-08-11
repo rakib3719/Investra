@@ -38,7 +38,7 @@ const PlatformPillars = () => {
       title: "Entrepreneur Hub",
       heading: "Showcase Pitch Decks & Get Backed",
       image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
-      details: "Allowing entrepreneurs (Uddoktas) to publish business plans, track investor views and bookmark metrics, and secure growth capital efficiently.",
+      details: "Allowing entrepreneurs to publish business plans, track investor views and bookmark metrics, and secure growth capital efficiently.",
       points: [
         "Custom pitch deck showcase builders",
         "Real-time visitor analytics and dashboard tracking",

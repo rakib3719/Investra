@@ -389,7 +389,7 @@ export default function BusinessComparePage() {
               Want deep due diligence & custom CSV exports?
             </h3>
             <p className="text-xs md:text-sm text-slate-200 max-w-xl font-body">
-              Upgrade to the Investor Pro subscription tier to unlock unlimited business comparisons, direct chat with Uddokta founders, and financial audit files.
+              Upgrade to the Investor Pro subscription tier to unlock unlimited business comparisons, direct chat with entrepreneur founders, and financial audit files.
             </p>
           </div>
 

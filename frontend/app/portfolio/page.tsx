@@ -83,7 +83,7 @@ export default function PortfolioPage() {
                   }`}
                 >
                   {type === "all" && "Show All Showcase"}
-                  {type === "startup" && "Startups (Uddoktas)"}
+                  {type === "startup" && "Startups (Entrepreneurs)"}
                   {type === "investor" && "Active Investors"}
                   {type === "consultant" && "Verified Consultants"}
                 </button>

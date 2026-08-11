@@ -154,7 +154,7 @@ export default function PitchDetailShowcasePage() {
 
             <div className="space-y-3">
               <button
-                onClick={() => alert("Initiating Premium Chat Request to Founder (Uddokta)... Unlocked via active subscription.")}
+                onClick={() => alert("Initiating Premium Chat Request to Founder (Entrepreneur)... Unlocked via active subscription.")}
                 className="w-full bg-[#064e3b] hover:bg-[#043c2e] text-white font-heading font-extrabold py-3.5 rounded-xl text-xs transition-colors shadow-md flex items-center justify-center gap-2"
               >
                 <MessageSquare className="w-4 h-4 text-[#10b981]" />

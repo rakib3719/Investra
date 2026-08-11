@@ -1,10 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { authApi } from './auth-api';
-import type { AuthUser, LoginInput, RegisterInput, ResetPasswordInput } from './types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authApi } from "./auth-api";
+import type {
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+} from "./types";
 
 export const authKeys = {
-  all: ['auth'] as const,
-  me: () => [...authKeys.all, 'me'] as const,
+  all: ["auth"] as const,
+  me: () => [...authKeys.all, "me"] as const,
 };
 
 export function useCurrentUserQuery() {
@@ -22,28 +27,39 @@ export function useLoginMutation() {
 
   return useMutation({
     mutationFn: (input: LoginInput) => authApi.login(input),
-    onSuccess: ({ user }) => queryClient.setQueryData<AuthUser>(authKeys.me(), user),
+    onSuccess: ({ user }) =>
+      queryClient.setQueryData<AuthUser>(authKeys.me(), user),
   });
 }
 
 export function useRegisterMutation() {
-  return useMutation({ mutationFn: (input: RegisterInput) => authApi.register(input) });
+  return useMutation({
+    mutationFn: (input: RegisterInput) => authApi.register(input),
+  });
 }
 
 export function useVerifyEmailMutation() {
-  return useMutation({ mutationFn: (token: string) => authApi.verifyEmail(token) });
+  return useMutation({
+    mutationFn: (token: string) => authApi.verifyEmail(token),
+  });
 }
 
 export function useResendVerificationMutation() {
-  return useMutation({ mutationFn: (email: string) => authApi.resendVerification(email) });
+  return useMutation({
+    mutationFn: (email: string) => authApi.resendVerification(email),
+  });
 }
 
 export function useForgotPasswordMutation() {
-  return useMutation({ mutationFn: (email: string) => authApi.forgotPassword(email) });
+  return useMutation({
+    mutationFn: (email: string) => authApi.forgotPassword(email),
+  });
 }
 
 export function useResetPasswordMutation() {
-  return useMutation({ mutationFn: (input: ResetPasswordInput) => authApi.resetPassword(input) });
+  return useMutation({
+    mutationFn: (input: ResetPasswordInput) => authApi.resetPassword(input),
+  });
 }
 
 export function useLogoutMutation() {
@@ -51,6 +67,12 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: authApi.logout,
-    onSettled: () => queryClient.removeQueries({ queryKey: authKeys.all }),
+    onSuccess: async () => {
+      // Keep the active AuthProvider query in place, but immediately replace its
+      // data so every consumer (especially the navbar) re-renders as signed out.
+      await queryClient.cancelQueries({ queryKey: authKeys.me() });
+      queryClient.setQueryData<AuthUser | null>(authKeys.me(), null);
+      queryClient.removeQueries({ queryKey: ["profile"] });
+    },
   });
 }

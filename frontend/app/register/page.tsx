@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { ArrowRight, Briefcase, Building2, CheckCircle2, GraduationCap, Mail, UserCheck } from 'lucide-react';
+import { ArrowRight, Briefcase, Building2, CheckCircle2, GraduationCap, LoaderCircle, Mail, UserCheck } from 'lucide-react';
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
 import { getApiError } from '@/lib/api/client';
@@ -15,7 +15,7 @@ import type { PublicUserRole } from '@/lib/auth/types';
 
 const roles: Array<{ value: PublicUserRole; label: string; description: string; icon: typeof Building2 }> = [
   { value: 'INVESTOR', label: 'Investor', description: 'Discover and compare vetted deals.', icon: Building2 },
-  { value: 'ENTREPRENEUR', label: 'Uddokta', description: 'Publish pitches and raise capital.', icon: Briefcase },
+  { value: 'ENTREPRENEUR', label: 'Entrepreneur', description: 'Publish pitches and raise capital.', icon: Briefcase },
   { value: 'CONSULTANT', label: 'Consultant', description: 'Offer advisory and mentoring.', icon: GraduationCap },
 ];
 
@@ -42,6 +42,19 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+      {registerAccount.isPending && (
+        <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/35 px-6 backdrop-blur-sm" role="status" aria-live="polite">
+          <div className="w-full max-w-sm rounded-3xl border border-white/30 bg-white p-8 text-center shadow-2xl">
+            <div className="relative mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-[#064e3b] shadow-lg shadow-[#064e3b]/25">
+              <LoaderCircle className="h-8 w-8 animate-spin text-[#10b981]" />
+              <span className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-pulse rounded-full bg-emerald-400 ring-4 ring-white" />
+            </div>
+            <h2 className="font-heading text-xl font-black text-slate-800">Creating your account</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-500">We are creating your secure profile and preparing your email verification link.</p>
+            <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-[#064e3b] to-[#10b981]" /></div>
+          </div>
+        </div>
+      )}
       <Navbar />
       <main className="flex-1 flex items-center justify-center py-16 px-6">
         <div className="max-w-xl w-full bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-2xl space-y-6">

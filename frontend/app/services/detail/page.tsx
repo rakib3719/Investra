@@ -122,7 +122,7 @@ export default function ServiceDetailPage() {
               Ready to submit your startup pitch for vetting?
             </h3>
             <p className="text-xs md:text-sm text-slate-200 font-body max-w-xl">
-              Entrepreneurs (Uddokta) can get featured across our investor directory.
+              Entrepreneurs can get featured across our investor directory.
             </p>
           </div>
 
