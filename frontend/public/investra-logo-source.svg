@@ -1,0 +1,10 @@
+<svg width="1000" height="250" viewBox="0 0 1000 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Investra</title>
+  <g transform="translate(28 16)">
+    <path d="M36 158C64 189 107 202 154 195C117 216 76 218 45 197C26 184 14 164 10 142C20 151 28 156 36 158Z" fill="#42B883"/>
+    <path d="M119 8C156 25 179 57 179 96C179 144 154 181 115 202V8H119Z" fill="#008B5A"/>
+    <path d="M72 63C103 79 121 105 121 137C121 166 108 186 86 197C52 181 32 153 32 120C32 93 47 74 72 63Z" fill="#31B877"/>
+    <path d="M98 139C98 169 83 184 61 185C44 170 36 153 36 132C36 111 47 94 66 83C87 98 98 116 98 139Z" fill="#31B877"/>
+  </g>
+  <text x="250" y="158" fill="#078457" font-family="Georgia, 'Times New Roman', serif" font-size="112" font-weight="700" letter-spacing="-3.5">Investra</text>
+</svg>

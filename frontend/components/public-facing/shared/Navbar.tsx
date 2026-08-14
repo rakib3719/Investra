@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -193,30 +194,16 @@ export default function Navbar() {
 
       <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] flex items-center justify-between h-20">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <svg
-            className="w-7 h-7 text-primary"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              fill="rgba(6, 78, 59, 0.08)"
-              stroke="#064e3b"
-            />
-            <path
-              d="M12 6a6 6 0 0 0-6 6c0 2.2.9 4.2 2.4 5.2"
-              stroke="#10b981"
-            />
-            <path d="M12 6v12" stroke="#064e3b" />
-            <path d="M12 9c1.5-.8 3-.8 4.5 0" stroke="#10b981" />
-            <path d="M12 13c2-.8 3.5-.8 5.5 0" stroke="#10b981" />
-          </svg>
-          <span className="font-heading font-extrabold text-xl tracking-tight text-[#064e3b]">
+        <Link href="/" className="flex items-center gap-2" aria-label="Investra home">
+          <Image
+            src="/investra-logo.png"
+            alt="Investra"
+            width={1254}
+            height={1254}
+            className="h-10 w-10 object-contain"
+            priority
+          />
+          <span className="font-serif text-[27px] font-bold tracking-tight text-[#078457]">
             Investra
           </span>
         </Link>
