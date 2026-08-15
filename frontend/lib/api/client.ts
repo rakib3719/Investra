@@ -8,8 +8,12 @@ interface AuthRequestConfig extends InternalAxiosRequestConfig {
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
-if (!baseURL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not configured.');
+function requireApiUrl() {
+  if (!baseURL) {
+    throw new Error(
+      'NEXT_PUBLIC_API_URL is not configured. Set it in your deployment environment before making API requests.',
+    );
+  }
 }
 
 export const apiClient = axios.create({
@@ -24,6 +28,17 @@ const refreshClient = axios.create({
   withCredentials: true,
   headers: { Accept: 'application/json' },
 });
+
+// Do not validate at module evaluation time: Next.js imports this module while
+// prerendering pages that do not make API requests (including the 404 page).
+// Checking immediately before a request keeps those builds independent of the
+// API while still giving a clear error if the app is used without its API URL.
+for (const client of [apiClient, refreshClient]) {
+  client.interceptors.request.use((config) => {
+    requireApiUrl();
+    return config;
+  });
+}
 
 let refreshPromise: Promise<void> | null = null;
 
