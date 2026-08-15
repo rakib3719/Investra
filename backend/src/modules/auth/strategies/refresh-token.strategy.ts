@@ -8,18 +8,24 @@ interface JwtPayload {
   sub: string;
   email: string;
   role: string;
+  sid: string;
+  type: string;
 }
 
 const cookieExtractor = (req: Request): string | null => {
-  let token = null;
-  if (req && req.cookies) {
-    token = req.cookies['refreshToken'];
-  }
-  return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req); // Both option
+  const cookies = req.cookies as Record<string, unknown> | undefined;
+  const token = cookies?.refreshToken;
+
+  return typeof token === 'string'
+    ? token
+    : ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 };
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class RefreshTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor() {
     super({
       jwtFromRequest: cookieExtractor,
@@ -30,14 +36,22 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refres
   }
 
   validate(req: Request, payload: JwtPayload) {
-    const refreshToken = req.cookies?.['refreshToken'] || req.get('Authorization')?.replace('Bearer ', '').trim();
+    const cookies = req.cookies as Record<string, unknown> | undefined;
+    const cookieToken = cookies?.refreshToken;
+    const headerToken = req.get('Authorization')?.replace('Bearer ', '').trim();
+    const refreshToken =
+      typeof cookieToken === 'string' ? cookieToken : headerToken;
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is required');
+    }
+    if (payload.type !== 'refresh' || !payload.sid) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
     return {
       id: payload.sub,
       email: payload.email,
       role: payload.role,
+      sessionId: payload.sid,
       refreshToken,
     };
   }

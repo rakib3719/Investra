@@ -7,9 +7,10 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { customValidationPipe } from './common/pipes/custom-validation.pipe';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, AuthModule, ProfileModule],
   controllers: [AppController],
   providers: [
     AppService,
@@ -28,4 +29,3 @@ import { AuthModule } from './modules/auth/auth.module';
   ],
 })
 export class AppModule {}
-

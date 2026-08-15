@@ -87,6 +87,79 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Investra loading mark: a moving investment orbit around an emerging growth chart. */
+.investra-loader-mark {
+  display: inline-block;
+}
+
+.investra-loader-track {
+  stroke: rgba(6, 78, 59, 0.12);
+  stroke-width: 3;
+}
+
+.investra-loader-orbit {
+  transform-origin: center;
+  animation: investra-loader-orbit 1.25s linear infinite;
+  stroke: #10b981;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 22 78;
+}
+
+.investra-loader-leaf {
+  fill: #10b981;
+  animation: investra-loader-leaf 1.4s ease-in-out infinite;
+  transform-origin: 32px 32px;
+}
+
+.investra-loader-stem {
+  stroke: #064e3b;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.investra-loader-bar {
+  fill: #064e3b;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: investra-loader-grow 1.05s ease-in-out infinite alternate;
+}
+
+.investra-loader-bar-two { animation-delay: 120ms; }
+.investra-loader-bar-three { animation-delay: 240ms; }
+
+.investra-loader-halo {
+  height: 5.5rem;
+  width: 5.5rem;
+  animation: investra-loader-float 2.2s ease-in-out infinite;
+}
+
+@keyframes investra-loader-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes investra-loader-grow {
+  from { transform: scaleY(0.55); opacity: 0.42; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes investra-loader-leaf {
+  50% { transform: translate(1px, -1px) scale(1.08); }
+}
+
+@keyframes investra-loader-float {
+  50% { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .investra-loader-orbit,
+  .investra-loader-leaf,
+  .investra-loader-bar,
+  .investra-loader-halo {
+    animation: none;
+  }
+}
+
 /* ==========================================================================
    2. LAYER BASE RESETS & ACCESSIBILITY
    ========================================================================== */

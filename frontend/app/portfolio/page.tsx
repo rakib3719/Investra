@@ -26,12 +26,12 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 w-full flex flex-col justify-between">
-      
+
       {/* Navigation */}
       <Navbar />
 
       <main className="w-full pb-24">
-        
+
         {/* Centered Page Hero Banner */}
         <section className="bg-white border-b border-slate-100 py-16 md:py-24">
           <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] space-y-6 text-center max-w-4xl">
@@ -69,7 +69,7 @@ export default function PortfolioPage() {
         {/* Filter and Search Controls */}
         <section className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] mt-8">
           <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center max-w-5xl mx-auto">
-            
+
             {/* Category Pills */}
             <div className="flex flex-wrap gap-2 w-full md:w-auto">
               {(["all", "startup", "investor", "consultant"] as const).map((type) => (
@@ -83,7 +83,7 @@ export default function PortfolioPage() {
                   }`}
                 >
                   {type === "all" && "Show All Showcase"}
-                  {type === "startup" && "Startups (Uddoktas)"}
+                  {type === "startup" && "Startups (Entrepreneurs)"}
                   {type === "investor" && "Active Investors"}
                   {type === "consultant" && "Verified Consultants"}
                 </button>
@@ -121,10 +121,10 @@ export default function PortfolioPage() {
                   spotlightColor="rgba(16, 185, 129, 0.04)"
                   className="bg-white border border-slate-200/60 rounded-[32px] overflow-hidden p-6 md:p-8 shadow-xs hover:shadow-md transition-shadow relative"
                 >
-                  
+
                   {/* Main Grid inside Card */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
+
                     {/* Column 1: Portrait / Brand image (4/12 span) */}
                     <div className="lg:col-span-4 relative h-[220px] rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-2xs">
                       <img
@@ -132,7 +132,7 @@ export default function PortfolioPage() {
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
-                      
+
                       {/* floating category badge */}
                       <span className={`absolute top-4 left-4 text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full font-heading backdrop-blur-xs border ${
                         item.type === "startup" ? "bg-emerald-500/90 text-white border-emerald-400/20" :
@@ -145,7 +145,7 @@ export default function PortfolioPage() {
 
                     {/* Column 2: Profile identity & metrics info (8/12 span) */}
                     <div className="lg:col-span-8 flex flex-col justify-between h-full space-y-6">
-                      
+
                       {/* Upper Identity segment */}
                       <div className="space-y-4">
                         <div className="flex items-center gap-4">
@@ -183,7 +183,7 @@ export default function PortfolioPage() {
 
                       {/* Bottom Metrics Bar & CTA Link */}
                       <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                        
+
                         {/* 3-column stats */}
                         <div className="flex gap-8">
                           <div className="space-y-1">
@@ -201,7 +201,7 @@ export default function PortfolioPage() {
                         </div>
 
                         {/* CTA Navigate Link */}
-                        <Link 
+                        <Link
                           href={`/portfolio/${item.id}`}
                           className="bg-primary hover:bg-[#043c2e] text-white px-5 py-2.5 rounded-xl text-xs font-bold font-heading transition-colors flex items-center gap-2 cursor-pointer shrink-0 self-stretch sm:self-auto justify-center"
                         >

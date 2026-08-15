@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 import { ChevronUp, Send } from "lucide-react";
@@ -30,15 +31,15 @@ export default function Footer() {
           
           {/* Column 1: Logo & Social Links (4/12 span) */}
           <div className="md:col-span-4 space-y-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <svg className="w-7 h-7 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="10" fill="var(--selection)" stroke="var(--accent)" />
-                <path d="M12 6a6 6 0 0 0-6 6c0 2.2.9 4.2 2.4 5.2" stroke="currentColor" />
-                <path d="M12 6v12" stroke="var(--accent)" />
-                <path d="M12 9c1.5-.8 3-.8 4.5 0" stroke="currentColor" />
-                <path d="M12 13c2-.8 3.5-.8 5.5 0" stroke="currentColor" />
-              </svg>
-              <span className="font-heading font-extrabold text-xl tracking-tight text-white">
+            <Link href="/" className="flex items-center gap-2" aria-label="Investra home">
+              <Image
+                src="/investra-logo.png"
+                alt="Investra"
+                width={1254}
+                height={1254}
+                className="h-10 w-10 object-contain"
+              />
+              <span className="font-serif text-[27px] font-bold tracking-tight text-emerald-400">
                 Investra
               </span>
             </Link>
