@@ -209,14 +209,14 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-7 h-full">
+        <div className="hidden min-[1360px]:flex items-center gap-7 h-full">
           {/* Dropdown Link: Platform with Hover-to-Open Wrapper */}
           <div
             onMouseEnter={() => {
-              if (window.innerWidth >= 768) setActiveDropdown("platform");
+              if (window.innerWidth >= 1360) setActiveDropdown("platform");
             }}
             onMouseLeave={() => {
-              if (window.innerWidth >= 768) setActiveDropdown(null);
+              if (window.innerWidth >= 1360) setActiveDropdown(null);
             }}
             className="h-full flex items-center"
           >
@@ -613,7 +613,7 @@ export default function Navbar() {
         </div>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden min-[1360px]:flex items-center gap-4">
           {isLoading ? (
             <div
               className="flex h-10 w-28 items-center justify-center rounded-xl border border-slate-100 bg-slate-50"
@@ -665,7 +665,7 @@ export default function Navbar() {
         {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-slate-700 hover:text-[#064e3b] focus:outline-none rounded-xl bg-slate-100 border border-slate-200 transition-colors"
+          className="min-[1360px]:hidden p-2 text-slate-700 hover:text-[#064e3b] focus:outline-none rounded-xl bg-slate-100 border border-slate-200 transition-colors"
           aria-label="Toggle menu"
         >
           {isOpen ? (
@@ -678,7 +678,7 @@ export default function Navbar() {
 
       {/* MOBILE DRAWER WITH CLEAN 'PLATFORM' ACCORDION */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white px-6 py-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl max-h-[85vh] overflow-y-auto">
+        <div className="min-[1360px]:hidden border-t border-slate-100 bg-white px-6 py-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl max-h-[85vh] overflow-y-auto">
           {/* Collapsible Mobile Platform Section */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
             <button
