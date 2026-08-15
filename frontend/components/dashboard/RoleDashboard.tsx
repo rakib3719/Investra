@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -284,8 +285,8 @@ function Sidebar({ config, isOpen, onClose, onSignOut, isSigningOut }: {
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 flex w-[268px] flex-col border-r border-slate-200/80 bg-white transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}`}>
       <div className="flex h-24 items-center justify-between border-b border-slate-100 px-7">
-        <Link href="/" className="inline-flex items-center gap-2 text-[27px] font-bold tracking-tight text-[#065f46]" aria-label="Investra home">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50"><Leaf className="h-5 w-5 fill-emerald-400 text-[#078457]" /></span>
+        <Link href="/" className="inline-flex items-center gap-2 text-[27px] font-bold tracking-tight text-[#078457]" aria-label="Investra home">
+          <Image src="/investra-logo.png" alt="Investra" width={1254} height={1254} className="h-10 w-10 object-contain" priority />
           <span className="font-serif">Investra</span>
         </Link>
         <button type="button" className="rounded-lg p-2 text-slate-500 lg:hidden" onClick={onClose} aria-label="Close menu"><X className="h-5 w-5" /></button>
