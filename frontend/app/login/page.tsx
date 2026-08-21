@@ -12,6 +12,7 @@ import { getApiError } from '@/lib/api/client';
 import { useLoginMutation } from '@/lib/auth/auth-hooks';
 import { loginSchema, type LoginFormValues } from '@/lib/auth/schemas';
 import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
+import { getDashboardPath } from '@/lib/auth/role';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,8 +25,8 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await login.mutateAsync(values);
-    router.replace('/profile');
+    const { user } = await login.mutateAsync(values);
+    router.replace(getDashboardPath(user.role));
   };
 
   const apiError = login.error ? getApiError(login.error) : null;

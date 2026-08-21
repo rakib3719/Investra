@@ -18,6 +18,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { env } from '../../common/config/env.config';
 import { MailService } from '../mail/mail.service';
@@ -42,15 +43,16 @@ export class AuthService {
     }
 
     // 2. Check if email already exists
+    const email = dto.email.trim().toLowerCase();
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email },
     });
     if (existingUser) {
       throw new ConflictException('A user with this email already exists');
     }
 
     // 3. Hash the password
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const hashedPassword = await bcrypt.hash(dto.password, env.BCRYPT_ROUNDS);
 
     // 4. Generate unique username
     const username = await this.generateUniqueUsername(
@@ -62,10 +64,10 @@ export class AuthService {
     const newUser = await this.prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
+          firstName: dto.firstName.trim(),
+          lastName: dto.lastName.trim(),
           username,
-          email: dto.email.toLowerCase(),
+          email,
           password: hashedPassword,
           role: dto.role,
           accountStatus: AccountStatus.PENDING, // default until email is verified
@@ -105,7 +107,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     // 1. Find user by email
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email: dto.email.trim().toLowerCase() },
     });
 
     if (!user) {
@@ -142,6 +144,7 @@ export class AuthService {
       user.id,
       user.email,
       user.role,
+      user.tokenVersion,
     );
 
     return {
@@ -153,7 +156,12 @@ export class AuthService {
   /**
    * Refreshes access token using a valid refresh token.
    */
-  async refreshTokens(userId: string, sessionId: string, refreshToken: string) {
+  async refreshTokens(
+    userId: string,
+    sessionId: string,
+    refreshToken: string,
+    tokenVersion: number,
+  ) {
     const session = await this.prisma.refreshSession.findUnique({
       where: { id: sessionId },
       include: { user: true },
@@ -164,6 +172,7 @@ export class AuthService {
       session.userId !== userId ||
       session.revokedAt ||
       session.expiresAt <= new Date() ||
+      session.user.tokenVersion !== tokenVersion ||
       !(await bcrypt.compare(refreshToken, session.tokenHash))
     ) {
       throw new UnauthorizedException('Refresh session is invalid or expired');
@@ -188,6 +197,7 @@ export class AuthService {
       session.user.id,
       session.user.email,
       session.user.role,
+      session.user.tokenVersion,
     );
 
     return {
@@ -213,6 +223,10 @@ export class AuthService {
 
       if (user.isEmailVerified) {
         return { message: 'Email is already verified' };
+      }
+
+      if (payload.tokenVersion !== user.tokenVersion) {
+        throw new BadRequestException('Verification link is no longer valid');
       }
 
       await this.prisma.user.update({
@@ -251,7 +265,7 @@ export class AuthService {
     }
 
     const resetToken = this.jwtService.sign(
-      { sub: user.id, type: 'password-reset' },
+      { sub: user.id, type: 'password-reset', tokenVersion: user.tokenVersion },
       { secret: env.JWT_SECRET, expiresIn: '1h' },
     );
 
@@ -274,15 +288,15 @@ export class AuthService {
         where: { id: payload.sub },
       });
 
-      if (!user) {
+      if (!user || payload.tokenVersion !== user.tokenVersion) {
         throw new NotFoundException('User not found');
       }
 
-      const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+      const hashedPassword = await bcrypt.hash(dto.newPassword, env.BCRYPT_ROUNDS);
 
       await this.prisma.user.update({
         where: { id: user.id },
-        data: { password: hashedPassword },
+        data: { password: hashedPassword, tokenVersion: { increment: 1 } },
       });
 
       await this.prisma.refreshSession.updateMany({
@@ -300,7 +314,7 @@ export class AuthService {
 
   async resendVerificationEmail(dto: ResendVerificationDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email: dto.email.trim().toLowerCase() },
     });
 
     if (user && !user.isEmailVerified) {
@@ -337,6 +351,36 @@ export class AuthService {
     }
   }
 
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const currentPasswordValid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!currentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    if (await bcrypt.compare(dto.newPassword, user.password)) {
+      throw new BadRequestException('Choose a password you have not used for this account');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: await bcrypt.hash(dto.newPassword, env.BCRYPT_ROUNDS),
+          tokenVersion: { increment: 1 },
+        },
+      }),
+      this.prisma.refreshSession.updateMany({
+        where: { userId: user.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+
+    return { message: 'Password changed. Please sign in again on this device and your other devices.' };
+  }
+
   // HELPER METHODS
 
   private async sendVerificationEmail(
@@ -344,7 +388,7 @@ export class AuthService {
     email: string,
   ): Promise<void> {
     const verificationToken = this.jwtService.sign(
-      { sub: userId, type: 'email-verification' },
+      { sub: userId, type: 'email-verification', tokenVersion: await this.getTokenVersion(userId) },
       { secret: env.JWT_SECRET, expiresIn: '24h' },
     );
 
@@ -354,7 +398,7 @@ export class AuthService {
   private verifyActionToken(
     token: string,
     expectedType: 'email-verification' | 'password-reset',
-  ): { sub: string; type: string } {
+  ): { sub: string; type: string; tokenVersion: number } {
     const payload: unknown = this.jwtService.verify(token, {
       secret: env.JWT_SECRET,
     });
@@ -368,14 +412,16 @@ export class AuthService {
 
   private isActionTokenPayload(
     payload: unknown,
-  ): payload is { sub: string; type: string } {
+  ): payload is { sub: string; type: string; tokenVersion: number } {
     return (
       typeof payload === 'object' &&
       payload !== null &&
       'sub' in payload &&
       typeof payload.sub === 'string' &&
       'type' in payload &&
-      typeof payload.type === 'string'
+      typeof payload.type === 'string' &&
+      'tokenVersion' in payload &&
+      typeof payload.tokenVersion === 'number'
     );
   }
 
@@ -383,15 +429,16 @@ export class AuthService {
     userId: string,
     email: string,
     role: string,
+    tokenVersion: number,
   ) {
     const sessionId = randomUUID();
     const accessToken = this.jwtService.sign(
-      { sub: userId, email, role, type: 'access' },
-      { secret: env.JWT_SECRET, expiresIn: '15m' },
+      { sub: userId, email, role, tokenVersion, type: 'access' },
+      { secret: env.JWT_SECRET, expiresIn: env.JWT_ACCESS_EXPIRES_IN as StringValue },
     );
 
     const refreshToken = this.jwtService.sign(
-      { sub: userId, email, role, sid: sessionId, type: 'refresh' },
+      { sub: userId, email, role, sid: sessionId, tokenVersion, type: 'refresh' },
       {
         secret: env.JWT_SECRET,
         expiresIn: (env.JWT_EXPIRES_IN || '7d') as StringValue,
@@ -426,6 +473,15 @@ export class AuthService {
     const multiplier = multipliers[unit] ?? multipliers.d;
 
     return new Date(Date.now() + amount * multiplier);
+  }
+
+  private async getTokenVersion(userId: string): Promise<number> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokenVersion: true },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user.tokenVersion;
   }
 
   private async generateUniqueUsername(

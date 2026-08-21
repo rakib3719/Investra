@@ -36,3 +36,18 @@ export function useUpdateMyProfileMutation() {
     },
   });
 }
+
+export function useUploadAvatarMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: profileApi.uploadAvatar,
+    onSuccess: ({ url }) => {
+      queryClient.setQueryData<MyProfile>(profileKeys.me(), (profile) =>
+        profile
+          ? { ...profile, account: { ...profile.account, image: url } }
+          : profile,
+      );
+    },
+  });
+}

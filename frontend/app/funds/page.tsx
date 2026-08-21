@@ -323,7 +323,7 @@ export default function FundsPage() {
               </div>
               <h3 className="text-base font-heading font-extrabold text-secondary">No Venture Opportunities Found</h3>
               <p className="text-xs text-slate-500 font-body leading-relaxed">
-                We couldn't find any campaigns matching your filters. Try checking other categories or modifying your search keywords.
+                We couldn&apos;t find any campaigns matching your filters. Try checking other categories or modifying your search keywords.
               </p>
             </div>
           )}

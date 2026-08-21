@@ -9,6 +9,7 @@ interface JwtPayload {
   sub: string;
   email: string;
   role: string;
+  tokenVersion: number;
   type: string;
 }
 
@@ -46,6 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         email: true,
         phone: true,
         role: true,
+        tokenVersion: true,
         isEmailVerified: true,
         accountStatus: true,
         createdAt: true,
@@ -59,6 +61,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     if (!user.isEmailVerified || user.accountStatus !== 'ACTIVE') {
       throw new UnauthorizedException('Your account is not active');
+    }
+
+    if (payload.tokenVersion !== user.tokenVersion) {
+      throw new UnauthorizedException('Your session is no longer valid');
     }
 
     return user;

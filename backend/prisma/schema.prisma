@@ -26,6 +26,7 @@ model User {
   isEmailVerified     Boolean                @default(false) @map("is_email_verified")
   isPhoneVerified     Boolean                @default(false) @map("is_phone_verified")
   isTwoFactorEnabled  Boolean                @default(false) @map("is_two_factor_enabled")
+  tokenVersion        Int                    @default(0) @map("token_version")
   accountStatus       AccountStatus          @default(PENDING) @map("account_status")
   lastLoginAt         DateTime?              @map("last_login_at") @db.Timestamp(6)
   createdAt           DateTime               @default(now()) @map("created_at") @db.Timestamp(6)

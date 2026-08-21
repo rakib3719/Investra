@@ -101,7 +101,7 @@ const Testimonials = () => {
                 Trusted By Over <span className="text-[#064e3b]">1300+</span> Loyal Clients
               </h2>
               <p className="text-xs md:text-sm text-slate-500 leading-relaxed font-body">
-                Our investors' trust is built on regulatory compliance, risk-managed yields, and verified environmental footprint indicators.
+                Our investors&apos; trust is built on regulatory compliance, risk-managed yields, and verified environmental footprint indicators.
               </p>
               
               <div>

@@ -35,7 +35,13 @@ export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState<PublicUserRole>('INVESTOR');
 
   const onSubmit = async (values: RegisterFormValues) => {
-    const { user } = await registerAccount.mutateAsync(values);
+    const { user } = await registerAccount.mutateAsync({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password,
+      role: values.role,
+    });
     router.push(`/verify-email?email=${encodeURIComponent(user.email)}`);
   };
 
@@ -78,7 +84,8 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1"><label htmlFor="email" className="text-xs font-bold text-slate-700">Work email</label><div className="relative"><Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" /><input id="email" type="email" autoComplete="email" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('email')} /></div>{errors.email && <p className="text-xs text-red-600">{errors.email.message}</p>}</div>
-            <div className="space-y-1"><label htmlFor="password" className="text-xs font-bold text-slate-700">Password</label><input id="password" type="password" autoComplete="new-password" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('password')} />{errors.password && <p className="text-xs text-red-600">{errors.password.message}</p>}</div>
+            <div className="space-y-1"><label htmlFor="password" className="text-xs font-bold text-slate-700">Password</label><input id="password" type="password" autoComplete="new-password" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('password')} /><p className="text-[11px] text-slate-500">12+ characters with uppercase, lowercase, number, and symbol.</p>{errors.password && <p className="text-xs text-red-600">{errors.password.message}</p>}</div>
+            <div className="space-y-1"><label htmlFor="confirmPassword" className="text-xs font-bold text-slate-700">Confirm password</label><input id="confirmPassword" type="password" autoComplete="new-password" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('confirmPassword')} />{errors.confirmPassword && <p className="text-xs text-red-600">{errors.confirmPassword.message}</p>}</div>
 
             <div className="p-4 bg-[#064e3b]/5 rounded-2xl border border-[#064e3b]/10 text-[11px] text-slate-600 flex gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" />Your account stays inactive until you verify the email we send.</div>
             {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError.message}</p>}

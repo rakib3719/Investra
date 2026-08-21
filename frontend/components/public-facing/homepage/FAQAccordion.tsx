@@ -49,7 +49,7 @@ const FAQAccordion = () => {
           {/* FAQ Left Section */}
           <div className="lg:col-span-4 space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#064e3b] font-heading">
-              FAQ's
+              FAQ&apos;s
             </span>
             <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight">
               Got Questions? We’ve Got <span className="italic text-[#064e3b]">Answers</span>!

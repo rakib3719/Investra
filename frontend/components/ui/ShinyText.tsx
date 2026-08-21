@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { type CSSProperties } from "react";
 
 interface ShinyTextProps {
   text: string;
@@ -33,10 +33,7 @@ export default function ShinyText({
       `}} />
       <span
         className={`inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#064e3b] via-[#10b981] to-[#064e3b] bg-[length:200%_auto] animate-shiny-flow ${className}`}
-        style={{
-          // @ts-ignore
-          "--shiny-speed": `${speed}s`
-        }}
+        style={{ "--shiny-speed": `${speed}s` } as CSSProperties}
       >
         {text}
       </span>

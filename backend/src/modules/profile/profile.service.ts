@@ -53,7 +53,9 @@ export class ProfileService {
         ? investorProfile
         : user.role === UserRole.ENTREPRENEUR
           ? entrepreneurProfile
-          : consultantProfile;
+          : user.role === UserRole.CONSULTANT
+            ? consultantProfile
+            : null;
 
     return { account, profile };
   }

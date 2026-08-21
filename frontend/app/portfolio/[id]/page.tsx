@@ -185,7 +185,7 @@ export default function PortfolioDetailPage({ params }: PageProps) {
                 </p>
                 <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10">
                   <p className="text-xs text-primary font-body font-bold leading-relaxed">
-                    "All metrics displayed have been audited under Investra's standard compliance checks. Connection requires subscription plan verification."
+                    &ldquo;All metrics displayed have been audited under Investra&apos;s standard compliance checks. Connection requires subscription plan verification.&rdquo;
                   </p>
                 </div>
               </SpotlightCard>

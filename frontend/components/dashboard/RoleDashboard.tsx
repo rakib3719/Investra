@@ -33,7 +33,7 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import type { AuthUser, PublicUserRole } from "@/lib/auth/types";
+import type { AuthUser, AuthenticatedUserRole } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 
 type NavigationItem = { label: string; icon: LucideIcon; badge?: string };
@@ -112,7 +112,7 @@ const consultantNavigation: NavigationItem[] = [
   { label: "Settings", icon: Settings },
 ];
 
-const dashboardConfigs: Record<PublicUserRole, RoleDashboardConfig> = {
+const dashboardConfigs: Record<AuthenticatedUserRole, RoleDashboardConfig> = {
   INVESTOR: {
     roleName: "Investor",
     roleDescription: "Here’s what’s happening with your portfolio today.",
@@ -248,6 +248,107 @@ const dashboardConfigs: Record<PublicUserRole, RoleDashboardConfig> = {
     ctaTitle: "Plan your next client win",
     ctaCopy: "Use your workspace to stay ahead of deadlines and conversations.",
     ctaAction: "View calendar",
+  },
+  ADMIN: {
+    roleName: "Administrator",
+    roleDescription: "Here’s the latest activity across the Investra platform.",
+    navigation: [
+      { label: "Dashboard", icon: LayoutDashboard },
+      { label: "Users", icon: Users },
+      { label: "Verification", icon: ShieldCheck, badge: "12" },
+      { label: "Categories", icon: ClipboardList },
+      { label: "Reports", icon: FileBarChart },
+      { label: "Settings", icon: Settings },
+    ],
+    metrics: [
+      { label: "Active users", value: "2,486", detail: "Verified platform accounts", footer: "8.2% vs last month", icon: Users },
+      { label: "Pending verification", value: "12", detail: "Require review", footer: "Review queue", icon: ShieldCheck, action: "Review queue" },
+      { label: "Live opportunities", value: "48", detail: "Published campaigns", footer: "5 added this month", icon: Compass },
+      { label: "Platform activity", value: "94.2%", detail: "Service availability", footer: "All systems operational", icon: TrendingUp },
+    ],
+    chartTitle: "Platform engagement",
+    chartSubtitle: "Active verified users (All time)",
+    chartValue: "+8.2%",
+    chartChange: "Growth compared with last month",
+    chartLabels: ["Dec ’24", "Jan ’25", "Feb ’25", "Mar ’25", "Apr ’25", "May ’25", "Jun ’25"],
+    allocationTitle: "User mix",
+    allocationValue: "2,486",
+    allocationLabel: "Active users",
+    allocation: [
+      { label: "Investors", percentage: "46%", value: "1,144", color: "#065f46" },
+      { label: "Entrepreneurs", percentage: "34%", value: "845", color: "#10b981" },
+      { label: "Consultants", percentage: "20%", value: "497", color: "#5ee0bb" },
+    ],
+    listTitle: "Priority review queue",
+    list: [
+      { title: "Investor verification", subtitle: "Accreditation documents", value: "7", meta: "Pending", tone: "emerald" },
+      { title: "Business review", subtitle: "Campaign publication", value: "3", meta: "Pending", tone: "mint" },
+      { title: "Consultant application", subtitle: "Profile approval", value: "2", meta: "Pending", tone: "slate" },
+    ],
+    activityTitle: "Recent platform activity",
+    activity: [
+      { title: "New investor verified", description: "Identity review complete", amount: "Approved", date: "8 min ago", icon: ShieldCheck },
+      { title: "Campaign submitted", description: "AgriNova Systems", amount: "Review", date: "42 min ago", icon: FileText },
+      { title: "Consultant joined", description: "Strategy & fundraising", amount: "New", date: "Today", icon: Users },
+    ],
+    scoreTitle: "Platform trust",
+    score: "96",
+    scoreLabel: "Healthy",
+    scoreCopy: "Verification and moderation queues are within their normal range.",
+    scoreAction: "View trust report",
+    ctaTitle: "Keep the platform trusted",
+    ctaCopy: "Review pending verification items and maintain clear user communication.",
+    ctaAction: "Open review queue",
+  },
+  SUB_ADMIN: {
+    roleName: "Sub-admin",
+    roleDescription: "Here’s the latest activity across your assigned platform work.",
+    navigation: [
+      { label: "Dashboard", icon: LayoutDashboard },
+      { label: "Users", icon: Users },
+      { label: "Verification", icon: ShieldCheck, badge: "12" },
+      { label: "Reports", icon: FileBarChart },
+      { label: "Settings", icon: Settings },
+    ],
+    metrics: [
+      { label: "Assigned reviews", value: "12", detail: "Awaiting action", footer: "4 due today", icon: ClipboardList },
+      { label: "Reviewed today", value: "18", detail: "Completed checks", footer: "6 more than yesterday", icon: ShieldCheck },
+      { label: "New users", value: "54", detail: "In your assigned region", footer: "View users", icon: Users, action: "View users" },
+      { label: "SLA progress", value: "92%", detail: "Within target", footer: "On track", icon: TrendingUp },
+    ],
+    chartTitle: "Review throughput",
+    chartSubtitle: "Completed checks (All time)",
+    chartValue: "92%",
+    chartChange: "On-track service level for this month",
+    chartLabels: ["Dec ’24", "Jan ’25", "Feb ’25", "Mar ’25", "Apr ’25", "May ’25", "Jun ’25"],
+    allocationTitle: "Assigned work",
+    allocationValue: "12",
+    allocationLabel: "Open reviews",
+    allocation: [
+      { label: "Identity checks", percentage: "58%", value: "7 reviews", color: "#065f46" },
+      { label: "Business checks", percentage: "25%", value: "3 reviews", color: "#10b981" },
+      { label: "Profile checks", percentage: "17%", value: "2 reviews", color: "#5ee0bb" },
+    ],
+    listTitle: "Priority review queue",
+    list: [
+      { title: "Investor verification", subtitle: "Accreditation documents", value: "7", meta: "Pending", tone: "emerald" },
+      { title: "Business review", subtitle: "Campaign publication", value: "3", meta: "Pending", tone: "mint" },
+      { title: "Consultant application", subtitle: "Profile approval", value: "2", meta: "Pending", tone: "slate" },
+    ],
+    activityTitle: "Recent activity",
+    activity: [
+      { title: "Identity review completed", description: "Investor profile", amount: "Approved", date: "8 min ago", icon: ShieldCheck },
+      { title: "Campaign assigned", description: "AgriNova Systems", amount: "Review", date: "42 min ago", icon: FileText },
+      { title: "Profile flagged", description: "Incomplete information", amount: "New", date: "Today", icon: Users },
+    ],
+    scoreTitle: "Review quality",
+    score: "94",
+    scoreLabel: "Excellent",
+    scoreCopy: "Your assigned review work is accurate, complete, and on schedule.",
+    scoreAction: "View feedback",
+    ctaTitle: "Complete priority work",
+    ctaCopy: "Review time-sensitive verifications to keep the platform moving.",
+    ctaAction: "Open review queue",
   },
 };
 

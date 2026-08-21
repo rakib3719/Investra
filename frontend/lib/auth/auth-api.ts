@@ -5,6 +5,7 @@ import type {
   AuthMessage,
   AuthUser,
   LoginInput,
+  ChangePasswordInput,
   RegisterInput,
   ResetPasswordInput,
 } from './types';
@@ -31,4 +32,6 @@ export const authApi = {
     unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/forgot-password', { email }, noRefresh)),
   resetPassword: (input: ResetPasswordInput) =>
     unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/reset-password', input, noRefresh)),
+  changePassword: (input: ChangePasswordInput) =>
+    unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/change-password', input, noRefresh)),
 };

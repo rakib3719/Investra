@@ -6,12 +6,13 @@ import { env } from '../common/config/env.config';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private static pool: Pool;
-  private static adapter: PrismaPg;
+  private static pool: Pool | null = null;
+  private static adapter: PrismaPg | null = null;
+  private destroyed = false;
 
   constructor() {
     // Initialize the pg Pool and PrismaPg adapter if not already initialized
-    if (!PrismaService.pool) {
+    if (!PrismaService.pool || !PrismaService.adapter) {
       PrismaService.pool = new Pool({
         connectionString: env.DATABASE_URL,
       });
@@ -29,9 +30,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleDestroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+
     await this.$disconnect();
-    if (PrismaService.pool) {
-      await PrismaService.pool.end();
-    }
+    const pool = PrismaService.pool;
+    PrismaService.pool = null;
+    PrismaService.adapter = null;
+    await pool?.end();
   }
 }

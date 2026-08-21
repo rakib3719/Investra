@@ -1,4 +1,4 @@
-import type { AccountStatus, PublicUserRole } from '@/lib/auth/types';
+import type { AccountStatus, AuthenticatedUserRole } from '@/lib/auth/types';
 
 export interface ProfileAccount {
   id: string;
@@ -8,7 +8,7 @@ export interface ProfileAccount {
   email: string;
   phone: string | null;
   image: string | null;
-  role: PublicUserRole;
+  role: AuthenticatedUserRole;
   gender: 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY' | null;
   dateOfBirth: string | null;
   bio: string | null;

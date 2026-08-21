@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { STATUS_CODES } from 'http';
+import { MulterError } from 'multer';
 
 export interface ApiErrorResponse {
   success: boolean;
@@ -33,7 +34,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let errorName = 'Internal Server Error';
     let validationErrors: Record<string, string> | undefined = undefined;
 
-    if (exception instanceof HttpException) {
+    if (exception instanceof MulterError) {
+      const multerError = exception as MulterError;
+      status = HttpStatus.BAD_REQUEST;
+      message =
+        multerError.code === 'LIMIT_FILE_SIZE'
+          ? 'The selected file is too large. Choose an image up to 5 MB.'
+          : 'The uploaded file could not be processed.';
+      errorName = 'Bad Request';
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const resContent = exception.getResponse();
 
@@ -93,5 +102,3 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     response.status(status).json(errorResponse);
   }
 }
-
-
