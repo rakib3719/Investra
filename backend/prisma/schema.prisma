@@ -58,6 +58,37 @@ model RefreshSession {
   @@map("refresh_sessions")
 }
 
+/// Consent-based anonymous homepage visit. No raw IP address or raw user-agent
+/// string is retained; the server stores an irreversible IP hash and parsed
+/// browser/device details instead.
+model VisitorInsight {
+  id               String   @id @default(uuid()) @db.Uuid
+  anonymousId      String   @map("anonymous_id") @db.VarChar
+  ipHash           String   @map("ip_hash") @db.VarChar
+  pagePath         String   @default("/") @map("page_path") @db.VarChar
+  browserName      String?  @map("browser_name") @db.VarChar
+  browserVersion   String?  @map("browser_version") @db.VarChar
+  operatingSystem  String?  @map("operating_system") @db.VarChar
+  deviceType       String?  @map("device_type") @db.VarChar
+  language         String?  @map("language") @db.VarChar
+  timezone         String?  @map("timezone") @db.VarChar
+  screenWidth      Int?     @map("screen_width")
+  screenHeight     Int?     @map("screen_height")
+  viewportWidth    Int?     @map("viewport_width")
+  viewportHeight   Int?     @map("viewport_height")
+  referrer         String?  @map("referrer")
+  locationConsent  Boolean  @default(false) @map("location_consent")
+  latitude         Decimal? @map("latitude") @db.Decimal(9, 6)
+  longitude        Decimal? @map("longitude") @db.Decimal(9, 6)
+  locationAccuracy Int?     @map("location_accuracy")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@index([createdAt])
+  @@index([anonymousId])
+  @@index([ipHash])
+  @@map("visitor_insights")
+}
+
 model InvestorProfile {
   id                 String             @id @default(uuid()) @db.Uuid
   userId             String             @unique @map("user_id") @db.Uuid

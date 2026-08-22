@@ -15,6 +15,7 @@ import Testimonials from "../components/public-facing/homepage/Testimonials";
 import FAQAccordion from "../components/public-facing/homepage/FAQAccordion";
 import BlogHome from "../components/public-facing/homepage/BlogHome";
 import Footer from "../components/public-facing/shared/Footer";
+import { VisitorConsent } from "@/components/public-facing/shared/VisitorConsent";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       
       {/* Header / Navigation */}
       <Navbar />
+      <VisitorConsent />
 
       {/* Hero Presentation */}
       <Hero />

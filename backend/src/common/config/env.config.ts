@@ -53,6 +53,7 @@ export const env = {
   MAX_AVATAR_FILE_SIZE: process.env.MAX_AVATAR_FILE_SIZE
     ? parseInt(process.env.MAX_AVATAR_FILE_SIZE, 10)
     : 5 * 1024 * 1024,
+  VISITOR_HASH_SALT: process.env.VISITOR_HASH_SALT || process.env.JWT_SECRET || '',
   SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
   SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 465,
   SMTP_SECURE: process.env.SMTP_SECURE !== 'false',

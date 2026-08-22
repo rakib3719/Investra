@@ -9,6 +9,7 @@ import { getDashboardPath } from "@/lib/auth/role";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 import { InvestorWorkspace } from "@/components/dashboard/investor/InvestorWorkspace";
 import { investorSections, type InvestorSection } from "@/components/dashboard/investor/navigation";
+import { AdminWorkspace } from '@/components/dashboard/admin/AdminWorkspace';
 
 function DashboardContent() {
   const router = useRouter();
@@ -54,6 +55,10 @@ function DashboardContent() {
         isSigningOut={logout.isPending}
       />
     );
+  }
+
+  if (user.role === 'ADMIN') {
+    return <AdminWorkspace user={user} onSignOut={signOut} isSigningOut={logout.isPending} />;
   }
 
   return (

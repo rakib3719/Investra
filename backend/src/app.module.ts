@@ -8,9 +8,10 @@ import { customValidationPipe } from './common/pipes/custom-validation.pipe';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { VisitorInsightsModule } from './modules/visitor-insights/visitor-insights.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProfileModule],
+  imports: [PrismaModule, AuthModule, ProfileModule, VisitorInsightsModule],
   controllers: [AppController],
   providers: [
     AppService,
