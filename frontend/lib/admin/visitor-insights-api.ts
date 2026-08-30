@@ -22,8 +22,7 @@ export interface AdminVisitorInsight {
 export interface AdminVisitorOverview {
   summary: {
     totalRecordedVisits: number;
-    uniqueOptedInVisitors: number;
-    visitsWithLocation: number;
+    uniqueVisitors: number;
   };
   visitors: AdminVisitorInsight[];
 }

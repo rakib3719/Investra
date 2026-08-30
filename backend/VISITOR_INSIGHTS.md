@@ -1,8 +1,8 @@
-# Consent-based visitor insights
+# Automatic visitor insights (testing)
 
-The homepage has a privacy choice banner. No visitor insight is sent until a visitor chooses **Allow insights**.
+For the testing environment, the homepage records an anonymous visit when it loads. There is no Allow/Disallow banner.
 
-With that consent, Investra stores:
+Investra stores:
 
 - parsed browser name/version, operating-system family, and device category;
 - language, timezone, screen/viewport size, referrer, and visit time;
@@ -10,11 +10,11 @@ With that consent, Investra stores:
 
 It does **not** retain raw IP addresses or raw user-agent strings. Browsers do not expose a reliable real-world device name, so the dashboard presents the best privacy-preserving information available (for example, `Mobile`, `Android`, `Chrome`).
 
-Precise latitude/longitude requires a separate **Share precise location** action and the browser's geolocation permission. It is not requested automatically.
+Precise latitude/longitude is not requested or recorded automatically.
 
 ## Administrator access
 
-Only the `ADMIN` role can call `GET /admin/visitor-insights`, which powers `/dashboard/admin`. The dashboard clearly identifies the data as consent-based.
+Only the `ADMIN` role can call `GET /admin/visitor-insights`, which powers `/dashboard/admin`. The dashboard shows anonymous testing analytics.
 
 ## Deployment
 
@@ -30,10 +30,8 @@ Only the `ADMIN` role can call `GET /admin/visitor-insights`, which powers `/das
 
    ```bash
    SEED_ADMIN_EMAIL=admin@gmail.com \
-   SEED_ADMIN_PASSWORD='use-a-unique-12-plus-character-password' \
+   SEED_ADMIN_PASSWORD='use-a-unique-8-plus-character-password' \
    npm run db:seed
    ```
 
-The seed is idempotent: if the email already exists, it activates and promotes that account but never overwrites its existing password.
-
-Location permission requires HTTPS in production (localhost is exempt by browsers).
+The seed is idempotent: if the email already exists, it activates, promotes the account, and updates its password from `SEED_ADMIN_PASSWORD`.

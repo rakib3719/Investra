@@ -10,8 +10,8 @@ async function main() {
   const email = (process.env.SEED_ADMIN_EMAIL || 'admin@gmail.com').trim().toLowerCase();
   const password = process.env.SEED_ADMIN_PASSWORD;
 
-  if (!password || password.length < 12) {
-    throw new Error('Set a 12+ character SEED_ADMIN_PASSWORD before running db:seed.');
+  if (!password || password.length < 8) {
+    throw new Error('Set an 8+ character SEED_ADMIN_PASSWORD before running db:seed.');
   }
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -23,12 +23,13 @@ async function main() {
       await prisma.user.update({
         where: { id: existing.id },
         data: {
+          password: await bcrypt.hash(password, 12),
           role: UserRole.ADMIN,
           accountStatus: AccountStatus.ACTIVE,
           isEmailVerified: true,
         },
       });
-      console.log(`Administrator ${email} is active. Existing password was not changed.`);
+      console.log(`Administrator ${email} is active and its password was updated.`);
       return;
     }
 

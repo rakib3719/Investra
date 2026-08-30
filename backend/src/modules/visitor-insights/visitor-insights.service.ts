@@ -53,7 +53,7 @@ export class VisitorInsightsService {
     return {
       summary: {
         totalRecordedVisits: await this.prisma.visitorInsight.count(),
-        uniqueOptedInVisitors: uniqueVisitors.length,
+        uniqueVisitors: uniqueVisitors.length,
         visitsWithLocation: records.filter((record) => record.locationConsent).length,
       },
       visitors: records.map((record) => ({
