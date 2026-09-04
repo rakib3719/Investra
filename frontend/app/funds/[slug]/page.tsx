@@ -10,6 +10,7 @@ import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useCampaignDetailQuery } from "@/lib/campaigns/campaigns-hooks";
 import {
   ArrowLeft,
+  Bookmark,
   Briefcase,
   Building2,
   Calendar,
@@ -30,13 +31,26 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { useBookmarkIdsQuery, useToggleBookmarkMutation } from "@/lib/bookmarks/bookmarks-hooks";
+import { ConnectFounderModal } from "@/components/deals/ConnectFounderModal";
 
 export default function CampaignDetailPage() {
   const params = useParams<{ slug: string }>();
   const router = useRouter();
   const slug = params?.slug || "";
 
+  const [isConnectOpen, setIsConnectOpen] = React.useState(false);
   const { data: campaign, isLoading, isError } = useCampaignDetailQuery(slug);
+  const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
+  const toggleBookmark = useToggleBookmarkMutation();
+
+  const isBookmarked = campaign ? bookmarkIds.includes(campaign.id) : false;
+  const bookmarkCount = campaign?._count?.bookmarks || campaign?.bookmarkCount || 0;
+
+  const handleToggleBookmark = () => {
+    if (!campaign) return;
+    toggleBookmark.mutate({ businessId: campaign.id, isBookmarked });
+  };
 
   if (isLoading) {
     return (
@@ -113,6 +127,20 @@ export default function CampaignDetailPage() {
                 <span className="bg-emerald-600 text-white text-xs font-bold font-heading px-3 py-1 rounded-full uppercase tracking-wider">
                   {campaign.riskLevel} Risk
                 </span>
+                <button
+                  type="button"
+                  onClick={handleToggleBookmark}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading transition ${
+                    isBookmarked
+                      ? "bg-white text-emerald-800 shadow-sm"
+                      : "bg-white/15 text-white hover:bg-white/25"
+                  }`}
+                  title={isBookmarked ? "Remove from watchlist" : "Save to watchlist"}
+                >
+                  <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-emerald-800 text-emerald-800" : ""}`} />
+                  <span>{isBookmarked ? "Saved to Watchlist" : "Save to Watchlist"}</span>
+                  {bookmarkCount > 0 && <span className="opacity-80">({bookmarkCount})</span>}
+                </button>
               </div>
 
               <h1 className="text-3xl md:text-5xl font-extrabold font-heading tracking-tight">
@@ -144,12 +172,13 @@ export default function CampaignDetailPage() {
               </div>
 
               <div className="pt-2">
-                <Link
-                  href="/subscription"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold font-heading text-sm transition-all shadow-md"
+                <button
+                  type="button"
+                  onClick={() => setIsConnectOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold font-heading text-sm transition-all shadow-md cursor-pointer"
                 >
-                  <Handshake className="w-4 h-4" /> Request Allocation / DM
-                </Link>
+                  <Handshake className="w-4 h-4" /> Connect with Founder
+                </button>
               </div>
             </div>
 
@@ -306,6 +335,11 @@ export default function CampaignDetailPage() {
 
         </div>
 
+        <ConnectFounderModal
+          isOpen={isConnectOpen}
+          onClose={() => setIsConnectOpen(false)}
+          campaign={campaign}
+        />
       </main>
 
       <Footer />

@@ -81,3 +81,30 @@ export function useAddMilestoneMutation(campaignId: string) {
     },
   });
 }
+
+export function useAdminCampaignsQuery(status?: string, page = 1) {
+  return useQuery({
+    queryKey: ["campaigns", "admin", status, page],
+    queryFn: () => campaignsApi.getAdminCampaigns(status, page),
+  });
+}
+
+export function useUpdateCampaignStatusMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+      rejectionReason,
+    }: {
+      id: string;
+      status: string;
+      rejectionReason?: string;
+    }) => campaignsApi.updateStatus(id, status, rejectionReason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+    },
+  });
+}
+

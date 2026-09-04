@@ -10,6 +10,7 @@ import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 import { InvestorWorkspace } from "@/components/dashboard/investor/InvestorWorkspace";
 import { investorSections, type InvestorSection } from "@/components/dashboard/investor/navigation";
 import { entrepreneurSections, type EntrepreneurSection } from "@/components/dashboard/entrepreneur/navigation";
+import { adminSections, type AdminSection } from "@/components/dashboard/admin/navigation";
 import { AdminWorkspace } from '@/components/dashboard/admin/AdminWorkspace';
 import { EntrepreneurWorkspace } from '@/components/dashboard/entrepreneur/EntrepreneurWorkspace';
 
@@ -23,6 +24,8 @@ function DashboardContent() {
     !section || investorSections.includes(section as InvestorSection);
   const validEntrepreneurSection =
     !section || entrepreneurSections.includes(section as EntrepreneurSection);
+  const validAdminSection =
+    !section || adminSections.includes(section as AdminSection);
 
   useEffect(() => {
     if (!user) return;
@@ -33,19 +36,33 @@ function DashboardContent() {
         ? validInvestorSection
         : user.role === "ENTREPRENEUR"
           ? validEntrepreneurSection
-          : !section;
+          : user.role === "ADMIN"
+            ? validAdminSection
+            : !section;
 
     if (!correctRole || !sectionAllowed) {
       router.replace(getDashboardPath(user.role));
     }
-  }, [params.role, router, section, user, validInvestorSection, validEntrepreneurSection]);
+  }, [
+    params.role,
+    router,
+    section,
+    user,
+    validInvestorSection,
+    validEntrepreneurSection,
+    validAdminSection,
+  ]);
 
   if (
     !user ||
     params.role !== user.role.toLowerCase() ||
     (user.role === "INVESTOR" && !validInvestorSection) ||
     (user.role === "ENTREPRENEUR" && !validEntrepreneurSection) ||
-    (user.role !== "INVESTOR" && user.role !== "ENTREPRENEUR" && section)
+    (user.role === "ADMIN" && !validAdminSection) ||
+    (user.role !== "INVESTOR" &&
+      user.role !== "ENTREPRENEUR" &&
+      user.role !== "ADMIN" &&
+      section)
   ) {
     return null;
   }
@@ -66,8 +83,15 @@ function DashboardContent() {
     );
   }
 
-  if (user.role === 'ADMIN') {
-    return <AdminWorkspace user={user} onSignOut={signOut} isSigningOut={logout.isPending} />;
+  if (user.role === "ADMIN") {
+    return (
+      <AdminWorkspace
+        user={user}
+        section={section}
+        onSignOut={signOut}
+        isSigningOut={logout.isPending}
+      />
+    );
   }
 
   if (user.role === 'ENTREPRENEUR') {

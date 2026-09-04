@@ -7,45 +7,47 @@ const { PrismaPg } = require('@prisma/adapter-pg');
 const { Pool } = require('pg');
 
 async function main() {
-  const email = (process.env.SEED_ADMIN_EMAIL || 'admin@investra.io').trim().toLowerCase();
-  const password = process.env.SEED_ADMIN_PASSWORD || 'Admin12345!';
+  const primaryAdminEmail = 'admin@gmail.com';
+  const primaryAdminPassword = 'admin@123';
+  const primaryHashedPassword = await bcrypt.hash(primaryAdminPassword, 12);
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
   try {
-    const existingAdmin = await prisma.user.findFirst({
+    const existingPrimary = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username: 'investraadmin' }],
+        OR: [{ email: primaryAdminEmail }, { username: 'admin' }],
       },
     });
+
     let adminUser;
-    if (existingAdmin) {
+    if (existingPrimary) {
       adminUser = await prisma.user.update({
-        where: { id: existingAdmin.id },
+        where: { id: existingPrimary.id },
         data: {
-          email,
-          password: await bcrypt.hash(password, 12),
+          email: primaryAdminEmail,
+          password: primaryHashedPassword,
           role: UserRole.ADMIN,
           accountStatus: AccountStatus.ACTIVE,
           isEmailVerified: true,
         },
       });
-      console.log(`Administrator ${email} is active and updated.`);
+      console.log(`Administrator ${primaryAdminEmail} is active and updated with password ${primaryAdminPassword}.`);
     } else {
       adminUser = await prisma.user.create({
         data: {
-          firstName: 'Investra',
-          lastName: 'Administrator',
-          username: 'investraadmin',
-          email,
-          password: await bcrypt.hash(password, 12),
+          firstName: 'Platform',
+          lastName: 'Admin',
+          username: 'admin',
+          email: primaryAdminEmail,
+          password: primaryHashedPassword,
           role: UserRole.ADMIN,
           accountStatus: AccountStatus.ACTIVE,
           isEmailVerified: true,
         },
       });
-      console.log(`Administrator ${email} created.`);
+      console.log(`Administrator ${primaryAdminEmail} created with password ${primaryAdminPassword}.`);
     }
 
     // Seed Categories

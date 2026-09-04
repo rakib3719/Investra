@@ -8,6 +8,9 @@ export interface Category {
   slug: string;
   description?: string;
   color?: string;
+  _count?: {
+    businesses?: number;
+  };
 }
 
 export interface CampaignMilestone {
@@ -79,6 +82,10 @@ export interface Campaign {
   entrepreneur?: CampaignEntrepreneur;
   milestones?: CampaignMilestone[];
   pitchDecks?: PitchDeck[];
+  _count?: {
+    bookmarks?: number;
+  };
+  bookmarkCount?: number;
 }
 
 export interface CampaignQueryInput {

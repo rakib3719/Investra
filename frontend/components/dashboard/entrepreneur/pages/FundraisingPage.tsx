@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
+  Bookmark,
   Briefcase,
   Calendar,
   CheckCircle2,
@@ -208,6 +209,12 @@ export function FundraisingPage() {
                       {camp.category?.name && (
                         <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200/60">
                           {camp.category.name}
+                        </span>
+                      )}
+                      {(camp._count?.bookmarks || 0) > 0 && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 bg-emerald-100/70 text-emerald-800 rounded-full">
+                          <Bookmark className="w-3 h-3 fill-emerald-800" />
+                          {camp._count?.bookmarks} {camp._count?.bookmarks === 1 ? "Investor Watching" : "Investors Watching"}
                         </span>
                       )}
                     </div>

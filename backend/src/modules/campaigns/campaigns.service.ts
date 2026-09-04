@@ -197,6 +197,9 @@ export class CampaignsService {
             },
           },
           milestones: true,
+          _count: {
+            select: { bookmarks: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       }),
@@ -220,6 +223,9 @@ export class CampaignsService {
         category: true,
         milestones: {
           orderBy: { sortOrder: "asc" },
+        },
+        _count: {
+          select: { bookmarks: true },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -306,6 +312,9 @@ export class CampaignsService {
           milestones: {
             orderBy: { sortOrder: "asc" },
           },
+          _count: {
+            select: { bookmarks: true },
+          },
         },
         orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
       }),
@@ -342,6 +351,9 @@ export class CampaignsService {
           orderBy: { sortOrder: "asc" },
         },
         pitchDecks: true,
+        _count: {
+          select: { bookmarks: true },
+        },
       },
     });
 

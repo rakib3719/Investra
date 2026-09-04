@@ -47,4 +47,19 @@ export const campaignsApi = {
 
   getCategories: () =>
     unwrap(apiClient.get<ApiResponse<Category[]>>("/campaigns/categories")),
+
+  getAdminCampaigns: (status?: string, page = 1, limit = 20) =>
+    unwrap(
+      apiClient.get<ApiResponse<PaginatedCampaigns>>("/admin/campaigns", {
+        params: { status, page, limit },
+      }),
+    ),
+
+  updateStatus: (id: string, status: string, rejectionReason?: string) =>
+    unwrap(
+      apiClient.patch<ApiResponse<Campaign>>(`/admin/campaigns/${id}/status`, {
+        status,
+        rejectionReason,
+      }),
+    ),
 };

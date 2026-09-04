@@ -41,6 +41,7 @@ model User {
   verification        UserVerification?
   refreshSessions     RefreshSession[]
   businesses          Business[]
+  bookmarks           Bookmark[]
 
   @@map("users")
 }
@@ -337,6 +338,7 @@ model Business {
   category        Category            @relation(fields: [categoryId], references: [id])
   milestones      CampaignMilestone[]
   pitchDecks      PitchDeck[]
+  bookmarks       Bookmark[]
 
   @@index([categoryId, status])
   @@index([entrepreneurId])
@@ -398,4 +400,20 @@ enum RiskLevel {
 
   @@map("risk_level")
 }
+
+model Bookmark {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([userId])
+  @@index([businessId])
+  @@map("bookmarks")
+}
+
 

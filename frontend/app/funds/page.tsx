@@ -18,11 +18,15 @@ import {
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Bookmark,
+  Handshake,
 } from "lucide-react";
 import { useCampaignsQuery, useCategoriesQuery } from "@/lib/campaigns/campaigns-hooks";
+import { useBookmarkIdsQuery, useToggleBookmarkMutation } from "@/lib/bookmarks/bookmarks-hooks";
 import type { Campaign, RiskLevel } from "@/lib/campaigns/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { ConnectFounderModal, type ConnectFounderTarget } from "@/components/deals/ConnectFounderModal";
 
 const fallbackCampaigns: Campaign[] = [
   {
@@ -88,6 +92,17 @@ export default function InvestmentFundsDirectory() {
   const [selectedRisk, setSelectedRisk] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+  const [activeConnectCampaign, setActiveConnectCampaign] = useState<ConnectFounderTarget | null>(null);
+
+  const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
+  const toggleBookmark = useToggleBookmarkMutation();
+
+  const handleToggleBookmark = (businessId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const isBookmarked = bookmarkIds.includes(businessId);
+    toggleBookmark.mutate({ businessId, isBookmarked });
+  };
 
   const queryParams = useMemo(() => ({
     category: selectedCategory === "All" ? undefined : selectedCategory,
@@ -232,6 +247,8 @@ export default function InvestmentFundsDirectory() {
                   ? `${camp.entrepreneur.firstName || ""} ${camp.entrepreneur.lastName || ""}`.trim() || "Verified Founder"
                   : "Verified Founder";
 
+                const isBookmarked = bookmarkIds.includes(camp.id);
+
                 return (
                   <SpotlightCard
                     key={camp.id}
@@ -255,6 +272,21 @@ export default function InvestmentFundsDirectory() {
                           }`}>
                             {camp.riskLevel} Risk
                           </span>
+                        </div>
+                        <div className="absolute top-4 right-4 z-10">
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleBookmark(camp.id, e)}
+                            className={`grid h-8 w-8 place-items-center rounded-full backdrop-blur transition ${
+                              isBookmarked
+                                ? "bg-white text-emerald-800 shadow-md"
+                                : "bg-black/40 text-white hover:bg-black/60"
+                            }`}
+                            title={isBookmarked ? "Remove from watchlist" : "Save to watchlist"}
+                            aria-label={isBookmarked ? `Remove ${camp.title} from watchlist` : `Save ${camp.title} to watchlist`}
+                          >
+                            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-emerald-800 text-emerald-800" : ""}`} />
+                          </button>
                         </div>
                       </div>
 
@@ -309,14 +341,23 @@ export default function InvestmentFundsDirectory() {
                             alt={ownerName}
                             className="w-7 h-7 rounded-full object-cover border border-slate-200"
                           />
-                          <p className="text-xs font-bold text-slate-700 font-heading truncate max-w-[120px]">{ownerName}</p>
+                          <p className="text-xs font-bold text-slate-700 font-heading truncate max-w-[100px]">{ownerName}</p>
                         </div>
-                        <Link
-                          href={`/funds/${camp.slug}`}
-                          className="inline-flex items-center gap-1 text-xs font-bold font-heading text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors"
-                        >
-                          View Pitch <ArrowUpRight className="w-3.5 h-3.5" />
-                        </Link>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setActiveConnectCampaign(camp)}
+                            className="inline-flex items-center gap-1 text-xs font-bold font-heading text-slate-700 hover:text-emerald-800 bg-slate-100 hover:bg-emerald-50 px-2.5 py-1.5 rounded-lg transition-colors"
+                          >
+                            <Handshake className="w-3.5 h-3.5" /> Connect
+                          </button>
+                          <Link
+                            href={`/funds/${camp.slug}`}
+                            className="inline-flex items-center gap-1 text-xs font-bold font-heading text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            View Pitch <ArrowUpRight className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
                       </div>
 
                     </div>
@@ -325,6 +366,13 @@ export default function InvestmentFundsDirectory() {
               })}
             </div>
           )}
+
+          {/* Connect Modal */}
+          <ConnectFounderModal
+            isOpen={Boolean(activeConnectCampaign)}
+            onClose={() => setActiveConnectCampaign(null)}
+            campaign={activeConnectCampaign}
+          />
 
           {/* Pagination Controls */}
           {totalPages > 1 && (

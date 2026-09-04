@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Bookmark,
   CalendarDays,
   CheckCircle2,
   Clock,
@@ -37,6 +38,8 @@ export function EntrepreneurOverviewPage() {
     totalTarget > 0 ? Math.min(Math.round((totalRaised / totalTarget) * 100), 100) : 0;
   const activeCount =
     campaigns?.filter((c) => c.status === "ACTIVE").length || 0;
+  const totalBookmarks =
+    campaigns?.reduce((acc, c) => acc + (c._count?.bookmarks || c.bookmarkCount || 0), 0) || 0;
   const avgIrr =
     campaigns && campaigns.length > 0
       ? (
@@ -102,11 +105,11 @@ export function EntrepreneurOverviewPage() {
           icon={TrendingUp}
         />
         <MetricCard
-          label="Investor matches"
-          value="42"
-          detail="8 new this week"
-          change="High thesis alignment"
-          icon={Users}
+          label="Investor Watchlists"
+          value={String(totalBookmarks)}
+          detail="Accredited investors tracking rounds"
+          change={totalBookmarks > 0 ? "Active pipeline traction" : "Public directory traction"}
+          icon={Bookmark}
         />
       </div>
 
@@ -164,18 +167,25 @@ export function EntrepreneurOverviewPage() {
                     : camp.status === "REJECTED"
                     ? "rose"
                     : "slate";
+                const campBookmarks = camp._count?.bookmarks || camp.bookmarkCount || 0;
 
                 return (
                   <div key={camp.id} className="py-4 first:pt-2 last:pb-2">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="text-sm font-bold text-slate-900">
                             {camp.title}
                           </h4>
                           <StatusPill tone={statusTone}>
                             {camp.status.replace("_", " ")}
                           </StatusPill>
+                          {campBookmarks > 0 && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+                              <Bookmark className="h-3 w-3 fill-emerald-700" />
+                              {campBookmarks} watching
+                            </span>
+                          )}
                         </div>
                         <p className="mt-1 line-clamp-1 text-xs text-slate-500">
                           {camp.tagline || camp.pitchText}
