@@ -287,7 +287,7 @@ export function AdminCampaignsPage() {
                         </button>
 
                         <Link
-                          href={`/campaigns/${campaign.slug}`}
+                          href={`/funds/${campaign.slug}`}
                           target="_blank"
                           className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
                           title="Open public page in new tab"

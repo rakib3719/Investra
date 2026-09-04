@@ -12,6 +12,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/campaigns/:slug*",
+        destination: "/funds/:slug*",
+        permanent: true,
+      },
+      {
+        source: "/campaigns",
+        destination: "/funds",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

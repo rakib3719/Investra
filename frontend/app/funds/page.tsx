@@ -21,12 +21,14 @@ import {
   Sparkles,
   Bookmark,
   Handshake,
+  Scale,
 } from "lucide-react";
 import { useCampaignsQuery, useCategoriesQuery } from "@/lib/campaigns/campaigns-hooks";
 import { useBookmarkIdsQuery, useToggleBookmarkMutation } from "@/lib/bookmarks/bookmarks-hooks";
 import type { Campaign, RiskLevel } from "@/lib/campaigns/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { ConnectFounderModal, type ConnectFounderTarget } from "@/components/deals/ConnectFounderModal";
+import { CompareFloatingDock, type DockDeal } from "@/components/deals/CompareFloatingDock";
 
 const fallbackCampaigns: Campaign[] = [
   {
@@ -93,6 +95,7 @@ export default function InvestmentFundsDirectory() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [activeConnectCampaign, setActiveConnectCampaign] = useState<ConnectFounderTarget | null>(null);
+  const [compareDeals, setCompareDeals] = useState<DockDeal[]>([]);
 
   const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
   const toggleBookmark = useToggleBookmarkMutation();
@@ -102,6 +105,28 @@ export default function InvestmentFundsDirectory() {
     e.preventDefault();
     const isBookmarked = bookmarkIds.includes(businessId);
     toggleBookmark.mutate({ businessId, isBookmarked });
+  };
+
+  const handleToggleCompare = (camp: Campaign, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (compareDeals.some((d) => d.id === camp.id)) {
+      setCompareDeals(compareDeals.filter((d) => d.id !== camp.id));
+    } else {
+      if (compareDeals.length >= 4) {
+        alert("You can compare up to 4 deals at a time.");
+        return;
+      }
+      setCompareDeals([
+        ...compareDeals,
+        {
+          id: camp.id,
+          title: camp.title,
+          slug: camp.slug,
+          bannerImage: camp.bannerImage,
+        },
+      ]);
+    }
   };
 
   const queryParams = useMemo(() => ({
@@ -248,20 +273,21 @@ export default function InvestmentFundsDirectory() {
                   : "Verified Founder";
 
                 const isBookmarked = bookmarkIds.includes(camp.id);
+                const isCompared = compareDeals.some((d) => d.id === camp.id);
 
                 return (
                   <SpotlightCard
                     key={camp.id}
+                    className="flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/80 bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-emerald-500/30"
                     spotlightColor="rgba(16, 185, 129, 0.08)"
-                    className="bg-white border border-slate-200/70 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       {/* Image & Badges */}
-                      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                      <div className="relative h-48 w-full overflow-hidden">
                         <img
-                          src={camp.bannerImage || "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80"}
+                          src={camp.bannerImage || "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80"}
                           alt={camp.title}
-                          className="w-full h-full object-cover"
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                         />
                         <div className="absolute top-4 left-4 flex gap-2">
                           <span className="bg-[#064E3B] text-white text-[10px] font-bold font-heading px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -273,7 +299,20 @@ export default function InvestmentFundsDirectory() {
                             {camp.riskLevel} Risk
                           </span>
                         </div>
-                        <div className="absolute top-4 right-4 z-10">
+                        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleCompare(camp, e)}
+                            className={`grid h-8 w-8 place-items-center rounded-full backdrop-blur transition ${
+                              isCompared
+                                ? "bg-emerald-600 text-white shadow-md ring-2 ring-white"
+                                : "bg-black/40 text-white hover:bg-black/60"
+                            }`}
+                            title={isCompared ? "Remove from compare" : "Add to compare matrix"}
+                            aria-label={isCompared ? `Remove ${camp.title} from compare` : `Add ${camp.title} to compare`}
+                          >
+                            <Scale className="h-4 w-4" />
+                          </button>
                           <button
                             type="button"
                             onClick={(e) => handleToggleBookmark(camp.id, e)}
@@ -398,6 +437,12 @@ export default function InvestmentFundsDirectory() {
           )}
         </section>
       </main>
+
+      <CompareFloatingDock
+        selectedDeals={compareDeals}
+        onRemoveDeal={(id) => setCompareDeals((d) => d.filter((item) => item.id !== id))}
+        onClearAll={() => setCompareDeals([])}
+      />
 
       <Footer />
     </div>

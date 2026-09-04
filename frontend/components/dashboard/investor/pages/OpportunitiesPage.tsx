@@ -8,6 +8,7 @@ import {
   Filter,
   Handshake,
   Leaf,
+  Scale,
   Search,
   ShieldCheck,
   TrendingUp,
@@ -27,12 +28,14 @@ import {
   ConnectFounderModal,
   type ConnectFounderTarget,
 } from "@/components/deals/ConnectFounderModal";
+import { CompareFloatingDock, type DockDeal } from "@/components/deals/CompareFloatingDock";
 
 export function OpportunitiesPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeConnectCampaign, setActiveConnectCampaign] =
     useState<ConnectFounderTarget | null>(null);
+  const [compareDeals, setCompareDeals] = useState<DockDeal[]>([]);
 
   const { data: categoriesData } = useCategoriesQuery();
   const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
@@ -62,6 +65,28 @@ export function OpportunitiesPage() {
     e.preventDefault();
     const isBookmarked = bookmarkIds.includes(businessId);
     toggleBookmark.mutate({ businessId, isBookmarked });
+  };
+
+  const handleToggleCompare = (deal: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (compareDeals.some((d) => d.id === deal.id)) {
+      setCompareDeals(compareDeals.filter((d) => d.id !== deal.id));
+    } else {
+      if (compareDeals.length >= 4) {
+        alert("You can compare up to 4 deals at a time.");
+        return;
+      }
+      setCompareDeals([
+        ...compareDeals,
+        {
+          id: deal.id,
+          title: deal.title,
+          slug: deal.slug,
+          bannerImage: deal.bannerImage,
+        },
+      ]);
+    }
   };
 
   return (
@@ -168,7 +193,10 @@ export function OpportunitiesPage() {
               100,
             );
             const isBookmarked = bookmarkIds.includes(deal.id);
-            const bookmarkCount = deal._count?.bookmarks || 0;
+            const isCompared = compareDeals.some((d) => d.id === deal.id);
+            const bookmarkCount =
+              (deal.bookmarkCount ?? deal._count?.bookmarks ?? 0) +
+              (isBookmarked ? 1 : 0);
 
             return (
               <article
@@ -189,31 +217,54 @@ export function OpportunitiesPage() {
                       <span className="rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold backdrop-blur">
                         {deal.stage}
                       </span>
-                      <button
-                        type="button"
-                        onClick={(e) => handleToggleBookmark(deal.id, e)}
-                        className={`grid h-9 w-9 place-items-center rounded-full backdrop-blur transition ${
-                          isBookmarked
-                            ? "bg-white text-emerald-800 shadow-md"
-                            : "bg-white/15 text-white hover:bg-white/25"
-                        }`}
-                        title={
-                          isBookmarked
-                            ? "Remove from watchlist"
-                            : "Save to watchlist"
-                        }
-                        aria-label={
-                          isBookmarked
-                            ? `Remove ${deal.title} from watchlist`
-                            : `Save ${deal.title} to watchlist`
-                        }
-                      >
-                        <Bookmark
-                          className={`h-4 w-4 ${
-                            isBookmarked ? "fill-emerald-800 text-emerald-800" : ""
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={(e) => handleToggleCompare(deal, e)}
+                          className={`grid h-8 w-8 place-items-center rounded-full backdrop-blur transition ${
+                            isCompared
+                              ? "bg-emerald-600 text-white shadow-md ring-2 ring-white"
+                              : "bg-white/15 text-white hover:bg-white/25"
                           }`}
-                        />
-                      </button>
+                          title={
+                            isCompared
+                              ? "Remove from compare"
+                              : "Add to compare matrix"
+                          }
+                          aria-label={
+                            isCompared
+                              ? `Remove ${deal.title} from compare`
+                              : `Add ${deal.title} to compare`
+                          }
+                        >
+                          <Scale className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => handleToggleBookmark(deal.id, e)}
+                          className={`grid h-8 w-8 place-items-center rounded-full backdrop-blur transition ${
+                            isBookmarked
+                              ? "bg-white text-emerald-800 shadow-md"
+                              : "bg-white/15 text-white hover:bg-white/25"
+                          }`}
+                          title={
+                            isBookmarked
+                              ? "Remove from watchlist"
+                              : "Save to watchlist"
+                          }
+                          aria-label={
+                            isBookmarked
+                              ? `Remove ${deal.title} from watchlist`
+                              : `Save ${deal.title} to watchlist`
+                          }
+                        >
+                          <Bookmark
+                            className={`h-4 w-4 ${
+                              isBookmarked ? "fill-emerald-800 text-emerald-800" : ""
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                     <div className="absolute bottom-4 left-5 right-5 z-10">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">
@@ -310,6 +361,13 @@ export function OpportunitiesPage() {
         isOpen={Boolean(activeConnectCampaign)}
         onClose={() => setActiveConnectCampaign(null)}
         campaign={activeConnectCampaign}
+      />
+
+      {/* Floating Compare Dock */}
+      <CompareFloatingDock
+        selectedDeals={compareDeals}
+        onRemoveDeal={(id) => setCompareDeals((d) => d.filter((item) => item.id !== id))}
+        onClearAll={() => setCompareDeals([])}
       />
     </div>
   );

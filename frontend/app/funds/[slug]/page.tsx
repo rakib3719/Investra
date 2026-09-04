@@ -8,6 +8,7 @@ import Footer from "@/components/public-facing/shared/Footer";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useCampaignDetailQuery } from "@/lib/campaigns/campaigns-hooks";
+import { curatedFallbackCampaigns } from "@/lib/deals/compare-utils";
 import {
   ArrowLeft,
   Bookmark,
@@ -40,7 +41,13 @@ export default function CampaignDetailPage() {
   const slug = params?.slug || "";
 
   const [isConnectOpen, setIsConnectOpen] = React.useState(false);
-  const { data: campaign, isLoading, isError } = useCampaignDetailQuery(slug);
+  const { data: apiCampaign, isLoading, isError } = useCampaignDetailQuery(slug);
+  const fallbackCampaign = React.useMemo(
+    () => curatedFallbackCampaigns.find((c) => c.slug === slug),
+    [slug],
+  );
+  const campaign = apiCampaign || fallbackCampaign;
+
   const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
   const toggleBookmark = useToggleBookmarkMutation();
 
@@ -52,7 +59,7 @@ export default function CampaignDetailPage() {
     toggleBookmark.mutate({ businessId: campaign.id, isBookmarked });
   };
 
-  if (isLoading) {
+  if (isLoading && !fallbackCampaign) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
         <Navbar />
@@ -64,7 +71,7 @@ export default function CampaignDetailPage() {
     );
   }
 
-  if (isError || !campaign) {
+  if (!campaign) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
         <Navbar />
