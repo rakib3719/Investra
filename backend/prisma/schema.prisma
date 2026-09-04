@@ -40,6 +40,7 @@ model User {
   socialLinks         UserSocialLink[]
   verification        UserVerification?
   refreshSessions     RefreshSession[]
+  businesses          Business[]
 
   @@map("users")
 }
@@ -203,6 +204,7 @@ model Category {
   deletedAt   DateTime?              @map("deleted_at") @db.Timestamp(6)
   creator     User?                  @relation(fields: [createdBy], references: [id])
   interest    UserInterestCategory[]
+  businesses  Business[]
 
   @@map("categories")
 }
@@ -304,3 +306,96 @@ enum CategoryStatus {
 
   @@map("category_status")
 }
+
+model Business {
+  id              String              @id @default(uuid()) @db.Uuid
+  entrepreneurId  String              @map("entrepreneur_id") @db.Uuid
+  title           String              @db.VarChar(255)
+  slug            String              @unique @db.VarChar(255)
+  tagline         String?             @db.VarChar(500)
+  pitchText       String              @map("pitch_text") @db.Text
+  categoryId      String              @map("category_id") @db.Uuid
+  stage           BusinessStage       @default(IDEA)
+  targetAmount    Decimal             @map("target_amount") @db.Decimal(14, 2)
+  raisedAmount    Decimal             @default(0) @map("raised_amount") @db.Decimal(14, 2)
+  minInvestment   Decimal             @map("min_investment") @db.Decimal(14, 2)
+  projectedIrr    Decimal?            @map("projected_irr") @db.Decimal(5, 2)
+  valuation       Decimal?            @db.Decimal(14, 2)
+  riskLevel       RiskLevel           @default(MEDIUM) @map("risk_level")
+  esgRating       String?             @map("esg_rating") @db.VarChar(10)
+  impactMetric    String?             @map("impact_metric") @db.VarChar(255)
+  bannerImage     String?             @map("banner_image")
+  gallery         String[]            @default([])
+  status          CampaignStatus      @default(DRAFT)
+  rejectionReason String?             @map("rejection_reason") @db.Text
+  isFeatured      Boolean             @default(false) @map("is_featured")
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt       DateTime?           @map("deleted_at") @db.Timestamp(6)
+
+  entrepreneur    User                @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  category        Category            @relation(fields: [categoryId], references: [id])
+  milestones      CampaignMilestone[]
+  pitchDecks      PitchDeck[]
+
+  @@index([categoryId, status])
+  @@index([entrepreneurId])
+  @@index([status])
+  @@map("businesses")
+}
+
+model CampaignMilestone {
+  id              String    @id @default(uuid()) @db.Uuid
+  businessId      String    @map("business_id") @db.Uuid
+  title           String    @db.VarChar(255)
+  description     String?   @db.Text
+  targetDate      DateTime? @map("target_date") @db.Date
+  fundingNeeded   Decimal?  @map("funding_needed") @db.Decimal(14, 2)
+  isCompleted     Boolean   @default(false) @map("is_completed")
+  completionProof String?   @map("completion_proof") @db.Text
+  sortOrder       Int       @default(0) @map("sort_order")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("campaign_milestones")
+}
+
+model PitchDeck {
+  id             String   @id @default(uuid()) @db.Uuid
+  businessId     String   @map("business_id") @db.Uuid
+  title          String   @db.VarChar(255)
+  fileUrl        String   @map("file_url")
+  fileSize       Int?     @map("file_size")
+  version        Int      @default(1)
+  isConfidential Boolean  @default(false) @map("is_confidential")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("pitch_decks")
+}
+
+enum CampaignStatus {
+  DRAFT
+  UNDER_REVIEW
+  ACTIVE
+  REJECTED
+  FUNDED
+  CLOSED
+
+  @@map("campaign_status")
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+
+  @@map("risk_level")
+}
+

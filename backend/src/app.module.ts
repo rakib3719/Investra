@@ -9,9 +9,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { VisitorInsightsModule } from './modules/visitor-insights/visitor-insights.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProfileModule, VisitorInsightsModule],
+  imports: [PrismaModule, AuthModule, ProfileModule, VisitorInsightsModule, CampaignsModule],
   controllers: [AppController],
   providers: [
     AppService,
