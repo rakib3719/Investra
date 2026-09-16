@@ -8,9 +8,13 @@ import { customValidationPipe } from './common/pipes/custom-validation.pipe';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { VisitorInsightsModule } from './modules/visitor-insights/visitor-insights.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { BookmarksModule } from './modules/bookmarks/bookmarks.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProfileModule],
+  imports: [PrismaModule, AuthModule, ProfileModule, VisitorInsightsModule, CampaignsModule, BookmarksModule, AdminModule],
   controllers: [AppController],
   providers: [
     AppService,

@@ -3,6 +3,8 @@ import {
   Post,
   Body,
   Get,
+  HttpCode,
+  HttpStatus,
   UseGuards,
   Req,
   Res,
@@ -16,6 +18,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import {
@@ -38,11 +41,15 @@ import {
   ForgotPasswordResponseDataDto,
   RefreshResponseDataDto,
 } from './dto/auth-response.dto';
+import { AuthRateLimitGuard } from './guards/auth-rate-limit.guard';
+import { CsrfOriginGuard } from '../../common/guards/csrf-origin.guard';
+import { env } from '../../common/config/env.config';
 
 interface RefreshRequestUser {
   id: string;
   sessionId: string;
   refreshToken: string;
+  tokenVersion: number;
 }
 
 interface RefreshRequest extends express.Request {
@@ -63,6 +70,7 @@ interface CurrentAuthUser {
 }
 
 @ApiTags('Authentication')
+@UseGuards(AuthRateLimitGuard, CsrfOriginGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -147,6 +155,7 @@ export class AuthController {
       user.id,
       user.sessionId,
       user.refreshToken,
+      user.tokenVersion,
     );
 
     this.setAuthCookies(res, result.accessToken, result.refreshToken);
@@ -181,6 +190,28 @@ export class AuthController {
     res.clearCookie('accessToken', cookieOptions);
     res.clearCookie('refreshToken', cookieOptions);
     return { message: 'Logged out successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiCookieAuth('accessToken')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Change password for the current user',
+    description:
+      'Requires the current password, revokes every session, and invalidates all existing access tokens.',
+  })
+  async changePassword(
+    @CurrentUser() user: CurrentAuthUser,
+    @Body() dto: ChangePasswordDto,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const result = await this.authService.changePassword(user.id, dto);
+    const cookieOptions = this.getCookieOptions();
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+    return result;
   }
 
   @Post('verify-email')
@@ -267,11 +298,11 @@ export class AuthController {
   ): void {
     res.cookie('accessToken', accessToken, {
       ...this.getCookieOptions(),
-      maxAge: 15 * 60 * 1000,
+      maxAge: this.durationToMilliseconds(env.JWT_ACCESS_EXPIRES_IN),
     });
     res.cookie('refreshToken', refreshToken, {
       ...this.getCookieOptions(),
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: this.durationToMilliseconds(env.JWT_EXPIRES_IN),
     });
   }
 
@@ -279,7 +310,21 @@ export class AuthController {
     return {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: env.COOKIE_SAME_SITE,
+      path: '/',
+      ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
     };
+  }
+
+  private durationToMilliseconds(value: string): number {
+    const match = /^(\d+)([smhd])$/.exec(value);
+    if (!match) return 7 * 24 * 60 * 60 * 1000;
+    const multipliers: Record<string, number> = {
+      s: 1_000,
+      m: 60_000,
+      h: 3_600_000,
+      d: 86_400_000,
+    };
+    return Number(match[1]) * multipliers[match[2]];
   }
 }

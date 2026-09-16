@@ -267,7 +267,7 @@ export default function ContactPage() {
               {/* Description & Socials Column */}
               <div className="lg:col-span-6 space-y-6">
                 <p className="text-xs md:text-sm text-slate-500 font-body leading-relaxed">
-                  Thank you for your interest in Investra and our mission to match seed capital with vetted entrepreneur initiatives. We value your thoughts, questions, and feedback. Please don't hesitate to reach out to us. Our dedicated team is here to assist you.
+                  Thank you for your interest in Investra and our mission to match seed capital with vetted entrepreneur initiatives. We value your thoughts, questions, and feedback. Please don&apos;t hesitate to reach out to us. Our dedicated team is here to assist you.
                 </p>
                 
                 {/* Social Circles */}

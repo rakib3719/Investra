@@ -1,5 +1,11 @@
 export const userRoles = ['INVESTOR', 'ENTREPRENEUR', 'CONSULTANT'] as const;
 export type PublicUserRole = (typeof userRoles)[number];
+export const authenticatedUserRoles = [
+  ...userRoles,
+  'ADMIN',
+  'SUB_ADMIN',
+] as const;
+export type AuthenticatedUserRole = (typeof authenticatedUserRoles)[number];
 
 export type AccountStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'BLOCKED';
 
@@ -11,7 +17,7 @@ export interface AuthUser {
   email: string;
   phone: string | null;
   image?: string | null;
-  role: PublicUserRole;
+  role: AuthenticatedUserRole;
   accountStatus: AccountStatus;
   createdAt: string;
   updatedAt: string;
@@ -32,6 +38,11 @@ export interface LoginInput {
 
 export interface ResetPasswordInput {
   token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string;
   newPassword: string;
 }
 

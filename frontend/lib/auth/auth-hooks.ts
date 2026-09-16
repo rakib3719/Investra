@@ -3,6 +3,7 @@ import { authApi } from "./auth-api";
 import type {
   AuthUser,
   LoginInput,
+  ChangePasswordInput,
   RegisterInput,
   ResetPasswordInput,
 } from "./types";
@@ -59,6 +60,19 @@ export function useForgotPasswordMutation() {
 export function useResetPasswordMutation() {
   return useMutation({
     mutationFn: (input: ResetPasswordInput) => authApi.resetPassword(input),
+  });
+}
+
+export function useChangePasswordMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: ChangePasswordInput) => authApi.changePassword(input),
+    onSuccess: async () => {
+      await queryClient.cancelQueries({ queryKey: authKeys.me() });
+      queryClient.setQueryData<AuthUser | null>(authKeys.me(), null);
+      queryClient.removeQueries({ queryKey: ['profile'] });
+    },
   });
 }
 

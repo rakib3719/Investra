@@ -126,7 +126,7 @@ export default function ConsistentAdvisorsPage() {
             </h1>
 
             <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
-              Institutional venture partners, ESG telemetry auditors, and legal strategists dedicated to maintaining Investra's deal vetting standards.
+              Institutional venture partners, ESG telemetry auditors, and legal strategists dedicated to maintaining Investra&apos;s deal vetting standards.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">

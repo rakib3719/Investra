@@ -12,6 +12,7 @@ import { getApiError } from '@/lib/api/client';
 import { useLoginMutation } from '@/lib/auth/auth-hooks';
 import { loginSchema, type LoginFormValues } from '@/lib/auth/schemas';
 import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
+import { getDashboardPath } from '@/lib/auth/role';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,8 +25,8 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await login.mutateAsync(values);
-    router.replace('/profile');
+    const { user } = await login.mutateAsync(values);
+    router.replace(getDashboardPath(user.role));
   };
 
   const apiError = login.error ? getApiError(login.error) : null;
@@ -60,8 +61,8 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('password')} />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                <input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 transition-colors focus:border-[#064e3b]" {...register('password')} />
+                <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:text-[#064e3b] focus-visible:outline-none" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>

@@ -32,6 +32,7 @@ const currentUser = {
   email: 'amina@example.com',
   phone: null,
   role: UserRole.INVESTOR,
+  tokenVersion: 0,
   accountStatus: 'ACTIVE',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-02T00:00:00.000Z'),
@@ -46,6 +47,7 @@ const authServiceMock = {
   resendVerificationEmail: jest.fn(),
   forgotPassword: jest.fn(),
   resetPassword: jest.fn(),
+  changePassword: jest.fn(),
 };
 
 interface ResponseMock {
@@ -118,6 +120,7 @@ describe('AuthController', () => {
           httpOnly: true,
           secure: false,
           sameSite: 'lax',
+          path: '/',
           maxAge: 15 * 60 * 1000,
         },
       );
@@ -129,6 +132,7 @@ describe('AuthController', () => {
           httpOnly: true,
           secure: false,
           sameSite: 'lax',
+          path: '/',
           maxAge: 7 * 24 * 60 * 60 * 1000,
         },
       );
@@ -143,6 +147,7 @@ describe('AuthController', () => {
           id: currentUser.id,
           sessionId: 'session-123',
           refreshToken: 'old-refresh-token',
+          tokenVersion: 0,
         },
       };
       authServiceMock.refreshTokens.mockResolvedValue({
@@ -161,6 +166,7 @@ describe('AuthController', () => {
         currentUser.id,
         'session-123',
         'old-refresh-token',
+        0,
       );
       expect(response.cookie).toHaveBeenCalledTimes(2);
       expect(response.cookie).toHaveBeenNthCalledWith(
@@ -200,11 +206,13 @@ describe('AuthController', () => {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
+        path: '/',
       });
       expect(response.clearCookie).toHaveBeenNthCalledWith(2, 'refreshToken', {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
+        path: '/',
       });
     });
 
@@ -218,6 +226,32 @@ describe('AuthController', () => {
         undefined,
       );
       expect(response.clearCookie).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('POST /auth/change-password', () => {
+    it('changes the password and clears this browser session', async () => {
+      const response = createResponseMock();
+      const dto = {
+        currentPassword: 'SecurePass123!',
+        newPassword: 'NewSecurePass123!',
+      };
+      const result = {
+        message: 'Password changed. Please sign in again on this device and your other devices.',
+      };
+      authServiceMock.changePassword.mockResolvedValue(result);
+
+      await expect(
+        controller.changePassword(currentUser, dto, response.response),
+      ).resolves.toEqual(result);
+
+      expect(authServiceMock.changePassword).toHaveBeenCalledWith(currentUser.id, dto);
+      expect(response.clearCookie).toHaveBeenNthCalledWith(1, 'accessToken',
+        expect.objectContaining({ httpOnly: true, sameSite: 'lax', path: '/' }),
+      );
+      expect(response.clearCookie).toHaveBeenNthCalledWith(2, 'refreshToken',
+        expect.objectContaining({ httpOnly: true, sameSite: 'lax', path: '/' }),
+      );
     });
   });
 

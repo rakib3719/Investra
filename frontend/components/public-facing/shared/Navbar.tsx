@@ -24,6 +24,7 @@ import {
   Menu,
   X,
   CircleUserRound,
+  LayoutDashboard,
   LogIn,
   LogOut,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import { FaTwitter, FaYoutube, FaInstagram, FaGlobe } from "react-icons/fa";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useLogoutMutation } from "@/lib/auth/auth-hooks";
+import { getDashboardPath } from "@/lib/auth/role";
 
 interface MenuItem {
   name: string;
@@ -209,14 +211,14 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-7 h-full">
+        <div className="hidden min-[1360px]:flex items-center gap-7 h-full">
           {/* Dropdown Link: Platform with Hover-to-Open Wrapper */}
           <div
             onMouseEnter={() => {
-              if (window.innerWidth >= 768) setActiveDropdown("platform");
+              if (window.innerWidth >= 1360) setActiveDropdown("platform");
             }}
             onMouseLeave={() => {
-              if (window.innerWidth >= 768) setActiveDropdown(null);
+              if (window.innerWidth >= 1360) setActiveDropdown(null);
             }}
             className="h-full flex items-center"
           >
@@ -613,14 +615,23 @@ export default function Navbar() {
         </div>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden min-[1360px]:flex items-center gap-4">
           {isLoading ? (
             <div
               className="flex h-10 w-28 items-center justify-center rounded-xl border border-slate-100 bg-slate-50"
               aria-label="Loading account"
             ><InvestraInlineLoader /></div>
           ) : user ? (
-            <div ref={accountMenuRef} className="relative">
+            <>
+              <Link
+                href={getDashboardPath(user.role)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#065f46] transition-colors hover:bg-emerald-100"
+                aria-label="Open dashboard"
+                title="Open dashboard"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+              </Link>
+              <div ref={accountMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => setIsAccountMenuOpen((open) => !open)}
@@ -639,11 +650,13 @@ export default function Navbar() {
               </button>
               {isAccountMenuOpen && (
                 <div role="menu" className="absolute right-0 top-[calc(100%+8px)] z-50 w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                  <Link href={getDashboardPath(user.role)} onClick={() => setIsAccountMenuOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-[#065f46] hover:bg-emerald-50" role="menuitem"><LayoutDashboard className="w-4 h-4" />Dashboard</Link>
                   <Link href="/profile" onClick={() => setIsAccountMenuOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem"><CircleUserRound className="w-4 h-4 text-[#064e3b]" />My profile</Link>
                   <button type="button" onClick={handleLogout} disabled={logout.isPending} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-60" role="menuitem">{logout.isPending ? <InvestraInlineLoader label="Signing out…" /> : <><LogOut className="w-4 h-4" />Sign out</>}</button>
                 </div>
               )}
-            </div>
+              </div>
+            </>
           ) : (
             <>
               <Link
@@ -665,7 +678,7 @@ export default function Navbar() {
         {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-slate-700 hover:text-[#064e3b] focus:outline-none rounded-xl bg-slate-100 border border-slate-200 transition-colors"
+          className="min-[1360px]:hidden p-2 text-slate-700 hover:text-[#064e3b] focus:outline-none rounded-xl bg-slate-100 border border-slate-200 transition-colors"
           aria-label="Toggle menu"
         >
           {isOpen ? (
@@ -678,7 +691,7 @@ export default function Navbar() {
 
       {/* MOBILE DRAWER WITH CLEAN 'PLATFORM' ACCORDION */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white px-6 py-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl max-h-[85vh] overflow-y-auto">
+        <div className="min-[1360px]:hidden border-t border-slate-100 bg-white px-6 py-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl max-h-[85vh] overflow-y-auto">
           {/* Collapsible Mobile Platform Section */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
             <button
@@ -771,11 +784,19 @@ export default function Navbar() {
             {isLoading ? <div className="flex justify-center py-2 text-xs font-bold text-slate-500"><InvestraInlineLoader label="Checking account…" /></div> : user ? (
               <>
                 <Link
-                  href="/profile"
+                  href={getDashboardPath(user.role)}
                   onClick={() => setIsOpen(false)}
                   className="w-full bg-[#064e3b] text-white text-xs font-extrabold font-heading py-3 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
                 >
-                  <CircleUserRound className="w-4 h-4 text-[#10b981]" />
+                  <LayoutDashboard className="w-4 h-4 text-[#10b981]" />
+                  <span>Open Dashboard</span>
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full border border-slate-200 text-slate-700 text-xs font-extrabold font-heading py-3 rounded-xl transition-colors flex items-center justify-center gap-2 hover:bg-slate-50"
+                >
+                  <CircleUserRound className="w-4 h-4 text-[#064e3b]" />
                   <span>My Profile</span>
                 </Link>
                 <button type="button" onClick={handleLogout} disabled={logout.isPending} className="w-full border border-red-100 text-red-600 text-xs font-extrabold font-heading py-3 rounded-xl disabled:opacity-60 flex items-center justify-center gap-2">{logout.isPending ? <InvestraInlineLoader label="Signing out…" /> : <><LogOut className="w-4 h-4" />Sign out</>}</button>

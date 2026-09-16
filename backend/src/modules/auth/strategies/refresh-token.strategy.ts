@@ -10,6 +10,7 @@ interface JwtPayload {
   role: string;
   sid: string;
   type: string;
+  tokenVersion: number;
 }
 
 const cookieExtractor = (req: Request): string | null => {
@@ -52,6 +53,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       email: payload.email,
       role: payload.role,
       sessionId: payload.sid,
+      tokenVersion: payload.tokenVersion,
       refreshToken,
     };
   }
