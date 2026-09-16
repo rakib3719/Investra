@@ -19,8 +19,11 @@ export class CsrfOriginGuard implements CanActivate {
     if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) return true;
 
     const origin = request.get('Origin');
-    if (origin && !env.TRUSTED_ORIGINS.includes(origin)) {
-      throw new ForbiddenException('This request origin is not allowed');
+    if (origin) {
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+      if (!env.TRUSTED_ORIGINS.includes(normalizedOrigin) && !env.TRUSTED_ORIGINS.includes('*')) {
+        throw new ForbiddenException('This request origin is not allowed');
+      }
     }
 
     return true;

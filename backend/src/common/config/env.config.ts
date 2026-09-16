@@ -30,10 +30,14 @@ export const env = {
     | 'production'
     | 'test',
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
-  TRUSTED_ORIGINS: (process.env.TRUSTED_ORIGINS || process.env.FRONTEND_URL || 'http://localhost:5173')
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3001',
+  TRUSTED_ORIGINS: (
+    process.env.TRUSTED_ORIGINS ||
+    process.env.FRONTEND_URL ||
+    'http://localhost:3001,http://localhost:5173,https://investra-frontend-4m5v.onrender.com'
+  )
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean),
   API_PUBLIC_URL: (process.env.API_PUBLIC_URL || `http://localhost:${process.env.PORT || '3000'}`).replace(/\/$/, ''),
   DATABASE_URL: process.env.DATABASE_URL || '',
