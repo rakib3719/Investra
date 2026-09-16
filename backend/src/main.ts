@@ -20,10 +20,23 @@ async function bootstrap() {
     maxAge: '1d',
   }));
   
-  // Enable CORS using the validated frontend client URL
+  // Enable CORS using the validated frontend client URLs
   app.enableCors({
-    origin: env.TRUSTED_ORIGINS,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, server-to-server, Postman)
+      if (!origin) return callback(null, true);
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+      if (
+        env.TRUSTED_ORIGINS.includes(normalizedOrigin) ||
+        env.TRUSTED_ORIGINS.includes('*')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
   });
 
   // Swagger setup

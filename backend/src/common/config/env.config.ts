@@ -30,10 +30,14 @@ export const env = {
     | 'production'
     | 'test',
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
-  TRUSTED_ORIGINS: (process.env.TRUSTED_ORIGINS || process.env.FRONTEND_URL || 'http://localhost:5173')
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3001',
+  TRUSTED_ORIGINS: (
+    process.env.TRUSTED_ORIGINS ||
+    process.env.FRONTEND_URL ||
+    'http://localhost:3001,http://localhost:5173,https://investra-frontend-4m5v.onrender.com'
+  )
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean),
   API_PUBLIC_URL: (process.env.API_PUBLIC_URL || `http://localhost:${process.env.PORT || '3000'}`).replace(/\/$/, ''),
   DATABASE_URL: process.env.DATABASE_URL || '',
@@ -53,6 +57,7 @@ export const env = {
   MAX_AVATAR_FILE_SIZE: process.env.MAX_AVATAR_FILE_SIZE
     ? parseInt(process.env.MAX_AVATAR_FILE_SIZE, 10)
     : 5 * 1024 * 1024,
+  VISITOR_HASH_SALT: process.env.VISITOR_HASH_SALT || process.env.JWT_SECRET || '',
   SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
   SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 465,
   SMTP_SECURE: process.env.SMTP_SECURE !== 'false',

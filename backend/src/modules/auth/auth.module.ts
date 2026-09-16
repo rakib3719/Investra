@@ -25,6 +25,6 @@ import { RolesGuard } from './guards/roles.guard';
     CsrfOriginGuard,
     RolesGuard,
   ],
-  exports: [AuthService],
+  exports: [AuthService, CsrfOriginGuard, RolesGuard],
 })
 export class AuthModule {}
