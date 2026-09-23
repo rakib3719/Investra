@@ -34,7 +34,7 @@ export const env = {
   TRUSTED_ORIGINS: (
     process.env.TRUSTED_ORIGINS ||
     process.env.FRONTEND_URL ||
-    'http://localhost:3001,http://localhost:5173,https://investra-frontend-4m5v.onrender.com'
+    'http://localhost:3001,http://localhost:5173,https://investra-three.vercel.app,https://investra-frontend-4m5v.onrender.com'
   )
     .split(',')
     .map((origin) => origin.trim().replace(/\/+$/, ''))
@@ -49,7 +49,8 @@ export const env = {
     ? parseInt(process.env.BCRYPT_ROUNDS, 10)
     : 12,
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || undefined,
-  COOKIE_SAME_SITE: (process.env.COOKIE_SAME_SITE || 'lax') as
+  COOKIE_SAME_SITE: (process.env.COOKIE_SAME_SITE ||
+    (process.env.NODE_ENV === 'production' ? 'none' : 'lax')) as
     | 'lax'
     | 'strict'
     | 'none',

@@ -28,7 +28,8 @@ async function bootstrap() {
       const normalizedOrigin = origin.trim().replace(/\/+$/, '');
       if (
         env.TRUSTED_ORIGINS.includes(normalizedOrigin) ||
-        env.TRUSTED_ORIGINS.includes('*')
+        env.TRUSTED_ORIGINS.includes('*') ||
+        normalizedOrigin.endsWith('.vercel.app')
       ) {
         return callback(null, true);
       }
