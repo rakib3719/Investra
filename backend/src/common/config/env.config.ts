@@ -69,3 +69,14 @@ export const env = {
 
 // Export the inferred type for type-safety elsewhere
 export type EnvConfig = typeof env;
+
+export function isAllowedOrigin(origin?: string | null): boolean {
+  if (!origin) return true;
+  const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+  return (
+    env.TRUSTED_ORIGINS.includes(normalizedOrigin) ||
+    env.TRUSTED_ORIGINS.includes('*') ||
+    normalizedOrigin.endsWith('.vercel.app') ||
+    normalizedOrigin === 'https://investra-three.vercel.app'
+  );
+}
