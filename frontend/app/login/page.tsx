@@ -8,11 +8,13 @@ import { ArrowRight, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
-import { getApiError } from '@/lib/api/client';
+import { handleFormApiError } from '@/lib/api/client';
+import { toast } from '@/lib/toast';
 import { useLoginMutation } from '@/lib/auth/auth-hooks';
 import { loginSchema, type LoginFormValues } from '@/lib/auth/schemas';
 import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
 import { getDashboardPath } from '@/lib/auth/role';
+import { InputError, getFieldStateClass } from '@/components/ui/InputError';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,15 +23,19 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (values: LoginFormValues) => {
-    const { user } = await login.mutateAsync(values);
-    router.replace(getDashboardPath(user.role));
+    try {
+      const { user } = await login.mutateAsync(values);
+      toast.success('Welcome back to Investra!', { title: 'Signed In' });
+      router.replace(getDashboardPath(user.role));
+    } catch (err) {
+      handleFormApiError(err, setError, 'Sign in failed');
+    }
   };
-
-  const apiError = login.error ? getApiError(login.error) : null;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
@@ -37,7 +43,7 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center py-16 px-6">
         <div className="max-w-md w-full bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-[#064e3b] text-white flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-[#064e3b] text-white flex items-center justify-center mx-auto shadow-md">
               <Lock className="w-6 h-6 text-[#10b981]" />
             </div>
             <h1 className="font-heading font-black text-2xl md:text-3xl text-slate-800">Sign in to Investra</h1>
@@ -49,9 +55,18 @@ export default function LoginPage() {
               <label className="text-xs font-bold text-slate-700" htmlFor="email">Work email</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input id="email" type="email" autoComplete="email" placeholder="name@company.com" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" {...register('email')} />
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="name@company.com"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-xs border transition-colors ${getFieldStateClass(errors.email)}`}
+                  {...register('email')}
+                />
               </div>
-              {errors.email && <p className="text-xs text-red-600">{errors.email.message}</p>}
+              <InputError message={errors.email?.message} id="email-error" />
             </div>
 
             <div className="space-y-1.5">
@@ -61,18 +76,42 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 transition-colors focus:border-[#064e3b]" {...register('password')} />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:text-[#064e3b] focus-visible:outline-none" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  aria-invalid={Boolean(errors.password)}
+                  aria-describedby={errors.password ? 'password-error' : undefined}
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl text-xs border transition-colors ${getFieldStateClass(errors.password)}`}
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:text-[#064e3b] focus-visible:outline-none cursor-pointer"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPassword}
+                >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-xs text-red-600">{errors.password.message}</p>}
+              <InputError message={errors.password?.message} id="password-error" />
             </div>
 
-            {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError.message}</p>}
-
-            <button type="submit" disabled={login.isPending} className="w-full bg-[#064e3b] disabled:opacity-60 text-white font-heading font-extrabold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2">
-              {login.isPending ? <InvestraInlineLoader label="Signing in…" /> : <><span>Sign in securely</span><ArrowRight className="w-4 h-4 text-[#10b981]" /></>}
+            <button
+              type="submit"
+              disabled={login.isPending}
+              className="w-full bg-[#064e3b] disabled:opacity-60 text-white font-heading font-extrabold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-[#053d2e]"
+            >
+              {login.isPending ? (
+                <InvestraInlineLoader label="Signing in…" />
+              ) : (
+                <>
+                  <span>Sign in securely</span>
+                  <ArrowRight className="w-4 h-4 text-[#10b981]" />
+                </>
+              )}
             </button>
           </form>
 

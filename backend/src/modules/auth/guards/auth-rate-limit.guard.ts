@@ -6,6 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { env } from '../../../common/config/env.config';
 
 type RateWindow = { limit: number; windowMs: number };
 
@@ -31,6 +32,12 @@ export class AuthRateLimitGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
+
+    // Do not block local testing and development with strict rate limits
+    if (env.NODE_ENV !== 'production') {
+      return true;
+    }
+
     const rule = windows[request.path];
     if (!rule || request.method !== 'POST') return true;
 
