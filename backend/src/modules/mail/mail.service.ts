@@ -1,10 +1,14 @@
 import {
   Injectable,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { env } from '../../common/config/env.config';
+import {
+  buildVerificationEmail,
+  buildPasswordResetEmail,
+  buildPasswordChangedEmail,
+} from './templates';
 
 @Injectable()
 export class MailService {
@@ -29,25 +33,68 @@ export class MailService {
     });
   }
 
-  async sendVerificationEmail(email: string, token: string): Promise<boolean> {
+  async sendVerificationEmail(
+    email: string,
+    token: string,
+    name?: string,
+  ): Promise<boolean> {
     const verificationUrl = `${env.FRONTEND_URL}/verify-email?token=${encodeURIComponent(token)}`;
+
+    const template = buildVerificationEmail({
+      email,
+      name,
+      verificationUrl,
+      expiresInHours: 24,
+      frontendUrl: env.FRONTEND_URL,
+    });
 
     return this.send({
       to: email,
-      subject: 'Verify your Investra email address',
-      text: `Welcome to Investra. Verify your email address: ${verificationUrl}`,
-      html: `<p>Welcome to Investra.</p><p><a href="${verificationUrl}">Verify your email address</a></p><p>This link expires in 24 hours.</p>`,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
     });
   }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
+  async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    name?: string,
+  ): Promise<boolean> {
     const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`;
+
+    const template = buildPasswordResetEmail({
+      email,
+      name,
+      resetUrl,
+      expiresInMinutes: 60,
+      frontendUrl: env.FRONTEND_URL,
+    });
 
     return this.send({
       to: email,
-      subject: 'Reset your Investra password',
-      text: `Reset your Investra password: ${resetUrl}`,
-      html: `<p>Reset your Investra password.</p><p><a href="${resetUrl}">Choose a new password</a></p><p>This link expires in 1 hour.</p>`,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+    });
+  }
+
+  async sendPasswordChangedEmail(
+    email: string,
+    name?: string,
+  ): Promise<boolean> {
+    const template = buildPasswordChangedEmail({
+      email,
+      name,
+      timestamp: new Date().toUTCString(),
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    return this.send({
+      to: email,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
     });
   }
 
@@ -66,7 +113,7 @@ export class MailService {
 
     try {
       await this.transporter.sendMail({
-        from: env.SMTP_FROM || env.SMTP_USER,
+        from: env.SMTP_FROM || `Investra <${env.SMTP_USER}>`,
         ...message,
       });
       this.logger.log(`Email successfully sent to ${message.to}`);
