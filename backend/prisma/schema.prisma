@@ -42,6 +42,9 @@ model User {
   refreshSessions     RefreshSession[]
   businesses          Business[]
   bookmarks           Bookmark[]
+  avatarMediaId       String?                @unique @map("avatar_media_id") @db.Uuid
+  avatarMedia         MediaFile?             @relation("UserAvatarMedia", fields: [avatarMediaId], references: [id], onDelete: SetNull)
+  uploadedMedia       MediaFile[]            @relation("UserUploadedMedia")
 
   @@map("users")
 }
@@ -177,6 +180,9 @@ model UserVerification {
   documentFront      String?            @map("document_front")
   documentBack       String?            @map("document_back")
   selfieImage        String?            @map("selfie_image")
+  frontMediaId       String?            @unique @map("front_media_id") @db.Uuid
+  backMediaId        String?            @unique @map("back_media_id") @db.Uuid
+  selfieMediaId      String?            @unique @map("selfie_media_id") @db.Uuid
   verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
   reviewedBy         String?            @map("reviewed_by") @db.Uuid
   reviewedAt         DateTime?          @map("reviewed_at") @db.Timestamp(6)
@@ -184,6 +190,9 @@ model UserVerification {
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  frontMedia         MediaFile?         @relation("VerificationFrontMedia", fields: [frontMediaId], references: [id], onDelete: SetNull)
+  backMedia          MediaFile?         @relation("VerificationBackMedia", fields: [backMediaId], references: [id], onDelete: SetNull)
+  selfieMedia        MediaFile?         @relation("VerificationSelfieMedia", fields: [selfieMediaId], references: [id], onDelete: SetNull)
 
   @@map("user_verifications")
 }
@@ -326,7 +335,10 @@ model Business {
   esgRating       String?             @map("esg_rating") @db.VarChar(10)
   impactMetric    String?             @map("impact_metric") @db.VarChar(255)
   bannerImage     String?             @map("banner_image")
+  coverMediaId    String?             @unique @map("cover_media_id") @db.Uuid
   gallery         String[]            @default([])
+  videoProvider   String?             @map("video_provider") @db.VarChar(50)
+  videoExternalUrl String?            @map("video_external_url") @db.VarChar(500)
   status          CampaignStatus      @default(DRAFT)
   rejectionReason String?             @map("rejection_reason") @db.Text
   isFeatured      Boolean             @default(false) @map("is_featured")
@@ -336,6 +348,7 @@ model Business {
 
   entrepreneur    User                @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
   category        Category            @relation(fields: [categoryId], references: [id])
+  coverMedia      MediaFile?          @relation("BusinessCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
   milestones      CampaignMilestone[]
   pitchDecks      PitchDeck[]
   bookmarks       Bookmark[]
@@ -366,19 +379,22 @@ model CampaignMilestone {
 }
 
 model PitchDeck {
-  id             String   @id @default(uuid()) @db.Uuid
-  businessId     String   @map("business_id") @db.Uuid
-  title          String   @db.VarChar(255)
-  fileUrl        String   @map("file_url")
-  fileSize       Int?     @map("file_size")
-  version        Int      @default(1)
-  isConfidential Boolean  @default(false) @map("is_confidential")
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  id             String     @id @default(uuid()) @db.Uuid
+  businessId     String     @map("business_id") @db.Uuid
+  mediaFileId    String?    @map("media_file_id") @db.Uuid
+  title          String     @db.VarChar(255)
+  fileUrl        String     @map("file_url")
+  fileSize       Int?       @map("file_size")
+  version        Int        @default(1)
+  isConfidential Boolean    @default(false) @map("is_confidential")
+  createdAt      DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business       Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  mediaFile      MediaFile? @relation("PitchDeckMedia", fields: [mediaFileId], references: [id], onDelete: SetNull)
 
   @@index([businessId])
+  @@index([mediaFileId])
   @@map("pitch_decks")
 }
 
@@ -414,6 +430,66 @@ model Bookmark {
   @@index([userId])
   @@index([businessId])
   @@map("bookmarks")
+}
+
+enum MediaCategory {
+  AVATAR
+  CAMPAIGN_COVER
+  CAMPAIGN_GALLERY
+  PITCH_DECK
+  CONFIDENTIAL_PITCH_DECK
+  FINANCIAL_REPORT
+  KYC_DOCUMENT
+  VIDEO
+
+  @@map("media_category")
+}
+
+enum MediaAccessType {
+  PUBLIC
+  PRIVATE
+
+  @@map("media_access_type")
+}
+
+enum MediaUploadStatus {
+  PENDING_UPLOAD
+  UPLOADED
+  ACTIVE
+  DELETE_PENDING
+  DELETED
+
+  @@map("media_upload_status")
+}
+
+model MediaFile {
+  id           String            @id @default(uuid()) @db.Uuid
+  key          String            @unique @map("key") @db.VarChar(500)
+  bucket       String            @map("bucket") @db.VarChar(255)
+  originalName String            @map("original_name") @db.VarChar(255)
+  mimeType     String            @map("mime_type") @db.VarChar(100)
+  sizeBytes    BigInt            @map("size_bytes")
+  accessType   MediaAccessType   @map("access_type")
+  category     MediaCategory     @map("category")
+  status       MediaUploadStatus @default(PENDING_UPLOAD) @map("status")
+  uploadedById String            @map("uploaded_by_id") @db.Uuid
+  activatedAt  DateTime?         @map("activated_at") @db.Timestamp(6)
+  deletedAt    DateTime?         @map("deleted_at") @db.Timestamp(6)
+  createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  uploadedBy         User              @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: Cascade)
+  userAvatar         User?             @relation("UserAvatarMedia")
+  businessCover      Business?         @relation("BusinessCoverMedia")
+  pitchDeckFiles     PitchDeck[]       @relation("PitchDeckMedia")
+  verificationFront  UserVerification? @relation("VerificationFrontMedia")
+  verificationBack   UserVerification? @relation("VerificationBackMedia")
+  verificationSelfie UserVerification? @relation("VerificationSelfieMedia")
+
+  @@index([uploadedById])
+  @@index([category, status])
+  @@index([status, createdAt])
+  @@map("media_files")
 }
 
 

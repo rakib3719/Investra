@@ -1,0 +1,12 @@
+export const MediaCategory = {
+  AVATAR: 'AVATAR',
+  CAMPAIGN_COVER: 'CAMPAIGN_COVER',
+  CAMPAIGN_GALLERY: 'CAMPAIGN_GALLERY',
+  PITCH_DECK: 'PITCH_DECK',
+  CONFIDENTIAL_PITCH_DECK: 'CONFIDENTIAL_PITCH_DECK',
+  FINANCIAL_REPORT: 'FINANCIAL_REPORT',
+  KYC_DOCUMENT: 'KYC_DOCUMENT',
+  VIDEO: 'VIDEO',
+} as const;
+
+export type MediaCategory = (typeof MediaCategory)[keyof typeof MediaCategory];

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MediaService } from '../media/media.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 const userProfileSelect = {
@@ -11,6 +12,13 @@ const userProfileSelect = {
   email: true,
   phone: true,
   image: true,
+  avatarMediaId: true,
+  avatarMedia: {
+    select: {
+      id: true,
+      key: true,
+    },
+  },
   role: true,
   gender: true,
   dateOfBirth: true,
@@ -30,7 +38,10 @@ const userProfileSelect = {
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   async getMyProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -46,8 +57,15 @@ export class ProfileService {
       investorProfile,
       entrepreneurProfile,
       consultantProfile,
+      avatarMedia,
       ...account
     } = user;
+
+    // Derive avatar image URL from Cloudflare R2 if avatarMedia exists
+    const resolvedImage = avatarMedia
+      ? this.mediaService.derivePublicUrl(avatarMedia.key)
+      : account.image;
+
     const profile =
       user.role === UserRole.INVESTOR
         ? investorProfile
@@ -57,17 +75,38 @@ export class ProfileService {
             ? consultantProfile
             : null;
 
-    return { account, profile };
+    return {
+      account: {
+        ...account,
+        image: resolvedImage,
+      },
+      profile,
+    };
   }
 
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true },
+      select: { id: true, role: true, avatarMediaId: true },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Handle avatar media replacement safely within transaction
+    if (dto.avatarMediaId && dto.avatarMediaId !== user.avatarMediaId) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.mediaService.replaceEntityMedia(
+          dto.avatarMediaId!,
+          user.avatarMediaId,
+          tx,
+        );
+        await tx.user.update({
+          where: { id: userId },
+          data: { avatarMediaId: dto.avatarMediaId },
+        });
+      });
     }
 
     const accountData = this.defined({

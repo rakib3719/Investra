@@ -22,6 +22,7 @@ import { toast } from '@/lib/toast';
 import { useMyProfileQuery, useUpdateMyProfileMutation, useUploadAvatarMutation } from '@/lib/profile/profile-hooks';
 import type { MyProfile, UpdateProfileInput } from '@/lib/profile/types';
 import { InvestraInlineLoader, InvestraLoader } from '@/components/ui/InvestraLoader';
+import { FileUploadDropzone } from '@/components/ui/FileUploadDropzone';
 
 const numberFields = new Set([
   'yearsOfExperience',
@@ -133,7 +134,47 @@ function ProfileWorkspace() {
           <section className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
             <div className="flex flex-wrap gap-2 mb-8">{['Identity & location', `${roleLabel} details`, 'Visibility & review'].map((title, index) => <button key={title} type="button" onClick={() => setStep(index)} className={`px-3.5 py-2 rounded-xl text-xs font-bold ${step === index ? 'bg-[#064e3b] text-white' : 'bg-slate-100 text-slate-500'}`}>{index + 1}. {title}</button>)}</div>
             <form key={account.updatedAt} onSubmit={saveProfile} className="space-y-6">
-              {step === 0 && <><div><p className="text-[11px] font-bold text-[#064e3b] uppercase tracking-widest">Step 1</p><h2 className="font-heading text-2xl font-black text-slate-800">Your identity</h2><p className="text-sm text-slate-500 mt-1">Keep the details that partners and the platform need accurate.</p></div><div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4"><div className="flex flex-wrap items-center gap-4">{account.image ? <img src={account.image} alt="Your profile avatar" className="h-16 w-16 rounded-2xl object-cover" /> : <span className="grid h-16 w-16 place-items-center rounded-2xl bg-[#064e3b]/10 text-[#064e3b]"><CircleUserRound className="h-8 w-8" /></span>}<div className="min-w-0 flex-1"><p className="text-sm font-bold text-slate-800">Profile photo</p><p className="mt-1 text-xs text-slate-500">JPG, PNG, or WebP — up to 5 MB. Stored locally for now and ready to switch to Cloudinary or Cloudflare later.</p>{(avatarValidationError || avatarError) && <p role="alert" className="mt-1 text-xs text-red-600">{avatarValidationError || avatarError}</p>}</div><label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[#064e3b] bg-white px-3.5 py-2.5 text-xs font-bold text-[#064e3b] hover:bg-emerald-50"><Camera className="h-4 w-4" />{uploadAvatar.isPending ? 'Uploading…' : 'Upload photo'}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarUpload} disabled={uploadAvatar.isPending} className="sr-only" /></label></div></div><div className="grid md:grid-cols-2 gap-4"><Field name="firstName" label="First name" defaultValue={account.firstName ?? ''} /><Field name="lastName" label="Last name" defaultValue={account.lastName ?? ''} /><Field name="phone" label="Phone number" defaultValue={account.phone ?? ''} /><Field name="country" label="Country" defaultValue={account.country ?? ''} /><Field name="city" label="City" defaultValue={account.city ?? ''} /><Field name="dateOfBirth" type="date" label="Date of birth" defaultValue={account.dateOfBirth?.slice(0, 10) ?? ''} /><Field name="website" type="url" label="Website" defaultValue={account.website ?? ''} /></div><div className="grid md:grid-cols-2 gap-4"><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Gender</span><select name="gender" defaultValue={account.gender ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Prefer not to say</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option><option value="PREFER_NOT_TO_SAY">Prefer not to say</option></select></label><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Professional type</span><select name="professionalType" defaultValue={account.professionalType ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Select type</option><option value="EMPLOYEE">Employee</option><option value="BUSINESS_OWNER">Business owner</option><option value="FREELANCER">Freelancer</option><option value="SELF_EMPLOYED">Self-employed</option><option value="STUDENT">Student</option><option value="OTHER">Other</option></select></label></div><label className="space-y-1 block"><span className="text-[11px] font-bold text-slate-700">Short bio</span><textarea name="bio" defaultValue={account.bio ?? ''} rows={4} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm" placeholder="Tell the community about your experience and focus." /></label></>}
+              {step === 0 && <><div><p className="text-[11px] font-bold text-[#064e3b] uppercase tracking-widest">Step 1</p><h2 className="font-heading text-2xl font-black text-slate-800">Your identity</h2><p className="text-sm text-slate-500 mt-1">Keep the details that partners and the platform need accurate.</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 space-y-3">
+                <div>
+                  <p className="text-sm font-bold text-slate-800">Profile Photo</p>
+                  <p className="text-xs text-slate-500">
+                    Direct-to-R2 upload with progress tracking. JPG, PNG, or WebP up to 5 MB.
+                  </p>
+                </div>
+                <FileUploadDropzone
+                  category="AVATAR"
+                  currentMedia={{
+                    url: account.image,
+                    fileName: `${account.firstName || 'Profile'} Avatar`,
+                    status: 'ACTIVE',
+                    mimeType: 'image/jpeg',
+                  }}
+                  onUploadSuccess={async (media) => {
+                    try {
+                      await updateProfile.mutateAsync({
+                        avatarMediaId: media.id,
+                        image: media.url || undefined,
+                      });
+                      toast.success('Avatar updated in Cloudflare R2!');
+                    } catch (err) {
+                      showApiErrorToast(err, 'Failed to save avatar reference');
+                    }
+                  }}
+                  onRemove={async () => {
+                    try {
+                      await updateProfile.mutateAsync({
+                        avatarMediaId: null,
+                        image: null,
+                      });
+                      toast.info('Avatar removed.');
+                    } catch (err) {
+                      showApiErrorToast(err, 'Failed to remove avatar');
+                    }
+                  }}
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4"><Field name="firstName" label="First name" defaultValue={account.firstName ?? ''} /><Field name="lastName" label="Last name" defaultValue={account.lastName ?? ''} /><Field name="phone" label="Phone number" defaultValue={account.phone ?? ''} /><Field name="country" label="Country" defaultValue={account.country ?? ''} /><Field name="city" label="City" defaultValue={account.city ?? ''} /><Field name="dateOfBirth" type="date" label="Date of birth" defaultValue={account.dateOfBirth?.slice(0, 10) ?? ''} /><Field name="website" type="url" label="Website" defaultValue={account.website ?? ''} /></div><div className="grid md:grid-cols-2 gap-4"><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Gender</span><select name="gender" defaultValue={account.gender ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Prefer not to say</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option><option value="PREFER_NOT_TO_SAY">Prefer not to say</option></select></label><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Professional type</span><select name="professionalType" defaultValue={account.professionalType ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Select type</option><option value="EMPLOYEE">Employee</option><option value="BUSINESS_OWNER">Business owner</option><option value="FREELANCER">Freelancer</option><option value="SELF_EMPLOYED">Self-employed</option><option value="STUDENT">Student</option><option value="OTHER">Other</option></select></label></div><label className="space-y-1 block"><span className="text-[11px] font-bold text-slate-700">Short bio</span><textarea name="bio" defaultValue={account.bio ?? ''} rows={4} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm" placeholder="Tell the community about your experience and focus." /></label></>}
 
               {step === 1 && <RoleDetails role={account.role} profile={profile} />}
               {step === 2 && <><div><p className="text-[11px] font-bold text-[#064e3b] uppercase tracking-widest">Step 3</p><h2 className="font-heading text-2xl font-black text-slate-800">Visibility & review</h2><p className="text-sm text-slate-500 mt-1">Choose whether your completed role profile may appear in discovery.</p></div><label className="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl"><input name="profileVisibility" type="checkbox" defaultChecked={profile?.profileVisibility ?? false} className="mt-0.5 accent-[#064e3b]" /><span><span className="block text-sm font-bold text-slate-800">Show my profile in discovery</span><span className="block text-xs text-slate-500 mt-1">Your profile remains subject to Investra verification and platform rules.</span></span></label><div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600"><p className="font-bold text-slate-800">Next: verification documents</p><p className="mt-1">NID/passport and identity documents are intentionally kept out of this page. Add them later in a dedicated encrypted verification experience.</p></div></>}

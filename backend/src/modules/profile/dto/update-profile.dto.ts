@@ -37,6 +37,10 @@ export class UpdateProfileDto {
   image?: string;
 
   @IsOptional()
+  @IsString()
+  avatarMediaId?: string;
+
+  @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
 

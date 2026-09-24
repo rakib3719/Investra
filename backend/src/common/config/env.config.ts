@@ -65,6 +65,20 @@ export const env = {
   SMTP_USER: process.env.SMTP_USER || '',
   SMTP_PASSWORD: process.env.SMTP_PASSWORD || '',
   SMTP_FROM: process.env.SMTP_FROM || process.env.SMTP_USER || '',
+
+  // Cloudflare R2 Dual-Bucket Storage
+  R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID || '',
+  R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID || '',
+  R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY || '',
+  R2_ENDPOINT:
+    process.env.R2_ENDPOINT ||
+    (process.env.R2_ACCOUNT_ID
+      ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
+      : ''),
+  R2_PUBLIC_BUCKET_NAME: process.env.R2_PUBLIC_BUCKET_NAME || 'investra-media-public',
+  R2_PRIVATE_BUCKET_NAME: process.env.R2_PRIVATE_BUCKET_NAME || 'investra-media-private',
+  R2_PUBLIC_URL: (process.env.R2_PUBLIC_URL || '').replace(/\/+$/, ''),
+  MEDIA_CLEANUP_SECRET: process.env.MEDIA_CLEANUP_SECRET || 'dev-cleanup-secret',
 };
 
 // Export the inferred type for type-safety elsewhere
