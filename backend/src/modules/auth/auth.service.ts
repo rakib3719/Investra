@@ -96,7 +96,7 @@ export class AuthService {
     });
 
     // Send verification email safely in background without blocking or breaking registration
-    void this.sendVerificationEmail(newUser.id, newUser.email).catch((err) => {
+    void this.sendVerificationEmail(newUser.id, newUser.email, newUser.firstName ?? undefined).catch((err) => {
       this.logger.error(
         `Failed to send verification email to ${newUser.email}: ${err?.message || err}`,
       );
@@ -272,7 +272,7 @@ export class AuthService {
       );
 
       // Send asynchronously without blocking the user response
-      void this.mailService.sendPasswordResetEmail(user.email, resetToken).catch((err) => {
+      void this.mailService.sendPasswordResetEmail(user.email, resetToken, user.firstName ?? undefined).catch((err) => {
         this.logger.error(
           `Failed to send password reset email to ${user.email}: ${err?.message || err}`,
         );
@@ -312,6 +312,13 @@ export class AuthService {
         data: { revokedAt: new Date() },
       });
 
+      // Send password changed security alert
+      void this.mailService.sendPasswordChangedEmail(user.email, user.firstName ?? undefined).catch((err) => {
+        this.logger.error(
+          `Failed to send password changed email to ${user.email}: ${err?.message || err}`,
+        );
+      });
+
       return {
         message: 'Password has been reset successfully. You can now login.',
       };
@@ -326,7 +333,7 @@ export class AuthService {
     });
 
     if (user && !user.isEmailVerified) {
-      void this.sendVerificationEmail(user.id, user.email).catch((err) => {
+      void this.sendVerificationEmail(user.id, user.email, user.firstName ?? undefined).catch((err) => {
         this.logger.error(
           `Failed to resend verification email to ${user.email}: ${err?.message || err}`,
         );
@@ -390,6 +397,13 @@ export class AuthService {
       }),
     ]);
 
+    // Send password changed security alert
+    void this.mailService.sendPasswordChangedEmail(user.email, user.firstName ?? undefined).catch((err) => {
+      this.logger.error(
+        `Failed to send password changed email to ${user.email}: ${err?.message || err}`,
+      );
+    });
+
     return { message: 'Password changed. Please sign in again on this device and your other devices.' };
   }
 
@@ -398,13 +412,14 @@ export class AuthService {
   private async sendVerificationEmail(
     userId: string,
     email: string,
+    name?: string,
   ): Promise<void> {
     const verificationToken = this.jwtService.sign(
       { sub: userId, type: 'email-verification', tokenVersion: await this.getTokenVersion(userId) },
       { secret: env.JWT_SECRET, expiresIn: '24h' },
     );
 
-    await this.mailService.sendVerificationEmail(email, verificationToken);
+    await this.mailService.sendVerificationEmail(email, verificationToken, name);
   }
 
   private verifyActionToken(
