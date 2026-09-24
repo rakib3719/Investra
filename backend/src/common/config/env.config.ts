@@ -30,11 +30,11 @@ export const env = {
     | 'production'
     | 'test',
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3001',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
   TRUSTED_ORIGINS: (
     process.env.TRUSTED_ORIGINS ||
     process.env.FRONTEND_URL ||
-    'http://localhost:3001,http://localhost:5173,https://investra-three.vercel.app,https://investra-frontend-4m5v.onrender.com'
+    'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:3001,https://investra-three.vercel.app,https://investra-frontend-4m5v.onrender.com'
   )
     .split(',')
     .map((origin) => origin.trim().replace(/\/+$/, ''))
@@ -73,10 +73,17 @@ export type EnvConfig = typeof env;
 export function isAllowedOrigin(origin?: string | null): boolean {
   if (!origin) return true;
   const normalizedOrigin = origin.trim().replace(/\/+$/, '');
-  return (
+  if (
     env.TRUSTED_ORIGINS.includes(normalizedOrigin) ||
     env.TRUSTED_ORIGINS.includes('*') ||
     normalizedOrigin.endsWith('.vercel.app') ||
     normalizedOrigin === 'https://investra-three.vercel.app'
-  );
+  ) {
+    return true;
+  }
+  // Allow any localhost / 127.0.0.1 origin during development
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)) {
+    return true;
+  }
+  return false;
 }

@@ -17,7 +17,8 @@ import {
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
 import { RequireAuth } from '@/components/auth/RequireAuth';
-import { getApiError } from '@/lib/api/client';
+import { getApiError, showApiErrorToast } from '@/lib/api/client';
+import { toast } from '@/lib/toast';
 import { useMyProfileQuery, useUpdateMyProfileMutation, useUploadAvatarMutation } from '@/lib/profile/profile-hooks';
 import type { MyProfile, UpdateProfileInput } from '@/lib/profile/types';
 import { InvestraInlineLoader, InvestraLoader } from '@/components/ui/InvestraLoader';
@@ -73,14 +74,21 @@ function ProfileWorkspace() {
     if (!image) return;
 
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 5 * 1024 * 1024) {
-      setAvatarValidationError('Choose a JPG, PNG, or WebP image that is 5 MB or smaller.');
+      const err = 'Choose a JPG, PNG, or WebP image that is 5 MB or smaller.';
+      setAvatarValidationError(err);
+      toast.error(err, { title: 'Invalid Image' });
       event.target.value = '';
       return;
     }
 
     setAvatarValidationError(null);
-    const { url } = await uploadAvatar.mutateAsync(image);
-    await updateProfile.mutateAsync({ image: url });
+    try {
+      const { url } = await uploadAvatar.mutateAsync(image);
+      await updateProfile.mutateAsync({ image: url });
+      toast.success('Profile avatar updated successfully!');
+    } catch (err) {
+      showApiErrorToast(err, 'Failed to upload avatar image');
+    }
     event.target.value = '';
   };
 
@@ -101,8 +109,13 @@ function ProfileWorkspace() {
       payload.accreditedInvestor = formData.get('accreditedInvestor') === 'on';
     }
 
-    await updateProfile.mutateAsync(payload as UpdateProfileInput);
-    if (step < 2) setStep((current) => current + 1);
+    try {
+      await updateProfile.mutateAsync(payload as UpdateProfileInput);
+      toast.success('Profile saved successfully!', { title: 'Changes Saved' });
+      if (step < 2) setStep((current) => current + 1);
+    } catch (err) {
+      showApiErrorToast(err, 'Failed to update profile');
+    }
   };
 
   return (

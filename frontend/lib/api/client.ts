@@ -77,15 +77,107 @@ apiClient.interceptors.response.use(
   },
 );
 
+import { toast } from '../toast';
+import type { UseFormSetError, FieldValues, Path } from 'react-hook-form';
+
 export function getApiError(error: unknown) {
   if (axios.isAxiosError<ApiErrorResponse>(error)) {
     const response = error.response?.data;
+    let message = response?.message;
+    if (Array.isArray(message)) {
+      message = message.join(', ');
+    } else if (!message && error.message) {
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        message = 'Unable to connect to server. Please check your internet connection.';
+      } else {
+        message = error.message;
+      }
+    }
+
     return {
-      message: response?.message ?? 'Something went wrong. Please try again.',
-      statusCode: response?.statusCode,
+      message: message ?? 'Something went wrong. Please try again.',
+      statusCode: response?.statusCode ?? error.response?.status,
       fieldErrors: response?.errors,
     };
   }
 
+  if (error instanceof Error) {
+    return { message: error.message };
+  }
+
   return { message: 'Something went wrong. Please try again.' };
+}
+
+/**
+ * Display an eye-catching error toast directly from any API error
+ */
+export function showApiErrorToast(error: unknown, fallbackMessage?: string) {
+  const err = getApiError(error);
+  return toast.apiError(error, fallbackMessage ?? err.message);
+}
+
+/**
+ * Map API response errors (including field errors or conflict errors) into React Hook Form
+ * AND trigger the toast notification!
+ */
+export function handleFormApiError<T extends FieldValues>(
+  error: unknown,
+  setError?: UseFormSetError<T>,
+  fallbackMessage?: string,
+) {
+  const apiError = getApiError(error);
+
+  // Show the toast error with cross button
+  showApiErrorToast(error, fallbackMessage ?? apiError.message);
+
+  if (!setError) return apiError;
+
+  // 1. If backend returned explicit field errors
+  if (apiError.fieldErrors) {
+    Object.entries(apiError.fieldErrors).forEach(([field, msg]) => {
+      setError(field as Path<T>, {
+        type: 'server',
+        message: String(msg),
+      });
+    });
+  }
+
+  const lowerMsg = apiError.message.toLowerCase();
+
+  // 2. Email-related errors:
+  // - Conflict: "A user with this email already exists"
+  // - Unverified email: "Please verify your email address before signing in"
+  // - Account status: "Your account is currently ..."
+  if (
+    lowerMsg.includes('already exists') ||
+    lowerMsg.includes('already registered') ||
+    lowerMsg.includes('verify your email') ||
+    lowerMsg.includes('email address') ||
+    apiError.statusCode === 409 ||
+    (lowerMsg.includes('email') && (apiError.statusCode === 400 || apiError.statusCode === 403))
+  ) {
+    setError('email' as Path<T>, {
+      type: 'server',
+      message: apiError.message,
+    });
+  }
+
+  // 3. Credentials or 401 Unauthorized errors:
+  if (apiError.statusCode === 401) {
+    setError('email' as Path<T>, {
+      type: 'server',
+      message: apiError.message,
+    });
+    setError('password' as Path<T>, {
+      type: 'server',
+      message: apiError.message,
+    });
+  } else if (lowerMsg.includes('password') && !lowerMsg.includes('email')) {
+    setError('password' as Path<T>, {
+      type: 'server',
+      message: apiError.message,
+    });
+  }
+
+  return apiError;
 }
