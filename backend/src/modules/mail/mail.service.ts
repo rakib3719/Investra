@@ -16,17 +16,23 @@ export class MailService {
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       secure: env.SMTP_SECURE,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASSWORD,
-      },
+      auth:
+        env.SMTP_USER && env.SMTP_PASSWORD
+          ? {
+              user: env.SMTP_USER,
+              pass: env.SMTP_PASSWORD,
+            }
+          : undefined,
+      connectionTimeout: 4000, // 4 seconds max
+      greetingTimeout: 4000,
+      socketTimeout: 5000,
     });
   }
 
-  async sendVerificationEmail(email: string, token: string): Promise<void> {
+  async sendVerificationEmail(email: string, token: string): Promise<boolean> {
     const verificationUrl = `${env.FRONTEND_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
-    await this.send({
+    return this.send({
       to: email,
       subject: 'Verify your Investra email address',
       text: `Welcome to Investra. Verify your email address: ${verificationUrl}`,
@@ -34,10 +40,10 @@ export class MailService {
     });
   }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+  async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
     const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`;
 
-    await this.send({
+    return this.send({
       to: email,
       subject: 'Reset your Investra password',
       text: `Reset your Investra password: ${resetUrl}`,
@@ -50,23 +56,26 @@ export class MailService {
     subject: string;
     text: string;
     html: string;
-  }): Promise<void> {
+  }): Promise<boolean> {
     if (!env.SMTP_USER || !env.SMTP_PASSWORD) {
-      throw new InternalServerErrorException(
-        'Email delivery is not configured. Set SMTP_USER and SMTP_PASSWORD.',
+      this.logger.warn(
+        `SMTP credentials not configured (SMTP_USER/SMTP_PASSWORD). Skipped sending email to ${message.to}.`,
       );
+      return false;
     }
 
     try {
       await this.transporter.sendMail({
-        from: env.SMTP_FROM,
+        from: env.SMTP_FROM || env.SMTP_USER,
         ...message,
       });
-    } catch (error) {
-      this.logger.error(`Unable to send email to ${message.to}`, error);
-      throw new InternalServerErrorException(
-        'We could not send the email. Please try again shortly.',
+      this.logger.log(`Email successfully sent to ${message.to}`);
+      return true;
+    } catch (error: any) {
+      this.logger.error(
+        `Unable to send email to ${message.to}: ${error?.message || error}`,
       );
+      return false;
     }
   }
 }

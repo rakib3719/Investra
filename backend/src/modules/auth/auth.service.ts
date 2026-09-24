@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -25,6 +26,8 @@ import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
@@ -92,7 +95,12 @@ export class AuthService {
       return user;
     });
 
-    await this.sendVerificationEmail(newUser.id, newUser.email);
+    // Send verification email safely in background without blocking or breaking registration
+    void this.sendVerificationEmail(newUser.id, newUser.email).catch((err) => {
+      this.logger.error(
+        `Failed to send verification email to ${newUser.email}: ${err?.message || err}`,
+      );
+    });
 
     return {
       message:
@@ -252,24 +260,24 @@ export class AuthService {
    * Initiates forgot password flow by generating a temporary password reset token.
    */
   async forgotPassword(dto: ForgotPasswordDto) {
+    const normalizedEmail = dto.email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email: normalizedEmail },
     });
 
-    // For security reasons, don't throw error if email does not exist (prevent enumeration)
-    if (!user) {
-      return {
-        message:
-          'If the email exists in our system, you will receive a reset link shortly.',
-      };
+    if (user) {
+      const resetToken = this.jwtService.sign(
+        { sub: user.id, type: 'password-reset', tokenVersion: user.tokenVersion },
+        { secret: env.JWT_SECRET, expiresIn: '1h' },
+      );
+
+      // Send asynchronously without blocking the user response
+      void this.mailService.sendPasswordResetEmail(user.email, resetToken).catch((err) => {
+        this.logger.error(
+          `Failed to send password reset email to ${user.email}: ${err?.message || err}`,
+        );
+      });
     }
-
-    const resetToken = this.jwtService.sign(
-      { sub: user.id, type: 'password-reset', tokenVersion: user.tokenVersion },
-      { secret: env.JWT_SECRET, expiresIn: '1h' },
-    );
-
-    await this.mailService.sendPasswordResetEmail(user.email, resetToken);
 
     return {
       message:
@@ -318,7 +326,11 @@ export class AuthService {
     });
 
     if (user && !user.isEmailVerified) {
-      await this.sendVerificationEmail(user.id, user.email);
+      void this.sendVerificationEmail(user.id, user.email).catch((err) => {
+        this.logger.error(
+          `Failed to resend verification email to ${user.email}: ${err?.message || err}`,
+        );
+      });
     }
 
     return {

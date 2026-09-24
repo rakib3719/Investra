@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { env } from './common/config/env.config';
+import { env, isAllowedOrigin } from './common/config/env.config';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
@@ -24,12 +24,7 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. mobile apps, server-to-server, Postman)
-      if (!origin) return callback(null, true);
-      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
-      if (
-        env.TRUSTED_ORIGINS.includes(normalizedOrigin) ||
-        env.TRUSTED_ORIGINS.includes('*')
-      ) {
+      if (!origin || isAllowedOrigin(origin)) {
         return callback(null, true);
       }
       return callback(null, false);
