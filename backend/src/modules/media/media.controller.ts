@@ -42,6 +42,16 @@ export class MediaController {
     return this.mediaService.presignUpload(userId, dto);
   }
 
+  @Post('presign-public')
+  @ApiOperation({
+    summary: 'Request a time-limited Presigned S3 PUT URL for public assets during registration (AVATAR, CAMPAIGN_COVER)',
+  })
+  @ApiResponse({ status: 201, description: 'Public presigned upload URL issued successfully' })
+  @ApiResponse({ status: 400, description: 'File rejected or unsupported category' })
+  async presignPublicUpload(@Body() dto: PresignUploadDto) {
+    return this.mediaService.presignUpload('public', dto);
+  }
+
   @Post('confirm-upload')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -55,6 +65,16 @@ export class MediaController {
     @Body() dto: ConfirmUploadDto,
   ) {
     return this.mediaService.confirmUpload(userId, dto.mediaId);
+  }
+
+  @Post('confirm-public-upload')
+  @ApiOperation({
+    summary: 'Verify public registration uploaded object in R2 via HeadObject and promote to UPLOADED status',
+  })
+  @ApiResponse({ status: 200, description: 'Public upload confirmed into UPLOADED status' })
+  @ApiResponse({ status: 400, description: 'Object not found or verification failed' })
+  async confirmPublicUpload(@Body() dto: ConfirmUploadDto) {
+    return this.mediaService.confirmPublicUpload(dto.mediaId);
   }
 
   @Get(':id/signed-url')

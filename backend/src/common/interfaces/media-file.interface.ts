@@ -12,7 +12,7 @@ export interface MediaFileRecord {
   accessType: MediaAccessType;
   category: MediaCategory;
   status: MediaUploadStatus;
-  uploadedById: string;
+  uploadedById: string | null;
   activatedAt?: Date | null;
   deletedAt?: Date | null;
   createdAt: Date;

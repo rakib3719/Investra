@@ -34,7 +34,7 @@ export interface FormattedMediaResponse {
   category: MediaCategory;
   status: MediaUploadStatus;
   url: string | null;
-  uploadedById: string;
+  uploadedById: string | null;
   createdAt: Date;
   activatedAt: Date | null;
 }
@@ -126,7 +126,9 @@ export class MediaService {
 
     // Generate safe unique key: prefix/userId/uuid.extension
     const fileId = randomUUID();
-    const key = `${policy.keyPrefix}/${userId}/${fileId}.${extension}`;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId || '');
+    const folder = isUuid ? userId : 'public';
+    const key = `${policy.keyPrefix}/${folder}/${fileId}.${extension}`;
 
     // Create DB record with PENDING_UPLOAD
     const media = await this.prisma.mediaFile.create({
@@ -140,7 +142,7 @@ export class MediaService {
         accessType: policy.accessType,
         category: dto.category,
         status: MediaUploadStatus.PENDING_UPLOAD,
-        uploadedById: userId,
+        uploadedById: isUuid ? userId : null,
       },
     });
 
@@ -208,6 +210,54 @@ export class MediaService {
     }
 
     // Promote to UPLOADED (retains UPLOADED until attached to a business entity)
+    const updated = await this.prisma.mediaFile.update({
+      where: { id: media.id },
+      data: {
+        status: MediaUploadStatus.UPLOADED,
+        sizeBytes: BigInt(actualBytes),
+      },
+    });
+
+    return this.formatMedia(updated);
+  }
+
+  /**
+   * 2b. Confirm Public Upload (e.g. unauthenticated registration avatar or cover)
+   */
+  async confirmPublicUpload(
+    mediaId: string,
+  ): Promise<FormattedMediaResponse> {
+    const media = await this.prisma.mediaFile.findUnique({
+      where: { id: mediaId },
+    });
+
+    if (!media) {
+      throw new NotFoundException('Media record not found.');
+    }
+
+    if (media.accessType !== MediaAccessType.PUBLIC) {
+      throw new ForbiddenException('Only public assets can be confirmed through the public endpoint.');
+    }
+
+    if (media.status === MediaUploadStatus.DELETED) {
+      throw new BadRequestException('This media record was previously deleted.');
+    }
+
+    // Verify object in Cloudflare R2
+    const head = await this.r2StorageService.headObject(media.bucket, media.key);
+    const actualBytes = head.ContentLength ?? 0;
+
+    if (actualBytes === 0) {
+      throw new BadRequestException('Uploaded object in storage is empty (0 bytes).');
+    }
+
+    const declaredBytes = Number(media.sizeBytes);
+    if (declaredBytes > 0 && Math.abs(actualBytes - declaredBytes) / declaredBytes > 0.1) {
+      throw new BadRequestException(
+        'Uploaded file size differs significantly from initial declaration.',
+      );
+    }
+
     const updated = await this.prisma.mediaFile.update({
       where: { id: media.id },
       data: {

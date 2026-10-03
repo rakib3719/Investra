@@ -41,6 +41,14 @@ export class UpdateProfileDto {
   avatarMediaId?: string;
 
   @IsOptional()
+  @IsUrl({}, { message: 'Please provide a valid cover image URL' })
+  coverImage?: string;
+
+  @IsOptional()
+  @IsString()
+  coverMediaId?: string;
+
+  @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
 

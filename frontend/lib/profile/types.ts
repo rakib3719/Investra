@@ -9,6 +9,8 @@ export interface ProfileAccount {
   phone: string | null;
   image: string | null;
   avatarMediaId?: string | null;
+  coverImage?: string | null;
+  coverMediaId?: string | null;
   role: AuthenticatedUserRole;
   gender: 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY' | null;
   dateOfBirth: string | null;

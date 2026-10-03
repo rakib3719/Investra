@@ -60,7 +60,28 @@ export async function requestPresignedUpload(
       category,
     },
   );
-  return response.data;
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
+/**
+ * 1b. Request public presigned PUT URL from NestJS backend (for registration without login)
+ */
+export async function requestPublicPresignedUpload(
+  file: File,
+  category: MediaCategory,
+): Promise<PresignedUploadResponse> {
+  const response = await apiClient.post<PresignedUploadResponse>(
+    '/api/v1/media/presign-public',
+    {
+      fileName: file.name,
+      fileType: file.type || 'application/octet-stream',
+      fileSize: file.size,
+      category,
+    },
+  );
+  const raw: any = response.data;
+  return raw?.data || raw;
 }
 
 /**
@@ -131,7 +152,22 @@ export async function confirmUpload(
     '/api/v1/media/confirm-upload',
     { mediaId },
   );
-  return response.data;
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
+/**
+ * 3b. Confirm unauthenticated public upload (for registration)
+ */
+export async function confirmPublicUpload(
+  mediaId: string,
+): Promise<ConfirmedMediaResponse> {
+  const response = await apiClient.post<ConfirmedMediaResponse>(
+    '/api/v1/media/confirm-public-upload',
+    { mediaId },
+  );
+  const raw: any = response.data;
+  return raw?.data || raw;
 }
 
 /**
@@ -143,7 +179,8 @@ export async function deleteMedia(
   const response = await apiClient.delete<{ success: boolean; message: string }>(
     `/api/v1/media/${mediaId}`,
   );
-  return response.data;
+  const raw: any = response.data;
+  return raw?.data || raw;
 }
 
 /**
@@ -155,7 +192,8 @@ export async function getMediaAccessUrl(
   const response = await apiClient.get<SignedUrlResponse>(
     `/api/v1/media/${mediaId}/signed-url`,
   );
-  return response.data;
+  const raw: any = response.data;
+  return raw?.data || raw;
 }
 
 /**
@@ -175,4 +213,23 @@ export async function uploadMediaPipeline(
 
   // Step 3: Confirm with backend
   return await confirmUpload(presignData.mediaId);
+}
+
+/**
+ * Unauthenticated pipeline runner for registration assets
+ */
+export async function uploadPublicMediaPipeline(
+  file: File,
+  category: MediaCategory,
+  onProgress?: (progressPercentage: number) => void,
+  abortSignal?: AbortSignal,
+): Promise<ConfirmedMediaResponse> {
+  // Step 1: Public Presign
+  const presignData = await requestPublicPresignedUpload(file, category);
+
+  // Step 2: Direct browser PUT to R2
+  await directUploadToR2(presignData.uploadUrl, file, onProgress, abortSignal);
+
+  // Step 3: Public Confirm
+  return await confirmPublicUpload(presignData.mediaId);
 }

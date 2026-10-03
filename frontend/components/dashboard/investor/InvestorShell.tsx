@@ -43,6 +43,15 @@ const navigation: { section: InvestorSection; label: string; icon: LucideIcon; b
 ];
 
 function UserAvatar({ user }: { user: AuthUser }) {
+  if (user.image) {
+    return (
+      <img
+        src={user.image}
+        alt={user.firstName || "User"}
+        className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-200"
+      />
+    );
+  }
   const initials = `${user.firstName?.[0] ?? user.email[0]}${user.lastName?.[0] ?? ""}`.toUpperCase();
   return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-800">{initials}</span>;
 }

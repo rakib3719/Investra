@@ -23,6 +23,7 @@ import { useMyProfileQuery, useUpdateMyProfileMutation, useUploadAvatarMutation 
 import type { MyProfile, UpdateProfileInput } from '@/lib/profile/types';
 import { InvestraInlineLoader, InvestraLoader } from '@/components/ui/InvestraLoader';
 import { FileUploadDropzone } from '@/components/ui/FileUploadDropzone';
+import { KycVerificationCard } from '@/components/dashboard/shared/KycVerificationCard';
 
 const numberFields = new Set([
   'yearsOfExperience',
@@ -174,10 +175,50 @@ function ProfileWorkspace() {
                   }}
                 />
               </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 space-y-3">
+                <div>
+                  <p className="text-sm font-bold text-slate-800">Cover Banner</p>
+                  <p className="text-xs text-slate-500">
+                    Direct-to-R2 upload. Landscape JPG, PNG, or WebP up to 10 MB.
+                  </p>
+                </div>
+                <FileUploadDropzone
+                  category="CAMPAIGN_COVER"
+                  currentMedia={{
+                    url: account.coverImage,
+                    fileName: `${account.firstName || 'Profile'} Cover Banner`,
+                    status: 'ACTIVE',
+                    mimeType: 'image/jpeg',
+                  }}
+                  onUploadSuccess={async (media) => {
+                    try {
+                      await updateProfile.mutateAsync({
+                        coverMediaId: media.id,
+                        coverImage: media.url || undefined,
+                      });
+                      toast.success('Cover banner updated in Cloudflare R2!');
+                    } catch (err) {
+                      showApiErrorToast(err, 'Failed to save cover reference');
+                    }
+                  }}
+                  onRemove={async () => {
+                    try {
+                      await updateProfile.mutateAsync({
+                        coverMediaId: null,
+                        coverImage: null,
+                      });
+                      toast.info('Cover banner removed.');
+                    } catch (err) {
+                      showApiErrorToast(err, 'Failed to remove cover');
+                    }
+                  }}
+                />
+              </div>
               <div className="grid md:grid-cols-2 gap-4"><Field name="firstName" label="First name" defaultValue={account.firstName ?? ''} /><Field name="lastName" label="Last name" defaultValue={account.lastName ?? ''} /><Field name="phone" label="Phone number" defaultValue={account.phone ?? ''} /><Field name="country" label="Country" defaultValue={account.country ?? ''} /><Field name="city" label="City" defaultValue={account.city ?? ''} /><Field name="dateOfBirth" type="date" label="Date of birth" defaultValue={account.dateOfBirth?.slice(0, 10) ?? ''} /><Field name="website" type="url" label="Website" defaultValue={account.website ?? ''} /></div><div className="grid md:grid-cols-2 gap-4"><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Gender</span><select name="gender" defaultValue={account.gender ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Prefer not to say</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option><option value="PREFER_NOT_TO_SAY">Prefer not to say</option></select></label><label className="space-y-1"><span className="text-[11px] font-bold text-slate-700">Professional type</span><select name="professionalType" defaultValue={account.professionalType ?? ''} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"><option value="">Select type</option><option value="EMPLOYEE">Employee</option><option value="BUSINESS_OWNER">Business owner</option><option value="FREELANCER">Freelancer</option><option value="SELF_EMPLOYED">Self-employed</option><option value="STUDENT">Student</option><option value="OTHER">Other</option></select></label></div><label className="space-y-1 block"><span className="text-[11px] font-bold text-slate-700">Short bio</span><textarea name="bio" defaultValue={account.bio ?? ''} rows={4} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm" placeholder="Tell the community about your experience and focus." /></label></>}
 
               {step === 1 && <RoleDetails role={account.role} profile={profile} />}
-              {step === 2 && <><div><p className="text-[11px] font-bold text-[#064e3b] uppercase tracking-widest">Step 3</p><h2 className="font-heading text-2xl font-black text-slate-800">Visibility & review</h2><p className="text-sm text-slate-500 mt-1">Choose whether your completed role profile may appear in discovery.</p></div><label className="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl"><input name="profileVisibility" type="checkbox" defaultChecked={profile?.profileVisibility ?? false} className="mt-0.5 accent-[#064e3b]" /><span><span className="block text-sm font-bold text-slate-800">Show my profile in discovery</span><span className="block text-xs text-slate-500 mt-1">Your profile remains subject to Investra verification and platform rules.</span></span></label><div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600"><p className="font-bold text-slate-800">Next: verification documents</p><p className="mt-1">NID/passport and identity documents are intentionally kept out of this page. Add them later in a dedicated encrypted verification experience.</p></div></>}
+              {step === 2 && <><div><p className="text-[11px] font-bold text-[#064e3b] uppercase tracking-widest">Step 3</p><h2 className="font-heading text-2xl font-black text-slate-800">Visibility & verification</h2><p className="text-sm text-slate-500 mt-1">Manage public marketplace discovery and complete regulatory KYC compliance.</p></div><label className="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl"><input name="profileVisibility" type="checkbox" defaultChecked={profile?.profileVisibility ?? false} className="mt-0.5 accent-[#064e3b]" /><span><span className="block text-sm font-bold text-slate-800">Show my profile in discovery</span><span className="block text-xs text-slate-500 mt-1">Your profile remains subject to Investra verification and platform rules.</span></span></label><KycVerificationCard user={account as any} /></>}
 
               {apiError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{apiError}</p>}
               {updateProfile.isSuccess && <p className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700">Profile saved securely.</p>}

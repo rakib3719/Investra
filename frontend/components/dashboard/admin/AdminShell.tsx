@@ -44,6 +44,15 @@ const navigation: {
 ];
 
 function UserAvatar({ user }: { user: AuthUser }) {
+  if (user.image) {
+    return (
+      <img
+        src={user.image}
+        alt={user.firstName || "Admin"}
+        className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-200"
+      />
+    );
+  }
   const initials = `${user.firstName?.[0] ?? user.email[0]}${
     user.lastName?.[0] ?? ""
   }`.toUpperCase();

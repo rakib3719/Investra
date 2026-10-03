@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { ArrowRight, Briefcase, Building2, CheckCircle2, Eye, EyeOff, GraduationCap, Lock, Mail, UserCheck } from 'lucide-react';
+import { ArrowRight, Briefcase, Building2, Camera, CheckCircle2, ChevronDown, ChevronUp, Eye, EyeOff, GraduationCap, Lock, Mail, UserCheck } from 'lucide-react';
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
 import { handleFormApiError } from '@/lib/api/client';
@@ -15,6 +15,7 @@ import { registerSchema, type RegisterFormValues } from '@/lib/auth/schemas';
 import type { PublicUserRole } from '@/lib/auth/types';
 import { InvestraInlineLoader } from '@/components/ui/InvestraLoader';
 import { InputError, getFieldStateClass } from '@/components/ui/InputError';
+import { FileUploadDropzone } from '@/components/ui/FileUploadDropzone';
 
 const roles: Array<{ value: PublicUserRole; label: string; description: string; icon: typeof Building2 }> = [
   { value: 'INVESTOR', label: 'Investor', description: 'Discover and compare vetted deals.', icon: Building2 },
@@ -38,6 +39,9 @@ export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState<PublicUserRole>('INVESTOR');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showMediaSection, setShowMediaSection] = useState(false);
+  const [avatarMedia, setAvatarMedia] = useState<{ id: string; url: string | null } | null>(null);
+  const [coverMedia, setCoverMedia] = useState<{ id: string; url: string | null } | null>(null);
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
@@ -47,6 +51,10 @@ export default function RegisterPage() {
         email: values.email,
         password: values.password,
         role: values.role,
+        avatarMediaId: avatarMedia?.id,
+        image: avatarMedia?.url || undefined,
+        coverMediaId: coverMedia?.id,
+        coverImage: coverMedia?.url || undefined,
       });
       toast.success('Account created! Please check your email to verify your account.', {
         title: 'Registration Successful',
@@ -193,6 +201,71 @@ export default function RegisterPage() {
                 </button>
               </div>
               <InputError message={errors.confirmPassword?.message} id="confirmPassword-error" />
+            </div>
+
+            {/* Optional Profile Media */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-all">
+              <button
+                type="button"
+                onClick={() => setShowMediaSection((prev) => !prev)}
+                className="flex w-full items-center justify-between text-left cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-slate-200 text-[#064e3b] shadow-xs group-hover:border-[#064e3b]/40 transition-colors">
+                    <Camera className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-heading font-bold text-xs text-slate-800">
+                        Profile & Cover Photos
+                      </p>
+                      <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                        Optional
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Add an avatar and banner now, or upload later in your dashboard
+                    </p>
+                  </div>
+                </div>
+                <div className="text-slate-400 p-1 rounded-lg group-hover:text-slate-600 transition-colors">
+                  {showMediaSection ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
+              </button>
+
+              {showMediaSection && (
+                <div className="mt-4 pt-4 border-t border-slate-200 space-y-4 animate-in fade-in duration-200">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      Avatar / Profile Photo
+                    </label>
+                    <FileUploadDropzone
+                      category="AVATAR"
+                      isPublic={true}
+                      label="Upload Avatar Photo"
+                      description="JPEG, PNG or WebP (max 5MB)"
+                      currentMedia={avatarMedia ? { id: avatarMedia.id, url: avatarMedia.url, status: 'UPLOADED' } : undefined}
+                      onUploadSuccess={(media) => setAvatarMedia({ id: media.id, url: media.url })}
+                      onRemove={() => setAvatarMedia(null)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      Cover Banner Photo
+                    </label>
+                    <FileUploadDropzone
+                      category="CAMPAIGN_COVER"
+                      isPublic={true}
+                      label="Upload Cover Banner"
+                      description="JPEG, PNG or WebP (max 10MB)"
+                      currentMedia={coverMedia ? { id: coverMedia.id, url: coverMedia.url, status: 'UPLOADED' } : undefined}
+                      onUploadSuccess={(media) => setCoverMedia({ id: media.id, url: media.url })}
+                      onRemove={() => setCoverMedia(null)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-[#064e3b]/5 rounded-2xl border border-[#064e3b]/10 text-[11px] text-slate-600 flex gap-2">

@@ -19,6 +19,14 @@ const userProfileSelect = {
       key: true,
     },
   },
+  coverImage: true,
+  coverMediaId: true,
+  coverMedia: {
+    select: {
+      id: true,
+      key: true,
+    },
+  },
   role: true,
   gender: true,
   dateOfBirth: true,
@@ -58,6 +66,7 @@ export class ProfileService {
       entrepreneurProfile,
       consultantProfile,
       avatarMedia,
+      coverMedia,
       ...account
     } = user;
 
@@ -65,6 +74,11 @@ export class ProfileService {
     const resolvedImage = avatarMedia
       ? this.mediaService.derivePublicUrl(avatarMedia.key)
       : account.image;
+
+    // Derive cover image URL from Cloudflare R2 if coverMedia exists
+    const resolvedCoverImage = coverMedia
+      ? this.mediaService.derivePublicUrl(coverMedia.key)
+      : account.coverImage;
 
     const profile =
       user.role === UserRole.INVESTOR
@@ -79,6 +93,7 @@ export class ProfileService {
       account: {
         ...account,
         image: resolvedImage,
+        coverImage: resolvedCoverImage,
       },
       profile,
     };
@@ -87,7 +102,7 @@ export class ProfileService {
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true, avatarMediaId: true },
+      select: { id: true, role: true, avatarMediaId: true, coverMediaId: true },
     });
 
     if (!user) {
@@ -109,11 +124,27 @@ export class ProfileService {
       });
     }
 
+    // Handle cover media replacement safely within transaction
+    if (dto.coverMediaId && dto.coverMediaId !== user.coverMediaId) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.mediaService.replaceEntityMedia(
+          dto.coverMediaId!,
+          user.coverMediaId,
+          tx,
+        );
+        await tx.user.update({
+          where: { id: userId },
+          data: { coverMediaId: dto.coverMediaId },
+        });
+      });
+    }
+
     const accountData = this.defined({
       firstName: dto.firstName,
       lastName: dto.lastName,
       phone: dto.phone,
       image: dto.image,
+      coverImage: dto.coverImage,
       gender: dto.gender,
       dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
       bio: dto.bio,

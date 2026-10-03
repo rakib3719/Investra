@@ -75,8 +75,8 @@ export const env = {
     (process.env.R2_ACCOUNT_ID
       ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
       : ''),
-  R2_PUBLIC_BUCKET_NAME: process.env.R2_PUBLIC_BUCKET_NAME || 'investra-media-public',
-  R2_PRIVATE_BUCKET_NAME: process.env.R2_PRIVATE_BUCKET_NAME || 'investra-media-private',
+  R2_PUBLIC_BUCKET_NAME: process.env.R2_PUBLIC_BUCKET_NAME || 'investra-public',
+  R2_PRIVATE_BUCKET_NAME: process.env.R2_PRIVATE_BUCKET_NAME || 'investra-private',
   R2_PUBLIC_URL: (process.env.R2_PUBLIC_URL || '').replace(/\/+$/, ''),
   MEDIA_CLEANUP_SECRET: process.env.MEDIA_CLEANUP_SECRET || 'dev-cleanup-secret',
 };

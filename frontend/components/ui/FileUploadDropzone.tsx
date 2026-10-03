@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import {
   uploadMediaPipeline,
+  uploadPublicMediaPipeline,
   deleteMedia,
   ConfirmedMediaResponse,
   MediaCategory,
@@ -33,6 +34,7 @@ interface FileUploadDropzoneProps {
   label?: string;
   description?: string;
   className?: string;
+  isPublic?: boolean;
 }
 
 const CATEGORY_LIMITS: Record<MediaCategory, { maxBytes: number; label: string; accept: string }> = {
@@ -88,6 +90,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
   label,
   description,
   className = '',
+  isPublic = false,
 }) => {
   const categoryConfig = CATEGORY_LIMITS[category] || {
     maxBytes: 10 * 1024 * 1024,
@@ -157,7 +160,8 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
     abortControllerRef.current = new AbortController();
 
     try {
-      const confirmed = await uploadMediaPipeline(
+      const runner = isPublic ? uploadPublicMediaPipeline : uploadMediaPipeline;
+      const confirmed = await runner(
         file,
         category,
         (pct) => setProgress(pct),

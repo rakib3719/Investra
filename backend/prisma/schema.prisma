@@ -44,6 +44,9 @@ model User {
   bookmarks           Bookmark[]
   avatarMediaId       String?                @unique @map("avatar_media_id") @db.Uuid
   avatarMedia         MediaFile?             @relation("UserAvatarMedia", fields: [avatarMediaId], references: [id], onDelete: SetNull)
+  coverImage          String?                @map("cover_image")
+  coverMediaId        String?                @unique @map("cover_media_id") @db.Uuid
+  coverMedia          MediaFile?             @relation("UserCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
   uploadedMedia       MediaFile[]            @relation("UserUploadedMedia")
 
   @@map("users")
@@ -472,14 +475,15 @@ model MediaFile {
   accessType   MediaAccessType   @map("access_type")
   category     MediaCategory     @map("category")
   status       MediaUploadStatus @default(PENDING_UPLOAD) @map("status")
-  uploadedById String            @map("uploaded_by_id") @db.Uuid
+  uploadedById String?           @map("uploaded_by_id") @db.Uuid
   activatedAt  DateTime?         @map("activated_at") @db.Timestamp(6)
   deletedAt    DateTime?         @map("deleted_at") @db.Timestamp(6)
   createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt    DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  uploadedBy         User              @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedBy         User?             @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: Cascade)
   userAvatar         User?             @relation("UserAvatarMedia")
+  userCover          User?             @relation("UserCoverMedia")
   businessCover      Business?         @relation("BusinessCoverMedia")
   pitchDeckFiles     PitchDeck[]       @relation("PitchDeckMedia")
   verificationFront  UserVerification? @relation("VerificationFrontMedia")

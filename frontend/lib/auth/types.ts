@@ -17,6 +17,7 @@ export interface AuthUser {
   email: string;
   phone: string | null;
   image?: string | null;
+  coverImage?: string | null;
   role: AuthenticatedUserRole;
   accountStatus: AccountStatus;
   createdAt: string;
@@ -29,6 +30,10 @@ export interface RegisterInput {
   email: string;
   password: string;
   role: PublicUserRole;
+  image?: string;
+  avatarMediaId?: string;
+  coverImage?: string;
+  coverMediaId?: string;
 }
 
 export interface LoginInput {
