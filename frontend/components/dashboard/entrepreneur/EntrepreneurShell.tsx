@@ -14,12 +14,15 @@ import {
   Rocket,
   Search,
   Settings,
+  ShieldCheck,
+  User,
   Users,
   X,
   type LucideIcon,
 } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
 import {
   entrepreneurPageMeta,
   entrepreneurSectionPath,
@@ -33,6 +36,8 @@ const navigation: {
   badge?: string;
 }[] = [
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
+  { section: "profile", label: "Company Profile", icon: User },
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
   { section: "analytics", label: "Analytics", icon: LineChart },
@@ -40,6 +45,15 @@ const navigation: {
 ];
 
 function UserAvatar({ user }: { user: AuthUser }) {
+  if (user.image) {
+    return (
+      <img
+        src={user.image}
+        alt={user.firstName || "User"}
+        className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-200"
+      />
+    );
+  }
   const initials = `${user.firstName?.[0] ?? user.email[0]}${
     user.lastName?.[0] ?? ""
   }`.toUpperCase();
@@ -65,7 +79,13 @@ export function EntrepreneurShell({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const { data: kycData } = useMyKycQuery();
   const meta = entrepreneurPageMeta[activeSection];
+
+  const kycStatus = kycData?.status;
+  const isKycVerified = kycStatus === "VERIFIED";
+  const isKycReview = kycStatus === "UNDER_REVIEW" || (kycStatus === "PENDING" && Boolean(kycData?.verification?.hasFront));
+  const isKycRejected = kycStatus === "REJECTED";
 
   return (
     <main className="min-h-screen bg-[#f9fbfa] text-slate-900">
@@ -113,6 +133,7 @@ export function EntrepreneurShell({
           >
             {navigation.map(({ section, label, icon: Icon, badge }) => {
               const active = section === activeSection;
+              const isKyc = section === "kyc";
               return (
                 <Link
                   key={section}
@@ -127,14 +148,26 @@ export function EntrepreneurShell({
                 >
                   <Icon className="h-[18px] w-[18px]" />
                   <span className="flex-1">{label}</span>
-                  {badge && (
-                    <span
-                      className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${
-                        active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"
-                      }`}
-                    >
-                      {badge}
-                    </span>
+                  {isKyc ? (
+                    isKycVerified ? (
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">Verified</span>
+                    ) : isKycReview ? (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">In Review</span>
+                    ) : isKycRejected ? (
+                      <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800 border border-rose-200">Action Req</span>
+                    ) : (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">Unverified</span>
+                    )
+                  ) : (
+                    badge && (
+                      <span
+                        className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${
+                          active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {badge}
+                      </span>
+                    )
                   )}
                 </Link>
               );
@@ -247,11 +280,18 @@ export function EntrepreneurShell({
                     className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
                   >
                     <Link
-                      href="/profile"
+                      href="/dashboard/entrepreneur/profile"
                       className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
                       role="menuitem"
                     >
-                      My profile
+                      Company profile
+                    </Link>
+                    <Link
+                      href="/dashboard/entrepreneur/kyc"
+                      className="block rounded-xl px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-50"
+                      role="menuitem"
+                    >
+                      Founder KYC
                     </Link>
                     <Link
                       href="/dashboard/entrepreneur/settings"

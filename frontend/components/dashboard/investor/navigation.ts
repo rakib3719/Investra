@@ -7,6 +7,8 @@ export const investorSections = [
   "reports",
   "watchlist",
   "messages",
+  "profile",
+  "kyc",
   "settings",
 ] as const;
 
@@ -68,9 +70,19 @@ export const investorPageMeta: Record<
     eyebrow: "Private conversations",
     description: "Stay connected with founders, advisors, and your Investra support team.",
   },
+  profile: {
+    title: "Investor Profile & Branding",
+    eyebrow: "Public Identity",
+    description: "Personalize your avatar, cover banner, and accreditation bio visible to verified founders.",
+  },
+  kyc: {
+    title: "Identity & KYC",
+    eyebrow: "Account Compliance",
+    description: "Verify your identity and regulatory credentials to unlock capital commitments and private deal rooms.",
+  },
   settings: {
     title: "Settings",
     eyebrow: "Account preferences",
-    description: "Manage your profile, security, investment preferences, and notifications.",
+    description: "Manage your security, investment preferences, and notifications.",
   },
 };

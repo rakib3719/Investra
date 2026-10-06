@@ -8,6 +8,7 @@ import {
   Bell,
   ChevronDown,
   CircleHelp,
+  Clock,
   FolderTree,
   LayoutDashboard,
   LogOut,
@@ -37,6 +38,8 @@ const navigation: {
 }[] = [
   { section: "overview", label: "Command Center", icon: LayoutDashboard },
   { section: "campaigns", label: "Moderation Queue", icon: Rocket },
+  { section: "kyc", label: "KYC Vault", icon: ShieldCheck },
+  { section: "pending-users", label: "Pending Users", icon: Clock },
   { section: "users", label: "User Directory", icon: Users },
   { section: "categories", label: "Categories", icon: FolderTree },
   { section: "visitors", label: "Traffic & Telemetry", icon: Activity },
@@ -44,6 +47,15 @@ const navigation: {
 ];
 
 function UserAvatar({ user }: { user: AuthUser }) {
+  if (user.image) {
+    return (
+      <img
+        src={user.image}
+        alt={user.firstName || "Admin"}
+        className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-200"
+      />
+    );
+  }
   const initials = `${user.firstName?.[0] ?? user.email[0]}${
     user.lastName?.[0] ?? ""
   }`.toUpperCase();

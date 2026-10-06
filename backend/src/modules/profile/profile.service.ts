@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MediaService } from '../media/media.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 const userProfileSelect = {
@@ -11,6 +12,21 @@ const userProfileSelect = {
   email: true,
   phone: true,
   image: true,
+  avatarMediaId: true,
+  avatarMedia: {
+    select: {
+      id: true,
+      key: true,
+    },
+  },
+  coverImage: true,
+  coverMediaId: true,
+  coverMedia: {
+    select: {
+      id: true,
+      key: true,
+    },
+  },
   role: true,
   gender: true,
   dateOfBirth: true,
@@ -30,7 +46,10 @@ const userProfileSelect = {
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   async getMyProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -46,8 +65,21 @@ export class ProfileService {
       investorProfile,
       entrepreneurProfile,
       consultantProfile,
+      avatarMedia,
+      coverMedia,
       ...account
     } = user;
+
+    // Derive avatar image URL from Cloudflare R2 if avatarMedia exists
+    const resolvedImage = avatarMedia
+      ? this.mediaService.derivePublicUrl(avatarMedia.key)
+      : account.image;
+
+    // Derive cover image URL from Cloudflare R2 if coverMedia exists
+    const resolvedCoverImage = coverMedia
+      ? this.mediaService.derivePublicUrl(coverMedia.key)
+      : account.coverImage;
+
     const profile =
       user.role === UserRole.INVESTOR
         ? investorProfile
@@ -57,17 +89,54 @@ export class ProfileService {
             ? consultantProfile
             : null;
 
-    return { account, profile };
+    return {
+      account: {
+        ...account,
+        image: resolvedImage,
+        coverImage: resolvedCoverImage,
+      },
+      profile,
+    };
   }
 
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true },
+      select: { id: true, role: true, avatarMediaId: true, coverMediaId: true },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Handle avatar media replacement safely within transaction
+    if (dto.avatarMediaId && dto.avatarMediaId !== user.avatarMediaId) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.mediaService.replaceEntityMedia(
+          dto.avatarMediaId!,
+          user.avatarMediaId,
+          tx,
+        );
+        await tx.user.update({
+          where: { id: userId },
+          data: { avatarMediaId: dto.avatarMediaId },
+        });
+      });
+    }
+
+    // Handle cover media replacement safely within transaction
+    if (dto.coverMediaId && dto.coverMediaId !== user.coverMediaId) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.mediaService.replaceEntityMedia(
+          dto.coverMediaId!,
+          user.coverMediaId,
+          tx,
+        );
+        await tx.user.update({
+          where: { id: userId },
+          data: { coverMediaId: dto.coverMediaId },
+        });
+      });
     }
 
     const accountData = this.defined({
@@ -75,6 +144,7 @@ export class ProfileService {
       lastName: dto.lastName,
       phone: dto.phone,
       image: dto.image,
+      coverImage: dto.coverImage,
       gender: dto.gender,
       dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
       bio: dto.bio,

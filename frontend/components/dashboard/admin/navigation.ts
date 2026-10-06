@@ -1,6 +1,8 @@
 export const adminSections = [
   "overview",
   "campaigns",
+  "kyc",
+  "pending-users",
   "users",
   "categories",
   "visitors",
@@ -36,6 +38,18 @@ export const adminPageMeta: Record<
     eyebrow: "Deal review",
     description:
       "Review entrepreneur submissions, audit funding goals and milestones, approve deals, or return with notes.",
+  },
+  kyc: {
+    title: "Identity & KYC Moderation Vault",
+    eyebrow: "Compliance Audit",
+    description:
+      "Inspect government documents, passports, and selfie liveness proofs stored in encrypted Cloudflare R2 private storage.",
+  },
+  "pending-users": {
+    title: "Pending & Incomplete Users Queue",
+    eyebrow: "Verification Backlog",
+    description:
+      "Audit registered stakeholders with incomplete verifications — clearly distinguish between pending KYC submissions under review and unsubmitted/missing KYC accounts.",
   },
   users: {
     title: "User Management & Moderation",

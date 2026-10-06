@@ -3,6 +3,8 @@ export const entrepreneurSections = [
   "campaigns",
   "matches",
   "analytics",
+  "profile",
+  "kyc",
   "settings",
 ] as const;
 
@@ -48,10 +50,22 @@ export const entrepreneurPageMeta: Record<
     description:
       "Track deck views, pitch deck downloads, and investor interest trends.",
   },
+  profile: {
+    title: "Founder & Company Profile",
+    eyebrow: "Public Identity",
+    description:
+      "Showcase your startup branding with avatar and cover banner photos visible to investors.",
+  },
+  kyc: {
+    title: "Identity & KYC",
+    eyebrow: "Account Compliance",
+    description:
+      "Verify your founder identity and company incorporation documents to unlock fundraising campaigns.",
+  },
   settings: {
     title: "Company & Account Settings",
     eyebrow: "Account preferences",
     description:
-      "Manage your startup profile, verification documents, and team permissions.",
+      "Manage your account preferences, security, and notification rules.",
   },
 };

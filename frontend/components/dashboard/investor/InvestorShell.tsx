@@ -18,12 +18,15 @@ import {
   MessageSquare,
   Search,
   Settings,
+  ShieldCheck,
+  User,
   WalletCards,
   X,
   type LucideIcon,
 } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
 import {
   investorPageMeta,
   investorSectionPath,
@@ -32,6 +35,8 @@ import {
 
 const navigation: { section: InvestorSection; label: string; icon: LucideIcon; badge?: string }[] = [
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
+  { section: "profile", label: "My Profile", icon: User },
   { section: "portfolio", label: "Portfolio", icon: BriefcaseBusiness },
   { section: "investments", label: "Investments", icon: WalletCards },
   { section: "opportunities", label: "Opportunities", icon: Compass },
@@ -43,6 +48,15 @@ const navigation: { section: InvestorSection; label: string; icon: LucideIcon; b
 ];
 
 function UserAvatar({ user }: { user: AuthUser }) {
+  if (user.image) {
+    return (
+      <img
+        src={user.image}
+        alt={user.firstName || "User"}
+        className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-200"
+      />
+    );
+  }
   const initials = `${user.firstName?.[0] ?? user.email[0]}${user.lastName?.[0] ?? ""}`.toUpperCase();
   return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-800">{initials}</span>;
 }
@@ -62,7 +76,13 @@ export function InvestorShell({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const { data: kycData } = useMyKycQuery();
   const meta = investorPageMeta[activeSection];
+
+  const kycStatus = kycData?.status;
+  const isKycVerified = kycStatus === "VERIFIED";
+  const isKycReview = kycStatus === "UNDER_REVIEW" || (kycStatus === "PENDING" && Boolean(kycData?.verification?.hasFront));
+  const isKycRejected = kycStatus === "REJECTED";
 
   return (
     <main className="min-h-screen bg-[#f9fbfa] text-slate-900">
@@ -82,11 +102,24 @@ export function InvestorShell({
           <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6" aria-label="Investor dashboard navigation">
             {navigation.map(({ section, label, icon: Icon, badge }) => {
               const active = section === activeSection;
+              const isKyc = section === "kyc";
               return (
                 <Link key={section} href={investorSectionPath(section)} onClick={() => setSidebarOpen(false)} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${active ? "bg-emerald-50 text-[#065f46] shadow-[inset_3px_0_0_#10b981]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}>
                   <Icon className="h-[18px] w-[18px]" />
                   <span className="flex-1">{label}</span>
-                  {badge && <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}`}>{badge}</span>}
+                  {isKyc ? (
+                    isKycVerified ? (
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">Verified</span>
+                    ) : isKycReview ? (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">In Review</span>
+                    ) : isKycRejected ? (
+                      <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800 border border-rose-200">Action Req</span>
+                    ) : (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">Unverified</span>
+                    )
+                  ) : (
+                    badge && <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}`}>{badge}</span>
+                  )}
                 </Link>
               );
             })}
@@ -128,7 +161,8 @@ export function InvestorShell({
                 </button>
                 {accountOpen && (
                   <div role="menu" className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-                    <Link href="/profile" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">My profile</Link>
+                    <Link href="/dashboard/investor/profile" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">My profile</Link>
+                    <Link href="/dashboard/investor/kyc" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-50" role="menuitem">Identity & KYC</Link>
                     <Link href="/dashboard/investor/settings" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">Account settings</Link>
                     <button type="button" onClick={onSignOut} className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50" role="menuitem">Sign out</button>
                   </div>

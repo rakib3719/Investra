@@ -74,8 +74,27 @@ export class AuthService {
           password: hashedPassword,
           role: dto.role,
           accountStatus: AccountStatus.PENDING, // default until email is verified
+          image: dto.image,
+          avatarMediaId: dto.avatarMediaId,
+          coverImage: dto.coverImage,
+          coverMediaId: dto.coverMediaId,
         },
       });
+
+      // Claim and activate registration media files
+      const mediaIdsToActivate = [dto.avatarMediaId, dto.coverMediaId].filter(
+        (id): id is string => typeof id === 'string' && id.length > 0,
+      );
+      if (mediaIdsToActivate.length > 0) {
+        await tx.mediaFile.updateMany({
+          where: { id: { in: mediaIdsToActivate } },
+          data: {
+            uploadedById: user.id,
+            status: 'ACTIVE',
+            activatedAt: new Date(),
+          },
+        });
+      }
 
       // Create role-specific profiles
       if (dto.role === UserRole.INVESTOR) {

@@ -12,9 +12,21 @@ import { VisitorInsightsModule } from './modules/visitor-insights/visitor-insigh
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { BookmarksModule } from './modules/bookmarks/bookmarks.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { MediaModule } from './modules/media/media.module';
+import { KycModule } from './modules/kyc/kyc.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProfileModule, VisitorInsightsModule, CampaignsModule, BookmarksModule, AdminModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ProfileModule,
+    VisitorInsightsModule,
+    CampaignsModule,
+    BookmarksModule,
+    AdminModule,
+    MediaModule,
+    KycModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

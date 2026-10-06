@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from "class-validator";
 import { Type } from "class-transformer";
-import { UserRole, AccountStatus } from "@prisma/client";
+import { UserRole, AccountStatus, VerificationStatus } from "@prisma/client";
 
 export class AdminUsersQueryDto {
   @IsOptional()
@@ -14,6 +14,17 @@ export class AdminUsersQueryDto {
   @IsOptional()
   @IsEnum(AccountStatus)
   status?: AccountStatus;
+
+  @IsOptional()
+  @IsEnum(VerificationStatus)
+  kycStatus?: VerificationStatus;
+
+  /**
+   * Filter specifically for users who have NOT yet submitted any KYC documents
+   */
+  @IsOptional()
+  @IsString()
+  kycSubmission?: "UNSUBMITTED" | "SUBMITTED" | "ALL";
 
   @IsOptional()
   @Type(() => Number)

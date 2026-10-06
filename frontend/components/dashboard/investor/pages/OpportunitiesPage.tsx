@@ -29,6 +29,8 @@ import {
   type ConnectFounderTarget,
 } from "@/components/deals/ConnectFounderModal";
 import { CompareFloatingDock, type DockDeal } from "@/components/deals/CompareFloatingDock";
+import { useKycGate } from "@/lib/kyc/useKycGate";
+import { VerificationRequiredModal } from "@/components/auth/VerificationRequiredModal";
 
 export function OpportunitiesPage() {
   const [search, setSearch] = useState("");
@@ -36,6 +38,24 @@ export function OpportunitiesPage() {
   const [activeConnectCampaign, setActiveConnectCampaign] =
     useState<ConnectFounderTarget | null>(null);
   const [compareDeals, setCompareDeals] = useState<DockDeal[]>([]);
+  const {
+    isModalOpen: isKycGateOpen,
+    gateContext: kycGateContext,
+    executeWithGate,
+    closeModal: closeKycGate,
+  } = useKycGate();
+
+  const handleConnectClick = (deal: ConnectFounderTarget) => {
+    executeWithGate(
+      () => setActiveConnectCampaign(deal),
+      {
+        title: "Identity Verification Required",
+        actionName: "direct intro calls with startup founders",
+        description:
+          "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+      }
+    );
+  };
 
   const { data: categoriesData } = useCategoriesQuery();
   const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
@@ -337,7 +357,7 @@ export function OpportunitiesPage() {
                 <div className="border-t border-slate-100 bg-slate-50/50 p-4 flex gap-2">
                   <button
                     type="button"
-                    onClick={() => setActiveConnectCampaign(deal)}
+                    onClick={() => handleConnectClick(deal)}
                     className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-700/20 bg-emerald-50 py-2.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100"
                   >
                     <Handshake className="h-3.5 w-3.5" />
@@ -361,6 +381,15 @@ export function OpportunitiesPage() {
         isOpen={Boolean(activeConnectCampaign)}
         onClose={() => setActiveConnectCampaign(null)}
         campaign={activeConnectCampaign}
+      />
+
+      {/* KYC Action Gate Modal */}
+      <VerificationRequiredModal
+        isOpen={isKycGateOpen}
+        onClose={closeKycGate}
+        title={kycGateContext.title}
+        actionName={kycGateContext.actionName}
+        description={kycGateContext.description}
       />
 
       {/* Floating Compare Dock */}

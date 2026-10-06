@@ -14,6 +14,20 @@ export type AccountStatus =
   | "SUSPENDED"
   | "PENDING_VERIFICATION";
 
+export interface UserVerificationSummary {
+  id: string;
+  verificationStatus: "PENDING" | "UNDER_REVIEW" | "VERIFIED" | "REJECTED";
+  frontMediaId?: string | null;
+  selfieMediaId?: string | null;
+  rejectionReason?: string | null;
+  reviewedAt?: string | null;
+  updatedAt: string;
+  nidNumber?: string | null;
+  passportNumber?: string | null;
+  taxIdNumber?: string | null;
+  tradeLicenseNumber?: string | null;
+}
+
 export interface AdminUserListItem {
   id: string;
   firstName: string;
@@ -27,6 +41,7 @@ export interface AdminUserListItem {
   isEmailVerified: boolean;
   createdAt: string;
   lastLoginAt?: string | null;
+  verification?: UserVerificationSummary | null;
   entrepreneurProfile?: {
     companyName?: string | null;
     headline?: string | null;
@@ -62,6 +77,8 @@ export interface PaginatedAdminUsers {
 export interface AdminUsersQueryInput {
   role?: UserRole | string;
   status?: AccountStatus | string;
+  kycStatus?: "PENDING" | "UNDER_REVIEW" | "VERIFIED" | "REJECTED" | string;
+  kycSubmission?: "UNSUBMITTED" | "SUBMITTED" | "ALL" | string;
   search?: string;
   page?: number;
   limit?: number;
@@ -74,6 +91,8 @@ export interface AdminOverviewStats {
     entrepreneurs: number;
     consultants: number;
     admins: number;
+    pendingKyc?: number;
+    unsubmittedKyc?: number;
   };
   campaigns: {
     total: number;
