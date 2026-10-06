@@ -498,6 +498,39 @@ export function AdminKycPage() {
                   </div>
                 </div>
 
+                {/* Expanded Financial & Regulatory Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 rounded-2xl bg-emerald-50/40 border border-emerald-100 text-xs">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Residential Address</span>
+                    <p className="font-semibold text-slate-800 mt-0.5">
+                      {detailQuery.data.residentialAddress || "Not provided"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Tax ID / TIN</span>
+                    <p className="font-mono font-semibold text-slate-800 mt-0.5">
+                      {detailQuery.data.taxIdNumber || "Not declared"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Source of Funds & Net Worth</span>
+                    <p className="font-semibold text-slate-800 mt-0.5">
+                      {detailQuery.data.sourceOfFunds || "N/A"} · {detailQuery.data.netWorthRange || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">PEP & Trade License</span>
+                    <p className="font-semibold text-slate-800 mt-0.5">
+                      {detailQuery.data.pepDeclaration ? (
+                        <span className="text-amber-700 font-bold">⚠️ PEP Declared</span>
+                      ) : (
+                        <span className="text-emerald-700">Non-PEP</span>
+                      )}
+                      {detailQuery.data.tradeLicenseNumber ? ` · TL: ${detailQuery.data.tradeLicenseNumber}` : ""}
+                    </p>
+                  </div>
+                </div>
+
                 {/* Secure Document Previews */}
                 <div className="space-y-3">
                   <h4 className="font-heading font-bold text-sm text-slate-800 flex items-center gap-2">
@@ -624,6 +657,182 @@ export function AdminKycPage() {
                       ) : (
                         <div className="h-40 rounded-xl bg-slate-100 grid place-items-center text-slate-400 text-xs">
                           Not Provided
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Proof of Address (Utility / Bank Statement) */}
+                    <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-[#064e3b]" />
+                          Proof of Address
+                        </span>
+                        {detailQuery.data.poaMedia?.accessUrl && (
+                          <a
+                            href={detailQuery.data.poaMedia.accessUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[11px] text-[#064e3b] font-bold hover:underline inline-flex items-center gap-0.5"
+                          >
+                            Full <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+
+                      {detailQuery.data.poaMedia?.accessUrl ? (
+                        detailQuery.data.poaMedia.mimeType?.includes("pdf") ? (
+                          <div className="h-40 rounded-xl bg-slate-100 flex flex-col items-center justify-center p-3 text-center border border-slate-200">
+                            <FileText className="w-8 h-8 text-slate-500 mb-2" />
+                            <p className="text-[11px] font-bold text-slate-700 truncate max-w-full">
+                              {detailQuery.data.poaMedia.originalName}
+                            </p>
+                            <span className="text-[10px] text-slate-400">PDF Document</span>
+                          </div>
+                        ) : (
+                          <div className="h-40 rounded-xl overflow-hidden border border-slate-200 bg-black/5">
+                            <img
+                              src={detailQuery.data.poaMedia.accessUrl}
+                              alt="Proof of Address"
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-40 rounded-xl bg-slate-100 grid place-items-center text-slate-400 text-xs">
+                          Not Provided
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Proof of Funds / Solvency */}
+                    <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          <FileCheck2 className="w-3.5 h-3.5 text-[#064e3b]" />
+                          Proof of Funds
+                        </span>
+                        {detailQuery.data.proofOfFundsMedia?.accessUrl && (
+                          <a
+                            href={detailQuery.data.proofOfFundsMedia.accessUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[11px] text-[#064e3b] font-bold hover:underline inline-flex items-center gap-0.5"
+                          >
+                            Full <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+
+                      {detailQuery.data.proofOfFundsMedia?.accessUrl ? (
+                        detailQuery.data.proofOfFundsMedia.mimeType?.includes("pdf") ? (
+                          <div className="h-40 rounded-xl bg-slate-100 flex flex-col items-center justify-center p-3 text-center border border-slate-200">
+                            <FileText className="w-8 h-8 text-slate-500 mb-2" />
+                            <p className="text-[11px] font-bold text-slate-700 truncate max-w-full">
+                              {detailQuery.data.proofOfFundsMedia.originalName}
+                            </p>
+                            <span className="text-[10px] text-slate-400">PDF Document</span>
+                          </div>
+                        ) : (
+                          <div className="h-40 rounded-xl overflow-hidden border border-slate-200 bg-black/5">
+                            <img
+                              src={detailQuery.data.proofOfFundsMedia.accessUrl}
+                              alt="Proof of Funds"
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-40 rounded-xl bg-slate-100 grid place-items-center text-slate-400 text-xs">
+                          Optional / None
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tax TIN Certificate */}
+                    <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-[#064e3b]" />
+                          TIN Certificate
+                        </span>
+                        {detailQuery.data.tinCertificateMedia?.accessUrl && (
+                          <a
+                            href={detailQuery.data.tinCertificateMedia.accessUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[11px] text-[#064e3b] font-bold hover:underline inline-flex items-center gap-0.5"
+                          >
+                            Full <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+
+                      {detailQuery.data.tinCertificateMedia?.accessUrl ? (
+                        detailQuery.data.tinCertificateMedia.mimeType?.includes("pdf") ? (
+                          <div className="h-40 rounded-xl bg-slate-100 flex flex-col items-center justify-center p-3 text-center border border-slate-200">
+                            <FileText className="w-8 h-8 text-slate-500 mb-2" />
+                            <p className="text-[11px] font-bold text-slate-700 truncate max-w-full">
+                              {detailQuery.data.tinCertificateMedia.originalName}
+                            </p>
+                            <span className="text-[10px] text-slate-400">PDF Document</span>
+                          </div>
+                        ) : (
+                          <div className="h-40 rounded-xl overflow-hidden border border-slate-200 bg-black/5">
+                            <img
+                              src={detailQuery.data.tinCertificateMedia.accessUrl}
+                              alt="TIN Certificate"
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-40 rounded-xl bg-slate-100 grid place-items-center text-slate-400 text-xs">
+                          Optional / None
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Trade License / Incorporation */}
+                    <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          <FileCheck2 className="w-3.5 h-3.5 text-[#064e3b]" />
+                          Trade License
+                        </span>
+                        {detailQuery.data.tradeLicenseMedia?.accessUrl && (
+                          <a
+                            href={detailQuery.data.tradeLicenseMedia.accessUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[11px] text-[#064e3b] font-bold hover:underline inline-flex items-center gap-0.5"
+                          >
+                            Full <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+
+                      {detailQuery.data.tradeLicenseMedia?.accessUrl ? (
+                        detailQuery.data.tradeLicenseMedia.mimeType?.includes("pdf") ? (
+                          <div className="h-40 rounded-xl bg-slate-100 flex flex-col items-center justify-center p-3 text-center border border-slate-200">
+                            <FileText className="w-8 h-8 text-slate-500 mb-2" />
+                            <p className="text-[11px] font-bold text-slate-700 truncate max-w-full">
+                              {detailQuery.data.tradeLicenseMedia.originalName}
+                            </p>
+                            <span className="text-[10px] text-slate-400">PDF Document</span>
+                          </div>
+                        ) : (
+                          <div className="h-40 rounded-xl overflow-hidden border border-slate-200 bg-black/5">
+                            <img
+                              src={detailQuery.data.tradeLicenseMedia.accessUrl}
+                              alt="Trade License"
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-40 rounded-xl bg-slate-100 grid place-items-center text-slate-400 text-xs">
+                          Optional / None
                         </div>
                       )}
                     </div>

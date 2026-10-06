@@ -176,26 +176,41 @@ model UserSocialLink {
 }
 
 model UserVerification {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  nidNumber          String?            @map("nid_number") @db.VarChar
-  passportNumber     String?            @map("passport_number") @db.VarChar
-  documentFront      String?            @map("document_front")
-  documentBack       String?            @map("document_back")
-  selfieImage        String?            @map("selfie_image")
-  frontMediaId       String?            @unique @map("front_media_id") @db.Uuid
-  backMediaId        String?            @unique @map("back_media_id") @db.Uuid
-  selfieMediaId      String?            @unique @map("selfie_media_id") @db.Uuid
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  reviewedBy         String?            @map("reviewed_by") @db.Uuid
-  reviewedAt         DateTime?          @map("reviewed_at") @db.Timestamp(6)
-  rejectionReason    String?            @map("rejection_reason")
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  frontMedia         MediaFile?         @relation("VerificationFrontMedia", fields: [frontMediaId], references: [id], onDelete: SetNull)
-  backMedia          MediaFile?         @relation("VerificationBackMedia", fields: [backMediaId], references: [id], onDelete: SetNull)
-  selfieMedia        MediaFile?         @relation("VerificationSelfieMedia", fields: [selfieMediaId], references: [id], onDelete: SetNull)
+  id                    String             @id @default(uuid()) @db.Uuid
+  userId                String             @unique @map("user_id") @db.Uuid
+  nidNumber             String?            @map("nid_number") @db.VarChar
+  passportNumber        String?            @map("passport_number") @db.VarChar
+  taxIdNumber           String?            @map("tax_id_number") @db.VarChar
+  residentialAddress    String?            @map("residential_address")
+  sourceOfFunds         String?            @map("source_of_funds") @db.VarChar
+  annualIncomeRange     String?            @map("annual_income_range") @db.VarChar
+  netWorthRange         String?            @map("net_worth_range") @db.VarChar
+  pepDeclaration        Boolean?           @default(false) @map("pep_declaration")
+  tradeLicenseNumber    String?            @map("trade_license_number") @db.VarChar
+  documentFront         String?            @map("document_front")
+  documentBack          String?            @map("document_back")
+  selfieImage           String?            @map("selfie_image")
+  frontMediaId          String?            @unique @map("front_media_id") @db.Uuid
+  backMediaId           String?            @unique @map("back_media_id") @db.Uuid
+  selfieMediaId         String?            @unique @map("selfie_media_id") @db.Uuid
+  poaMediaId            String?            @unique @map("poa_media_id") @db.Uuid
+  proofOfFundsMediaId   String?            @unique @map("proof_of_funds_media_id") @db.Uuid
+  tradeLicenseMediaId   String?            @unique @map("trade_license_media_id") @db.Uuid
+  tinCertificateMediaId String?            @unique @map("tin_certificate_media_id") @db.Uuid
+  verificationStatus    VerificationStatus @default(PENDING) @map("verification_status")
+  reviewedBy            String?            @map("reviewed_by") @db.Uuid
+  reviewedAt            DateTime?          @map("reviewed_at") @db.Timestamp(6)
+  rejectionReason       String?            @map("rejection_reason")
+  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt             DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  frontMedia            MediaFile?         @relation("VerificationFrontMedia", fields: [frontMediaId], references: [id], onDelete: SetNull)
+  backMedia             MediaFile?         @relation("VerificationBackMedia", fields: [backMediaId], references: [id], onDelete: SetNull)
+  selfieMedia           MediaFile?         @relation("VerificationSelfieMedia", fields: [selfieMediaId], references: [id], onDelete: SetNull)
+  poaMedia              MediaFile?         @relation("VerificationPoaMedia", fields: [poaMediaId], references: [id], onDelete: SetNull)
+  proofOfFundsMedia     MediaFile?         @relation("VerificationProofOfFundsMedia", fields: [proofOfFundsMediaId], references: [id], onDelete: SetNull)
+  tradeLicenseMedia     MediaFile?         @relation("VerificationTradeLicenseMedia", fields: [tradeLicenseMediaId], references: [id], onDelete: SetNull)
+  tinCertificateMedia   MediaFile?         @relation("VerificationTinCertificateMedia", fields: [tinCertificateMediaId], references: [id], onDelete: SetNull)
 
   @@map("user_verifications")
 }
@@ -486,9 +501,13 @@ model MediaFile {
   userCover          User?             @relation("UserCoverMedia")
   businessCover      Business?         @relation("BusinessCoverMedia")
   pitchDeckFiles     PitchDeck[]       @relation("PitchDeckMedia")
-  verificationFront  UserVerification? @relation("VerificationFrontMedia")
-  verificationBack   UserVerification? @relation("VerificationBackMedia")
-  verificationSelfie UserVerification? @relation("VerificationSelfieMedia")
+  verificationFront            UserVerification? @relation("VerificationFrontMedia")
+  verificationBack             UserVerification? @relation("VerificationBackMedia")
+  verificationSelfie           UserVerification? @relation("VerificationSelfieMedia")
+  verificationPoa              UserVerification? @relation("VerificationPoaMedia")
+  verificationProofOfFunds     UserVerification? @relation("VerificationProofOfFundsMedia")
+  verificationTradeLicense     UserVerification? @relation("VerificationTradeLicenseMedia")
+  verificationTinCertificate   UserVerification? @relation("VerificationTinCertificateMedia")
 
   @@index([uploadedById])
   @@index([category, status])

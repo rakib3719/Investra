@@ -32,6 +32,10 @@ export class KycService {
         frontMedia: true,
         backMedia: true,
         selfieMedia: true,
+        poaMedia: true,
+        proofOfFundsMedia: true,
+        tradeLicenseMedia: true,
+        tinCertificateMedia: true,
       },
     });
 
@@ -67,6 +71,13 @@ export class KycService {
             id: verification.id,
             nidNumber: verification.nidNumber,
             passportNumber: verification.passportNumber,
+            taxIdNumber: verification.taxIdNumber,
+            residentialAddress: verification.residentialAddress,
+            sourceOfFunds: verification.sourceOfFunds,
+            annualIncomeRange: verification.annualIncomeRange,
+            netWorthRange: verification.netWorthRange,
+            pepDeclaration: verification.pepDeclaration,
+            tradeLicenseNumber: verification.tradeLicenseNumber,
             verificationStatus: verification.verificationStatus,
             rejectionReason: verification.rejectionReason,
             reviewedAt: verification.reviewedAt,
@@ -75,9 +86,17 @@ export class KycService {
             frontMediaId: verification.frontMediaId,
             backMediaId: verification.backMediaId,
             selfieMediaId: verification.selfieMediaId,
+            poaMediaId: verification.poaMediaId,
+            proofOfFundsMediaId: verification.proofOfFundsMediaId,
+            tradeLicenseMediaId: verification.tradeLicenseMediaId,
+            tinCertificateMediaId: verification.tinCertificateMediaId,
             hasFront: Boolean(verification.frontMediaId),
             hasBack: Boolean(verification.backMediaId),
             hasSelfie: Boolean(verification.selfieMediaId),
+            hasPoa: Boolean(verification.poaMediaId),
+            hasProofOfFunds: Boolean(verification.proofOfFundsMediaId),
+            hasTradeLicense: Boolean(verification.tradeLicenseMediaId),
+            hasTinCertificate: Boolean(verification.tinCertificateMediaId),
           }
         : null,
       status: verification?.verificationStatus || roleStatus || VerificationStatus.PENDING,
@@ -99,9 +118,15 @@ export class KycService {
     }
 
     // Validate media files belong to KYC category and were uploaded by this user or are pending
-    const mediaIds = [dto.frontMediaId, dto.backMediaId, dto.selfieMediaId].filter(
-      (id): id is string => Boolean(id),
-    );
+    const mediaIds = [
+      dto.frontMediaId,
+      dto.backMediaId,
+      dto.selfieMediaId,
+      dto.poaMediaId,
+      dto.proofOfFundsMediaId,
+      dto.tradeLicenseMediaId,
+      dto.tinCertificateMediaId,
+    ].filter((id): id is string => Boolean(id));
 
     const mediaRecords = await this.prisma.mediaFile.findMany({
       where: { id: { in: mediaIds } },
@@ -138,18 +163,40 @@ export class KycService {
           userId,
           nidNumber: dto.nidNumber || null,
           passportNumber: dto.passportNumber || null,
+          taxIdNumber: dto.taxIdNumber || null,
+          residentialAddress: dto.residentialAddress || null,
+          sourceOfFunds: dto.sourceOfFunds || null,
+          annualIncomeRange: dto.annualIncomeRange || null,
+          netWorthRange: dto.netWorthRange || null,
+          pepDeclaration: dto.pepDeclaration ?? false,
+          tradeLicenseNumber: dto.tradeLicenseNumber || null,
           frontMediaId: dto.frontMediaId,
           backMediaId: dto.backMediaId || null,
           selfieMediaId: dto.selfieMediaId,
+          poaMediaId: dto.poaMediaId || null,
+          proofOfFundsMediaId: dto.proofOfFundsMediaId || null,
+          tradeLicenseMediaId: dto.tradeLicenseMediaId || null,
+          tinCertificateMediaId: dto.tinCertificateMediaId || null,
           verificationStatus: VerificationStatus.PENDING,
           rejectionReason: null,
         },
         update: {
           nidNumber: dto.nidNumber || null,
           passportNumber: dto.passportNumber || null,
+          taxIdNumber: dto.taxIdNumber || null,
+          residentialAddress: dto.residentialAddress || null,
+          sourceOfFunds: dto.sourceOfFunds || null,
+          annualIncomeRange: dto.annualIncomeRange || null,
+          netWorthRange: dto.netWorthRange || null,
+          pepDeclaration: dto.pepDeclaration ?? false,
+          tradeLicenseNumber: dto.tradeLicenseNumber || null,
           frontMediaId: dto.frontMediaId,
           backMediaId: dto.backMediaId || null,
           selfieMediaId: dto.selfieMediaId,
+          poaMediaId: dto.poaMediaId || null,
+          proofOfFundsMediaId: dto.proofOfFundsMediaId || null,
+          tradeLicenseMediaId: dto.tradeLicenseMediaId || null,
+          tinCertificateMediaId: dto.tinCertificateMediaId || null,
           verificationStatus: VerificationStatus.PENDING,
           rejectionReason: null,
           reviewedAt: null,
@@ -208,6 +255,8 @@ export class KycService {
       where.OR = [
         { nidNumber: { contains: term, mode: 'insensitive' } },
         { passportNumber: { contains: term, mode: 'insensitive' } },
+        { taxIdNumber: { contains: term, mode: 'insensitive' } },
+        { tradeLicenseNumber: { contains: term, mode: 'insensitive' } },
         {
           user: {
             OR: [
@@ -249,6 +298,18 @@ export class KycService {
           selfieMedia: {
             select: { id: true, originalName: true, mimeType: true, sizeBytes: true, key: true },
           },
+          poaMedia: {
+            select: { id: true, originalName: true, mimeType: true, sizeBytes: true, key: true },
+          },
+          proofOfFundsMedia: {
+            select: { id: true, originalName: true, mimeType: true, sizeBytes: true, key: true },
+          },
+          tradeLicenseMedia: {
+            select: { id: true, originalName: true, mimeType: true, sizeBytes: true, key: true },
+          },
+          tinCertificateMedia: {
+            select: { id: true, originalName: true, mimeType: true, sizeBytes: true, key: true },
+          },
         },
       }),
     ]);
@@ -264,6 +325,18 @@ export class KycService {
         : null,
       selfieMedia: item.selfieMedia
         ? { ...item.selfieMedia, sizeBytes: Number(item.selfieMedia.sizeBytes) }
+        : null,
+      poaMedia: item.poaMedia
+        ? { ...item.poaMedia, sizeBytes: Number(item.poaMedia.sizeBytes) }
+        : null,
+      proofOfFundsMedia: item.proofOfFundsMedia
+        ? { ...item.proofOfFundsMedia, sizeBytes: Number(item.proofOfFundsMedia.sizeBytes) }
+        : null,
+      tradeLicenseMedia: item.tradeLicenseMedia
+        ? { ...item.tradeLicenseMedia, sizeBytes: Number(item.tradeLicenseMedia.sizeBytes) }
+        : null,
+      tinCertificateMedia: item.tinCertificateMedia
+        ? { ...item.tinCertificateMedia, sizeBytes: Number(item.tinCertificateMedia.sizeBytes) }
         : null,
     }));
 
@@ -303,6 +376,10 @@ export class KycService {
         frontMedia: true,
         backMedia: true,
         selfieMedia: true,
+        poaMedia: true,
+        proofOfFundsMedia: true,
+        tradeLicenseMedia: true,
+        tinCertificateMedia: true,
       },
     });
 
@@ -314,6 +391,10 @@ export class KycService {
     let frontAccessUrl: string | null = null;
     let backAccessUrl: string | null = null;
     let selfieAccessUrl: string | null = null;
+    let poaAccessUrl: string | null = null;
+    let proofOfFundsAccessUrl: string | null = null;
+    let tradeLicenseAccessUrl: string | null = null;
+    let tinCertificateAccessUrl: string | null = null;
 
     if (item.frontMediaId) {
       const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.frontMediaId);
@@ -326,6 +407,22 @@ export class KycService {
     if (item.selfieMediaId) {
       const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.selfieMediaId);
       selfieAccessUrl = res.url;
+    }
+    if (item.poaMediaId) {
+      const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.poaMediaId);
+      poaAccessUrl = res.url;
+    }
+    if (item.proofOfFundsMediaId) {
+      const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.proofOfFundsMediaId);
+      proofOfFundsAccessUrl = res.url;
+    }
+    if (item.tradeLicenseMediaId) {
+      const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.tradeLicenseMediaId);
+      tradeLicenseAccessUrl = res.url;
+    }
+    if (item.tinCertificateMediaId) {
+      const res = await this.mediaService.getMediaAccessUrl(adminId, UserRole.ADMIN, item.tinCertificateMediaId);
+      tinCertificateAccessUrl = res.url;
     }
 
     return {
@@ -349,6 +446,34 @@ export class KycService {
             ...item.selfieMedia,
             sizeBytes: Number(item.selfieMedia.sizeBytes),
             accessUrl: selfieAccessUrl,
+          }
+        : null,
+      poaMedia: item.poaMedia
+        ? {
+            ...item.poaMedia,
+            sizeBytes: Number(item.poaMedia.sizeBytes),
+            accessUrl: poaAccessUrl,
+          }
+        : null,
+      proofOfFundsMedia: item.proofOfFundsMedia
+        ? {
+            ...item.proofOfFundsMedia,
+            sizeBytes: Number(item.proofOfFundsMedia.sizeBytes),
+            accessUrl: proofOfFundsAccessUrl,
+          }
+        : null,
+      tradeLicenseMedia: item.tradeLicenseMedia
+        ? {
+            ...item.tradeLicenseMedia,
+            sizeBytes: Number(item.tradeLicenseMedia.sizeBytes),
+            accessUrl: tradeLicenseAccessUrl,
+          }
+        : null,
+      tinCertificateMedia: item.tinCertificateMedia
+        ? {
+            ...item.tinCertificateMedia,
+            sizeBytes: Number(item.tinCertificateMedia.sizeBytes),
+            accessUrl: tinCertificateAccessUrl,
           }
         : null,
     };

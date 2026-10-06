@@ -8,6 +8,13 @@ export interface MyKycResponse {
     id: string;
     nidNumber?: string | null;
     passportNumber?: string | null;
+    taxIdNumber?: string | null;
+    residentialAddress?: string | null;
+    sourceOfFunds?: string | null;
+    annualIncomeRange?: string | null;
+    netWorthRange?: string | null;
+    pepDeclaration?: boolean | null;
+    tradeLicenseNumber?: string | null;
     verificationStatus: VerificationStatus;
     rejectionReason?: string | null;
     reviewedAt?: string | null;
@@ -16,9 +23,17 @@ export interface MyKycResponse {
     frontMediaId?: string | null;
     backMediaId?: string | null;
     selfieMediaId?: string | null;
+    poaMediaId?: string | null;
+    proofOfFundsMediaId?: string | null;
+    tradeLicenseMediaId?: string | null;
+    tinCertificateMediaId?: string | null;
     hasFront: boolean;
     hasBack: boolean;
     hasSelfie: boolean;
+    hasPoa?: boolean;
+    hasProofOfFunds?: boolean;
+    hasTradeLicense?: boolean;
+    hasTinCertificate?: boolean;
   } | null;
   status: VerificationStatus;
   role: AuthenticatedUserRole;
@@ -28,9 +43,20 @@ export interface MyKycResponse {
 export interface SubmitKycPayload {
   nidNumber?: string;
   passportNumber?: string;
+  taxIdNumber?: string;
+  residentialAddress?: string;
+  sourceOfFunds?: string;
+  annualIncomeRange?: string;
+  netWorthRange?: string;
+  pepDeclaration?: boolean;
+  tradeLicenseNumber?: string;
   frontMediaId: string;
   backMediaId?: string;
   selfieMediaId: string;
+  poaMediaId?: string;
+  proofOfFundsMediaId?: string;
+  tradeLicenseMediaId?: string;
+  tinCertificateMediaId?: string;
 }
 
 export interface AdminKycListItem {
@@ -38,6 +64,13 @@ export interface AdminKycListItem {
   userId: string;
   nidNumber?: string | null;
   passportNumber?: string | null;
+  taxIdNumber?: string | null;
+  residentialAddress?: string | null;
+  sourceOfFunds?: string | null;
+  annualIncomeRange?: string | null;
+  netWorthRange?: string | null;
+  pepDeclaration?: boolean | null;
+  tradeLicenseNumber?: string | null;
   verificationStatus: VerificationStatus;
   rejectionReason?: string | null;
   reviewedBy?: string | null;
@@ -75,6 +108,34 @@ export interface AdminKycListItem {
     sizeBytes: number;
     key: string;
   } | null;
+  poaMedia?: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    key: string;
+  } | null;
+  proofOfFundsMedia?: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    key: string;
+  } | null;
+  tradeLicenseMedia?: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    key: string;
+  } | null;
+  tinCertificateMedia?: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    key: string;
+  } | null;
 }
 
 export interface AdminKycDetail extends AdminKycListItem {
@@ -86,6 +147,10 @@ export interface AdminKycDetail extends AdminKycListItem {
   frontMedia?: (AdminKycListItem['frontMedia'] & { accessUrl?: string | null }) | null;
   backMedia?: (AdminKycListItem['backMedia'] & { accessUrl?: string | null }) | null;
   selfieMedia?: (AdminKycListItem['selfieMedia'] & { accessUrl?: string | null }) | null;
+  poaMedia?: (AdminKycListItem['poaMedia'] & { accessUrl?: string | null }) | null;
+  proofOfFundsMedia?: (AdminKycListItem['proofOfFundsMedia'] & { accessUrl?: string | null }) | null;
+  tradeLicenseMedia?: (AdminKycListItem['tradeLicenseMedia'] & { accessUrl?: string | null }) | null;
+  tinCertificateMedia?: (AdminKycListItem['tinCertificateMedia'] & { accessUrl?: string | null }) | null;
 }
 
 export interface KycListQuery {
