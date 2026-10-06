@@ -34,6 +34,8 @@ import {
 
 const navigation: { section: InvestorSection; label: string; icon: LucideIcon; badge?: string }[] = [
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
+  { section: "profile", label: "My Profile", icon: User },
   { section: "portfolio", label: "Portfolio", icon: BriefcaseBusiness },
   { section: "investments", label: "Investments", icon: WalletCards },
   { section: "opportunities", label: "Opportunities", icon: Compass },
@@ -41,8 +43,6 @@ const navigation: { section: InvestorSection; label: string; icon: LucideIcon; b
   { section: "reports", label: "Reports", icon: FileBarChart },
   { section: "watchlist", label: "Watchlist", icon: Bookmark, badge: "6" },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "3" },
-  { section: "profile", label: "My Profile", icon: User },
-  { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

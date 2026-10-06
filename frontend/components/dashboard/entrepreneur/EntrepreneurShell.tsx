@@ -35,11 +35,11 @@ const navigation: {
   badge?: string;
 }[] = [
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
+  { section: "profile", label: "Company Profile", icon: User },
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
   { section: "analytics", label: "Analytics", icon: LineChart },
-  { section: "profile", label: "Company Profile", icon: User },
-  { section: "kyc", label: "Founder KYC", icon: ShieldCheck },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

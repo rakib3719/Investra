@@ -79,31 +79,33 @@ interface RoleDashboardConfig {
 }
 
 const investorNavigation: NavigationItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Portfolio", icon: BriefcaseBusiness },
-  { label: "Investments", icon: WalletCards },
-  { label: "Opportunities", icon: Compass },
-  { label: "Impact", icon: Leaf },
-  { label: "Reports", icon: FileBarChart },
-  { label: "Watchlist", icon: Bookmark },
-  { label: "Messages", icon: MessageSquare, badge: "3" },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/investor" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/investor/kyc" },
+  { label: "Profile", icon: User, href: "/dashboard/investor/profile" },
+  { label: "Portfolio", icon: BriefcaseBusiness, href: "/dashboard/investor/portfolio" },
+  { label: "Investments", icon: WalletCards, href: "/dashboard/investor/investments" },
+  { label: "Opportunities", icon: Compass, href: "/dashboard/investor/opportunities" },
+  { label: "Impact", icon: Leaf, href: "/dashboard/investor/impact" },
+  { label: "Reports", icon: FileBarChart, href: "/dashboard/investor/reports" },
+  { label: "Watchlist", icon: Bookmark, badge: "6", href: "/dashboard/investor/watchlist" },
+  { label: "Messages", icon: MessageSquare, badge: "3", href: "/dashboard/investor/messages" },
+  { label: "Settings", icon: Settings, href: "/dashboard/investor/settings" },
 ];
 
 const entrepreneurNavigation: NavigationItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "My company", icon: Building2 },
-  { label: "Fundraising", icon: Rocket },
-  { label: "Investor matches", icon: Users, badge: "8" },
-  { label: "Data room", icon: FileText },
-  { label: "Analytics", icon: LineChart },
-  { label: "Messages", icon: MessageSquare, badge: "5" },
-  { label: "Tasks", icon: ClipboardList },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/entrepreneur" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/entrepreneur/kyc" },
+  { label: "Company Profile", icon: User, href: "/dashboard/entrepreneur/profile" },
+  { label: "Fundraising", icon: Rocket, href: "/dashboard/entrepreneur/campaigns" },
+  { label: "Investor matches", icon: Users, badge: "8", href: "/dashboard/entrepreneur/matches" },
+  { label: "Analytics", icon: LineChart, href: "/dashboard/entrepreneur/analytics" },
+  { label: "Settings", icon: Settings, href: "/dashboard/entrepreneur/settings" },
 ];
 
 const consultantNavigation: NavigationItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/consultant" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/consultant/kyc" },
+  { label: "Profile", icon: User, href: "/dashboard/consultant/profile" },
   { label: "Client workspace", icon: Users, href: "/dashboard/consultant/clients" },
   { label: "Advisory work", icon: Handshake, href: "/dashboard/consultant/advisory" },
   { label: "Deal room", icon: BriefcaseBusiness, href: "/dashboard/consultant/deal-room" },
@@ -111,8 +113,6 @@ const consultantNavigation: NavigationItem[] = [
   { label: "Calendar", icon: CalendarDays, href: "/dashboard/consultant/calendar" },
   { label: "Messages", icon: MessageSquare, badge: "2", href: "/dashboard/consultant/messages" },
   { label: "Earnings", icon: WalletCards, href: "/dashboard/consultant/earnings" },
-  { label: "Profile", icon: User, href: "/dashboard/consultant/profile" },
-  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/consultant/kyc" },
   { label: "Settings", icon: Settings, href: "/dashboard/consultant/settings" },
 ];
 

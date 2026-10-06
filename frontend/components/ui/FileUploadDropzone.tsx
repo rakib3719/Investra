@@ -35,6 +35,7 @@ interface FileUploadDropzoneProps {
   description?: string;
   className?: string;
   isPublic?: boolean;
+  hidePreview?: boolean;
 }
 
 const CATEGORY_LIMITS: Record<MediaCategory, { maxBytes: number; label: string; accept: string }> = {
@@ -91,6 +92,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
   description,
   className = '',
   isPublic = false,
+  hidePreview = false,
 }) => {
   const categoryConfig = CATEGORY_LIMITS[category] || {
     maxBytes: 10 * 1024 * 1024,
@@ -228,7 +230,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
   // Check if we have an active or newly uploaded media to preview
   const displayMedia = uploadedMedia || currentMedia;
 
-  if (displayMedia && (displayMedia.url || (displayMedia as ConfirmedMediaResponse).id)) {
+  if (!hidePreview && displayMedia && (displayMedia.url || (displayMedia as ConfirmedMediaResponse).id)) {
     return (
       <div className={`space-y-2 ${className}`}>
         <FilePreview
