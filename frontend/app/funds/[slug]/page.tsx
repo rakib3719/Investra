@@ -34,6 +34,8 @@ import {
 } from "lucide-react";
 import { useBookmarkIdsQuery, useToggleBookmarkMutation } from "@/lib/bookmarks/bookmarks-hooks";
 import { ConnectFounderModal } from "@/components/deals/ConnectFounderModal";
+import { useKycGate } from "@/lib/kyc/useKycGate";
+import { VerificationRequiredModal } from "@/components/auth/VerificationRequiredModal";
 
 export default function CampaignDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -41,6 +43,25 @@ export default function CampaignDetailPage() {
   const slug = params?.slug || "";
 
   const [isConnectOpen, setIsConnectOpen] = React.useState(false);
+  const {
+    isModalOpen: isKycGateOpen,
+    gateContext: kycGateContext,
+    executeWithGate,
+    closeModal: closeKycGate,
+  } = useKycGate();
+
+  const handleConnectClick = () => {
+    executeWithGate(
+      () => setIsConnectOpen(true),
+      {
+        title: "Identity Verification Required",
+        actionName: "direct intro calls with startup founders",
+        description:
+          "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+      }
+    );
+  };
+
   const { data: apiCampaign, isLoading, isError } = useCampaignDetailQuery(slug);
   const fallbackCampaign = React.useMemo(
     () => curatedFallbackCampaigns.find((c) => c.slug === slug),
@@ -181,7 +202,7 @@ export default function CampaignDetailPage() {
               <div className="pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsConnectOpen(true)}
+                  onClick={handleConnectClick}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold font-heading text-sm transition-all shadow-md cursor-pointer"
                 >
                   <Handshake className="w-4 h-4" /> Connect with Founder
@@ -346,6 +367,14 @@ export default function CampaignDetailPage() {
           isOpen={isConnectOpen}
           onClose={() => setIsConnectOpen(false)}
           campaign={campaign}
+        />
+
+        <VerificationRequiredModal
+          isOpen={isKycGateOpen}
+          onClose={closeKycGate}
+          title={kycGateContext.title}
+          actionName={kycGateContext.actionName}
+          description={kycGateContext.description}
         />
       </main>
 

@@ -76,9 +76,9 @@ export const consultantPageMeta: Record<
     description: "Personalize your avatar, cover banner, and specialization credentials visible to startups and funds.",
   },
   kyc: {
-    title: "Professional Identity & KYC Verification",
-    eyebrow: "Regulatory Compliance",
-    description: "Upload government identity documents and certifications into our private vault to unlock paid advisory engagements.",
+    title: "Identity & KYC",
+    eyebrow: "Account Compliance",
+    description: "Verify your professional credentials and certifications to unlock paid advisory engagements.",
   },
   settings: {
     title: "Consultant Settings",

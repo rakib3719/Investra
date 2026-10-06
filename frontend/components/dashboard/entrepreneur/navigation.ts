@@ -57,10 +57,10 @@ export const entrepreneurPageMeta: Record<
       "Showcase your startup branding with avatar and cover banner photos visible to investors.",
   },
   kyc: {
-    title: "Founder KYB & Identity Compliance",
-    eyebrow: "Regulatory Compliance",
+    title: "Identity & KYC",
+    eyebrow: "Account Compliance",
     description:
-      "Submit founder NID/Passport and incorporation documents into our private vault to unlock fundraising campaigns.",
+      "Verify your founder identity and company incorporation documents to unlock fundraising campaigns.",
   },
   settings: {
     title: "Company & Account Settings",

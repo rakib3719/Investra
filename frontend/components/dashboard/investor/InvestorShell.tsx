@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
 import {
   investorPageMeta,
   investorSectionPath,
@@ -75,7 +76,13 @@ export function InvestorShell({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const { data: kycData } = useMyKycQuery();
   const meta = investorPageMeta[activeSection];
+
+  const kycStatus = kycData?.status;
+  const isKycVerified = kycStatus === "VERIFIED";
+  const isKycReview = kycStatus === "UNDER_REVIEW" || (kycStatus === "PENDING" && Boolean(kycData?.verification?.hasFront));
+  const isKycRejected = kycStatus === "REJECTED";
 
   return (
     <main className="min-h-screen bg-[#f9fbfa] text-slate-900">
@@ -95,11 +102,24 @@ export function InvestorShell({
           <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6" aria-label="Investor dashboard navigation">
             {navigation.map(({ section, label, icon: Icon, badge }) => {
               const active = section === activeSection;
+              const isKyc = section === "kyc";
               return (
                 <Link key={section} href={investorSectionPath(section)} onClick={() => setSidebarOpen(false)} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${active ? "bg-emerald-50 text-[#065f46] shadow-[inset_3px_0_0_#10b981]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}>
                   <Icon className="h-[18px] w-[18px]" />
                   <span className="flex-1">{label}</span>
-                  {badge && <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}`}>{badge}</span>}
+                  {isKyc ? (
+                    isKycVerified ? (
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">Verified</span>
+                    ) : isKycReview ? (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">In Review</span>
+                    ) : isKycRejected ? (
+                      <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800 border border-rose-200">Action Req</span>
+                    ) : (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">Unverified</span>
+                    )
+                  ) : (
+                    badge && <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}`}>{badge}</span>
+                  )}
                 </Link>
               );
             })}

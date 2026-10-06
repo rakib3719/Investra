@@ -76,9 +76,9 @@ export const investorPageMeta: Record<
     description: "Personalize your avatar, cover banner, and accreditation bio visible to verified founders.",
   },
   kyc: {
-    title: "Identity Verification & Compliance",
-    eyebrow: "Regulatory Compliance",
-    description: "Submit private government IDs and selfie check to unlock capital commitments and deal rooms.",
+    title: "Identity & KYC",
+    eyebrow: "Account Compliance",
+    description: "Verify your identity and regulatory credentials to unlock capital commitments and private deal rooms.",
   },
   settings: {
     title: "Settings",

@@ -122,14 +122,16 @@ export function directUploadToR2(
         if (onProgress) onProgress(100);
         resolve();
       } else {
+        const errorDetail = xhr.responseText ? `: ${xhr.responseText.slice(0, 150)}` : '';
         reject(
-          new Error(`Direct storage upload failed with HTTP status ${xhr.status}`),
+          new Error(`Direct storage upload failed with HTTP status ${xhr.status}${errorDetail}`),
         );
       }
     };
 
-    xhr.onerror = () => {
-      reject(new Error('Network error during direct storage upload. Please check connection and CORS.'));
+    xhr.onerror = (e) => {
+      console.error('[directUploadToR2] XHR error event:', e, 'status:', xhr.status, 'target:', uploadUrl);
+      reject(new Error(`Network error during direct storage upload (status: ${xhr.status || 'preflight/connection blocked'}). Please check connection and CORS.`));
     };
 
     xhr.onabort = () => {
