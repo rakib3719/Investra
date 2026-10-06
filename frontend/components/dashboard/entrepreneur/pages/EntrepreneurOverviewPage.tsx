@@ -65,20 +65,68 @@ export function EntrepreneurOverviewPage() {
         </div>
         <div className="flex gap-2">
           <Link
+            href="/dashboard/entrepreneur/profile"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5"
+          >
+            <span>Company Profile</span>
+          </Link>
+          <Link
+            href="/dashboard/entrepreneur/kyc"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 flex items-center gap-1.5"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Founder KYC</span>
+          </Link>
+          <Link
             href="/dashboard/entrepreneur/campaigns"
             className="inline-flex items-center gap-2 rounded-xl bg-[#065f46] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#044c38]"
           >
             <Plus className="h-3.5 w-3.5" />
             New campaign
           </Link>
-          <Link
-            href="/funds"
-            target="_blank"
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
-          >
-            Explore public directory
-          </Link>
         </div>
+      </div>
+
+      {/* Profile & KYC Quick Banners */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Link
+          href="/dashboard/entrepreneur/profile"
+          className="group block p-4 rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 transition-all shadow-xs"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
+                Company Profile & Founder Branding
+              </p>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Manage company cover banner, brand avatar, and public details.
+              </p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/entrepreneur/kyc"
+          className="group block p-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 transition-all shadow-xs"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+                <ShieldCheck className="w-4 h-4" />
+              </span>
+              <div>
+                <p className="text-xs font-bold text-emerald-950">
+                  Founder Identity Verification (KYC)
+                </p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">
+                  Institutional vetting required to launch campaigns and receive investor capital.
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-all" />
+          </div>
+        </Link>
       </div>
 
       {/* Metrics Row */}

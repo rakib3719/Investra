@@ -1,7 +1,7 @@
 import { Bell, Building2, Check, ChevronRight, CircleUserRound, CreditCard, Fingerprint, KeyRound, Lock, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { Panel, PrimaryButton, SectionHeading, StatusPill } from "../InvestorUI";
-import { ProfileAvatarCard } from "@/components/dashboard/shared/ProfileAvatarCard";
+import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
 import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 
 const settingsNavigation = [
@@ -18,8 +18,8 @@ export function SettingsPage({ user }: { user: AuthUser }) {
     <div className="grid gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
       <Panel className="h-fit p-3"><nav aria-label="Settings sections" className="space-y-1">{settingsNavigation.map(({ label, icon: Icon, active }) => <button key={label} type="button" className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-xs font-bold ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50"}`}><Icon className="h-4 w-4" /><span className="flex-1">{label}</span><ChevronRight className="h-3.5 w-3.5" /></button>)}</nav><div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4"><ShieldCheck className="h-5 w-5 text-emerald-700" /><strong className="mt-3 block text-xs text-slate-800">Account protected</strong><p className="mt-1 text-[11px] leading-4 text-slate-500">Two-factor authentication is active.</p></div></Panel>
 
-      <div className="space-y-5">
-        <ProfileAvatarCard user={user} />
+      <div className="space-y-6">
+        <ProfileWorkspaceCard user={user} />
 
         <KycVerificationCard user={user} />
 

@@ -165,6 +165,57 @@ export function KycVerificationCard({
         </div>
       </div>
 
+      {/* Step Indicators */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className={`p-3.5 rounded-2xl border transition-all ${
+          frontMedia
+            ? "border-emerald-200 bg-emerald-50/50"
+            : "border-slate-200 bg-slate-50/60"
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+              frontMedia ? "bg-[#064e3b] text-white" : "bg-slate-200 text-slate-600"
+            }`}>1</span>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Govt ID Details</p>
+              <p className="text-[10px] text-slate-500">NID / Passport & Front copy</p>
+            </div>
+          </div>
+        </div>
+
+        <div className={`p-3.5 rounded-2xl border transition-all ${
+          backMedia
+            ? "border-emerald-200 bg-emerald-50/50"
+            : "border-slate-200 bg-slate-50/60"
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+              backMedia ? "bg-[#064e3b] text-white" : "bg-slate-200 text-slate-600"
+            }`}>2</span>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Back Side (Optional)</p>
+              <p className="text-[10px] text-slate-500">Address / Smart card flip</p>
+            </div>
+          </div>
+        </div>
+
+        <div className={`p-3.5 rounded-2xl border transition-all ${
+          selfieMedia
+            ? "border-emerald-200 bg-emerald-50/50"
+            : "border-slate-200 bg-slate-50/60"
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+              selfieMedia ? "bg-[#064e3b] text-white" : "bg-slate-200 text-slate-600"
+            }`}>3</span>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Liveness Selfie</p>
+              <p className="text-[10px] text-slate-500">Anti-fraud identity match</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* State A: Verified */}
       {isVerified && (
         <div className="mt-6 p-6 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-center space-y-3">

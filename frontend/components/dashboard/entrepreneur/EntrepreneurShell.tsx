@@ -14,6 +14,8 @@ import {
   Rocket,
   Search,
   Settings,
+  ShieldCheck,
+  User,
   Users,
   X,
   type LucideIcon,
@@ -36,6 +38,8 @@ const navigation: {
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
   { section: "analytics", label: "Analytics", icon: LineChart },
+  { section: "profile", label: "Company Profile", icon: User },
+  { section: "kyc", label: "Founder KYC", icon: ShieldCheck },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

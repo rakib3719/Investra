@@ -29,6 +29,7 @@ import {
   ShieldCheck,
   Target,
   TrendingUp,
+  User,
   Users,
   WalletCards,
   X,
@@ -109,6 +110,8 @@ const consultantNavigation: NavigationItem[] = [
   { label: "Calendar", icon: CalendarDays },
   { label: "Messages", icon: MessageSquare, badge: "2" },
   { label: "Earnings", icon: WalletCards },
+  { label: "Profile", icon: User },
+  { label: "Identity & KYC", icon: ShieldCheck },
   { label: "Settings", icon: Settings },
 ];
 
