@@ -7,8 +7,7 @@ import {
   getConsultantSection,
   type ConsultantSection,
 } from "./navigation";
-import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
-import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
+import { ConsultantProfileKycView } from "./pages/ConsultantProfileKycView";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 
 export function ConsultantWorkspace({
@@ -37,11 +36,11 @@ export function ConsultantWorkspace({
   let content: ReactNode;
 
   if (activeSection === "profile") {
-    content = <ProfileWorkspaceCard user={user} />;
+    content = <ConsultantProfileKycView user={user} initialTab="profile" />;
   } else if (activeSection === "kyc") {
-    content = <KycVerificationCard user={user} />;
+    content = <ConsultantProfileKycView user={user} initialTab="kyc" />;
   } else {
-    content = <ProfileWorkspaceCard user={user} />;
+    content = <ConsultantProfileKycView user={user} initialTab="profile" />;
   }
 
   return (

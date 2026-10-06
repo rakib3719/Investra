@@ -141,7 +141,8 @@ export function InvestorShell({
                 </button>
                 {accountOpen && (
                   <div role="menu" className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-                    <Link href="/profile" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">My profile</Link>
+                    <Link href="/dashboard/investor/profile" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">My profile</Link>
+                    <Link href="/dashboard/investor/kyc" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-50" role="menuitem">Identity & KYC</Link>
                     <Link href="/dashboard/investor/settings" className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" role="menuitem">Account settings</Link>
                     <button type="button" onClick={onSignOut} className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50" role="menuitem">Sign out</button>
                   </div>
