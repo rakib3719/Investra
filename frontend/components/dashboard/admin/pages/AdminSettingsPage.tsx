@@ -22,6 +22,7 @@ import {
 } from "@/components/dashboard/investor/InvestorUI";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { ProfileAvatarCard } from "@/components/dashboard/shared/ProfileAvatarCard";
 
 export function AdminSettingsPage({ user }: { user: AuthUser }) {
   const [minGoal, setMinGoal] = useState("5000");
@@ -39,6 +40,9 @@ export function AdminSettingsPage({ user }: { user: AuthUser }) {
 
   return (
     <div className="space-y-6">
+      {/* Profile Photo Upload */}
+      <ProfileAvatarCard user={user} />
+
       {/* Toast */}
       {savedSuccess && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 flex items-center gap-2">

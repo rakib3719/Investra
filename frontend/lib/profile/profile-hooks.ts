@@ -30,9 +30,12 @@ export function useUpdateMyProfileMutation() {
               firstName: profile.account.firstName,
               lastName: profile.account.lastName,
               phone: profile.account.phone,
+              image: profile.account.image,
+              coverImage: profile.account.coverImage,
             }
           : currentUser,
       );
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
     },
   });
 }

@@ -13,6 +13,8 @@ import { entrepreneurSections, type EntrepreneurSection } from "@/components/das
 import { adminSections, type AdminSection } from "@/components/dashboard/admin/navigation";
 import { AdminWorkspace } from '@/components/dashboard/admin/AdminWorkspace';
 import { EntrepreneurWorkspace } from '@/components/dashboard/entrepreneur/EntrepreneurWorkspace';
+import { consultantSections, type ConsultantSection } from '@/components/dashboard/consultant/navigation';
+import { ConsultantWorkspace } from '@/components/dashboard/consultant/ConsultantWorkspace';
 
 function DashboardContent() {
   const router = useRouter();
@@ -26,6 +28,8 @@ function DashboardContent() {
     !section || entrepreneurSections.includes(section as EntrepreneurSection);
   const validAdminSection =
     !section || adminSections.includes(section as AdminSection);
+  const validConsultantSection =
+    !section || consultantSections.includes(section as ConsultantSection);
 
   useEffect(() => {
     if (!user) return;
@@ -38,7 +42,9 @@ function DashboardContent() {
           ? validEntrepreneurSection
           : user.role === "ADMIN"
             ? validAdminSection
-            : !section;
+            : user.role === "CONSULTANT"
+              ? validConsultantSection
+              : !section;
 
     if (!correctRole || !sectionAllowed) {
       router.replace(getDashboardPath(user.role));
@@ -51,6 +57,7 @@ function DashboardContent() {
     validInvestorSection,
     validEntrepreneurSection,
     validAdminSection,
+    validConsultantSection,
   ]);
 
   if (
@@ -59,9 +66,11 @@ function DashboardContent() {
     (user.role === "INVESTOR" && !validInvestorSection) ||
     (user.role === "ENTREPRENEUR" && !validEntrepreneurSection) ||
     (user.role === "ADMIN" && !validAdminSection) ||
+    (user.role === "CONSULTANT" && !validConsultantSection) ||
     (user.role !== "INVESTOR" &&
       user.role !== "ENTREPRENEUR" &&
       user.role !== "ADMIN" &&
+      user.role !== "CONSULTANT" &&
       section)
   ) {
     return null;
@@ -97,6 +106,17 @@ function DashboardContent() {
   if (user.role === 'ENTREPRENEUR') {
     return (
       <EntrepreneurWorkspace
+        user={user}
+        section={section}
+        onSignOut={signOut}
+        isSigningOut={logout.isPending}
+      />
+    );
+  }
+
+  if (user.role === 'CONSULTANT') {
+    return (
+      <ConsultantWorkspace
         user={user}
         section={section}
         onSignOut={signOut}

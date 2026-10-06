@@ -8,6 +8,7 @@ import {
   CampaignStatus,
   Prisma,
   UserRole,
+  VerificationStatus,
 } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AdminUsersQueryDto } from "./dto/admin-users-query.dto";
@@ -42,6 +43,31 @@ export class AdminUsersService {
       ];
     }
 
+    // Filter by KYC Status
+    if (query.kycStatus) {
+      where.verification = {
+        verificationStatus: query.kycStatus,
+      };
+    }
+
+    // Filter specifically by KYC submission status (Unsubmitted / Submitted)
+    if (query.kycSubmission === "UNSUBMITTED") {
+      where.OR = [
+        { verification: null },
+        {
+          verification: {
+            frontMediaId: null,
+            selfieMediaId: null,
+          },
+        },
+      ];
+    } else if (query.kycSubmission === "SUBMITTED") {
+      where.verification = {
+        frontMediaId: { not: null },
+        selfieMediaId: { not: null },
+      };
+    }
+
     const [total, users] = await Promise.all([
       this.prisma.user.count({ where }),
       this.prisma.user.findMany({
@@ -61,6 +87,21 @@ export class AdminUsersService {
           isEmailVerified: true,
           createdAt: true,
           lastLoginAt: true,
+          verification: {
+            select: {
+              id: true,
+              verificationStatus: true,
+              frontMediaId: true,
+              selfieMediaId: true,
+              rejectionReason: true,
+              reviewedAt: true,
+              updatedAt: true,
+              nidNumber: true,
+              passportNumber: true,
+              taxIdNumber: true,
+              tradeLicenseNumber: true,
+            },
+          },
           entrepreneurProfile: {
             select: {
               companyName: true,
@@ -109,6 +150,17 @@ export class AdminUsersService {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
+        verification: {
+          include: {
+            frontMedia: true,
+            backMedia: true,
+            selfieMedia: true,
+            poaMedia: true,
+            proofOfFundsMedia: true,
+            tradeLicenseMedia: true,
+            tinCertificateMedia: true,
+          },
+        },
         entrepreneurProfile: true,
         investorProfile: true,
         consultantProfile: true,
@@ -205,6 +257,8 @@ export class AdminUsersService {
       activeCampaigns,
       underReviewCampaigns,
       capitalAggregate,
+      pendingKycCount,
+      unsubmittedKycCount,
     ] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.user.count({ where: { role: UserRole.INVESTOR } }),
@@ -222,6 +276,18 @@ export class AdminUsersService {
           raisedAmount: true,
         },
       }),
+      this.prisma.userVerification.count({
+        where: { verificationStatus: VerificationStatus.PENDING },
+      }),
+      this.prisma.user.count({
+        where: {
+          role: { in: [UserRole.INVESTOR, UserRole.ENTREPRENEUR, UserRole.CONSULTANT] },
+          OR: [
+            { verification: null },
+            { verification: { frontMediaId: null } },
+          ],
+        },
+      }),
     ]);
 
     return {
@@ -231,6 +297,8 @@ export class AdminUsersService {
         entrepreneurs: entrepreneurCount,
         consultants: consultantCount,
         admins: adminCount,
+        pendingKyc: pendingKycCount,
+        unsubmittedKyc: unsubmittedKycCount,
       },
       campaigns: {
         total: totalCampaigns,

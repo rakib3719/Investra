@@ -18,11 +18,13 @@ import {
   SectionHeading,
   StatusPill,
 } from "@/components/dashboard/investor/InvestorUI";
+import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
+import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 
 const settingsNav = [
   { label: "Company profile", icon: Building2, active: true },
+  { label: "Identity & KYC", icon: ShieldCheck },
   { label: "Security & Login", icon: Lock },
-  { label: "Data room verification", icon: ShieldCheck },
   { label: "Notifications", icon: Bell },
 ];
 
@@ -62,7 +64,11 @@ export function EntrepreneurSettingsPage({ user }: { user: AuthUser }) {
       </Panel>
 
       {/* Main Settings Body */}
-      <div className="space-y-5">
+      <div className="space-y-6">
+        <ProfileWorkspaceCard user={user} />
+
+        <KycVerificationCard user={user} />
+
         <Panel className="p-5 sm:p-6">
           <SectionHeading
             title="Founder & Company profile"

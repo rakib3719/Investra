@@ -1,9 +1,12 @@
 import { Bell, Building2, Check, ChevronRight, CircleUserRound, CreditCard, Fingerprint, KeyRound, Lock, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { Panel, PrimaryButton, SectionHeading, StatusPill } from "../InvestorUI";
+import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
+import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 
 const settingsNavigation = [
-  { label: "Profile", icon: CircleUserRound, active: true },
+  { label: "Profile & Media", icon: CircleUserRound, active: true },
+  { label: "Identity & KYC", icon: ShieldCheck },
   { label: "Security", icon: Lock },
   { label: "Investment preferences", icon: SlidersHorizontal },
   { label: "Notifications", icon: Bell },
@@ -15,7 +18,11 @@ export function SettingsPage({ user }: { user: AuthUser }) {
     <div className="grid gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
       <Panel className="h-fit p-3"><nav aria-label="Settings sections" className="space-y-1">{settingsNavigation.map(({ label, icon: Icon, active }) => <button key={label} type="button" className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-xs font-bold ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50"}`}><Icon className="h-4 w-4" /><span className="flex-1">{label}</span><ChevronRight className="h-3.5 w-3.5" /></button>)}</nav><div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4"><ShieldCheck className="h-5 w-5 text-emerald-700" /><strong className="mt-3 block text-xs text-slate-800">Account protected</strong><p className="mt-1 text-[11px] leading-4 text-slate-500">Two-factor authentication is active.</p></div></Panel>
 
-      <div className="space-y-5">
+      <div className="space-y-6">
+        <ProfileWorkspaceCard user={user} />
+
+        <KycVerificationCard user={user} />
+
         <Panel className="p-5 sm:p-6"><SectionHeading title="Personal information" description="Used for account verification and investor records" action={<StatusPill>Verified</StatusPill>} /><div className="mt-6 flex flex-col gap-6 sm:flex-row"><div className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-emerald-100 text-xl font-bold text-emerald-800">{`${user.firstName?.[0] ?? user.email[0]}${user.lastName?.[0] ?? ""}`.toUpperCase()}</div><div className="grid flex-1 gap-4 sm:grid-cols-2"><Field label="First name" value={user.firstName || "Alex"} /><Field label="Last name" value={user.lastName || "Roberts"} /><Field label="Email address" value={user.email} /><Field label="Phone number" value={user.phone || "+1 (415) 555-0142"} /><Field label="Country of residence" value="United States" /><Field label="Investor type" value="Accredited investor" /></div></div><div className="mt-6 flex justify-end"><PrimaryButton>Save profile</PrimaryButton></div></Panel>
 
         <Panel className="p-5 sm:p-6"><SectionHeading title="Security" description="Protect access to your investments and personal information" /><div className="mt-5 divide-y divide-slate-100">{[{ icon: KeyRound, title: "Password", detail: "Last changed 42 days ago", action: "Change password" }, { icon: Fingerprint, title: "Two-factor authentication", detail: "Authenticator app enabled", action: "Manage" }, { icon: ShieldCheck, title: "Identity verification", detail: "Identity and accreditation verified", action: "View status" }].map(({ icon: Icon, title, detail, action }) => <div key={title} className="flex flex-wrap items-center gap-4 py-4 first:pt-0 last:pb-0"><span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700"><Icon className="h-4 w-4" /></span><span className="min-w-0 flex-1"><strong className="block text-sm text-slate-800">{title}</strong><span className="text-xs text-slate-500">{detail}</span></span><button type="button" className="text-xs font-bold text-emerald-700">{action}</button></div>)}</div></Panel>

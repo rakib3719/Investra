@@ -10,6 +10,8 @@ import { AdminUsersPage } from "./pages/AdminUsersPage";
 import { AdminCategoriesPage } from "./pages/AdminCategoriesPage";
 import { AdminVisitorsPage } from "./pages/AdminVisitorsPage";
 import { AdminSettingsPage } from "./pages/AdminSettingsPage";
+import { AdminKycPage } from "./pages/AdminKycPage";
+import { AdminPendingUsersPage } from "./pages/AdminPendingUsersPage";
 
 const sectionComponents: Record<
   Exclude<AdminSection, "settings">,
@@ -17,6 +19,8 @@ const sectionComponents: Record<
 > = {
   overview: AdminOverviewPage,
   campaigns: AdminCampaignsPage,
+  kyc: AdminKycPage,
+  "pending-users": AdminPendingUsersPage,
   users: AdminUsersPage,
   categories: AdminCategoriesPage,
   visitors: AdminVisitorsPage,

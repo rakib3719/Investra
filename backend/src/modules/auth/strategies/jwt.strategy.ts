@@ -46,6 +46,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         username: true,
         email: true,
         phone: true,
+        image: true,
+        avatarMedia: { select: { key: true } },
+        coverImage: true,
+        coverMedia: { select: { key: true } },
         role: true,
         tokenVersion: true,
         isEmailVerified: true,
@@ -59,6 +63,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User no longer exists');
     }
 
+    const resolvedImage = user.avatarMedia
+      ? (env.R2_PUBLIC_URL
+          ? `${env.R2_PUBLIC_URL.replace(/\/+$/, '')}/${user.avatarMedia.key}`
+          : user.image)
+      : user.image;
+
+    const resolvedCoverImage = user.coverMedia
+      ? (env.R2_PUBLIC_URL
+          ? `${env.R2_PUBLIC_URL.replace(/\/+$/, '')}/${user.coverMedia.key}`
+          : user.coverImage)
+      : user.coverImage;
+
+    const { avatarMedia: _avatarMedia, coverMedia: _coverMedia, ...userData } = user;
+
     if (!user.isEmailVerified || user.accountStatus !== 'ACTIVE') {
       throw new UnauthorizedException('Your account is not active');
     }
@@ -67,6 +85,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('Your session is no longer valid');
     }
 
-    return user;
+    return {
+      ...userData,
+      image: resolvedImage,
+      coverImage: resolvedCoverImage,
+    };
   }
 }

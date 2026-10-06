@@ -41,4 +41,20 @@ export class RegisterDto {
   @IsEnum(UserRole, { message: 'Invalid user role' })
   @IsNotEmpty({ message: 'Role is required' })
   role: UserRole;
+
+  @ApiProperty({ required: false, description: 'Optional avatar media ID uploaded to Cloudflare R2' })
+  @IsString()
+  avatarMediaId?: string;
+
+  @ApiProperty({ required: false, description: 'Optional public avatar URL' })
+  @IsString()
+  image?: string;
+
+  @ApiProperty({ required: false, description: 'Optional cover media ID uploaded to Cloudflare R2' })
+  @IsString()
+  coverMediaId?: string;
+
+  @ApiProperty({ required: false, description: 'Optional public cover photo URL' })
+  @IsString()
+  coverImage?: string;
 }

@@ -13,6 +13,7 @@ import {
   CalendarDays,
   ChevronDown,
   ClipboardList,
+  Clock,
   Compass,
   FileBarChart,
   FileText,
@@ -29,6 +30,7 @@ import {
   ShieldCheck,
   Target,
   TrendingUp,
+  User,
   Users,
   WalletCards,
   X,
@@ -36,7 +38,7 @@ import {
 import type { AuthUser, AuthenticatedUserRole } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 
-type NavigationItem = { label: string; icon: LucideIcon; badge?: string };
+type NavigationItem = { label: string; icon: LucideIcon; badge?: string; href?: string };
 type Metric = {
   label: string;
   value: string;
@@ -77,39 +79,41 @@ interface RoleDashboardConfig {
 }
 
 const investorNavigation: NavigationItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Portfolio", icon: BriefcaseBusiness },
-  { label: "Investments", icon: WalletCards },
-  { label: "Opportunities", icon: Compass },
-  { label: "Impact", icon: Leaf },
-  { label: "Reports", icon: FileBarChart },
-  { label: "Watchlist", icon: Bookmark },
-  { label: "Messages", icon: MessageSquare, badge: "3" },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/investor" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/investor/kyc" },
+  { label: "Profile", icon: User, href: "/dashboard/investor/profile" },
+  { label: "Portfolio", icon: BriefcaseBusiness, href: "/dashboard/investor/portfolio" },
+  { label: "Investments", icon: WalletCards, href: "/dashboard/investor/investments" },
+  { label: "Opportunities", icon: Compass, href: "/dashboard/investor/opportunities" },
+  { label: "Impact", icon: Leaf, href: "/dashboard/investor/impact" },
+  { label: "Reports", icon: FileBarChart, href: "/dashboard/investor/reports" },
+  { label: "Watchlist", icon: Bookmark, badge: "6", href: "/dashboard/investor/watchlist" },
+  { label: "Messages", icon: MessageSquare, badge: "3", href: "/dashboard/investor/messages" },
+  { label: "Settings", icon: Settings, href: "/dashboard/investor/settings" },
 ];
 
 const entrepreneurNavigation: NavigationItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "My company", icon: Building2 },
-  { label: "Fundraising", icon: Rocket },
-  { label: "Investor matches", icon: Users, badge: "8" },
-  { label: "Data room", icon: FileText },
-  { label: "Analytics", icon: LineChart },
-  { label: "Messages", icon: MessageSquare, badge: "5" },
-  { label: "Tasks", icon: ClipboardList },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/entrepreneur" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/entrepreneur/kyc" },
+  { label: "Company Profile", icon: User, href: "/dashboard/entrepreneur/profile" },
+  { label: "Fundraising", icon: Rocket, href: "/dashboard/entrepreneur/campaigns" },
+  { label: "Investor matches", icon: Users, badge: "8", href: "/dashboard/entrepreneur/matches" },
+  { label: "Analytics", icon: LineChart, href: "/dashboard/entrepreneur/analytics" },
+  { label: "Settings", icon: Settings, href: "/dashboard/entrepreneur/settings" },
 ];
 
 const consultantNavigation: NavigationItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Client workspace", icon: Users },
-  { label: "Advisory work", icon: Handshake },
-  { label: "Deal room", icon: BriefcaseBusiness },
-  { label: "Reports", icon: FileBarChart },
-  { label: "Calendar", icon: CalendarDays },
-  { label: "Messages", icon: MessageSquare, badge: "2" },
-  { label: "Earnings", icon: WalletCards },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/consultant" },
+  { label: "Identity & KYC", icon: ShieldCheck, href: "/dashboard/consultant/kyc" },
+  { label: "Profile", icon: User, href: "/dashboard/consultant/profile" },
+  { label: "Client workspace", icon: Users, href: "/dashboard/consultant/clients" },
+  { label: "Advisory work", icon: Handshake, href: "/dashboard/consultant/advisory" },
+  { label: "Deal room", icon: BriefcaseBusiness, href: "/dashboard/consultant/deal-room" },
+  { label: "Reports", icon: FileBarChart, href: "/dashboard/consultant/reports" },
+  { label: "Calendar", icon: CalendarDays, href: "/dashboard/consultant/calendar" },
+  { label: "Messages", icon: MessageSquare, badge: "2", href: "/dashboard/consultant/messages" },
+  { label: "Earnings", icon: WalletCards, href: "/dashboard/consultant/earnings" },
+  { label: "Settings", icon: Settings, href: "/dashboard/consultant/settings" },
 ];
 
 const dashboardConfigs: Record<AuthenticatedUserRole, RoleDashboardConfig> = {
@@ -253,12 +257,14 @@ const dashboardConfigs: Record<AuthenticatedUserRole, RoleDashboardConfig> = {
     roleName: "Administrator",
     roleDescription: "Here’s the latest activity across the Investra platform.",
     navigation: [
-      { label: "Dashboard", icon: LayoutDashboard },
-      { label: "Users", icon: Users },
-      { label: "Verification", icon: ShieldCheck, badge: "12" },
-      { label: "Categories", icon: ClipboardList },
-      { label: "Reports", icon: FileBarChart },
-      { label: "Settings", icon: Settings },
+      { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/admin" },
+      { label: "Campaigns", icon: Rocket, href: "/dashboard/admin/campaigns" },
+      { label: "KYC Vault", icon: ShieldCheck, href: "/dashboard/admin/kyc" },
+      { label: "Pending Users", icon: Clock, href: "/dashboard/admin/pending-users" },
+      { label: "Users", icon: Users, href: "/dashboard/admin/users" },
+      { label: "Categories", icon: ClipboardList, href: "/dashboard/admin/categories" },
+      { label: "Reports", icon: FileBarChart, href: "/dashboard/admin/visitors" },
+      { label: "Settings", icon: Settings, href: "/dashboard/admin/settings" },
     ],
     metrics: [
       { label: "Active users", value: "2,486", detail: "Verified platform accounts", footer: "8.2% vs last month", icon: Users },
@@ -394,13 +400,32 @@ function Sidebar({ config, isOpen, onClose, onSignOut, isSigningOut }: {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6" aria-label={`${config.roleName} dashboard navigation`}>
-        {config.navigation.map(({ label, icon: Icon, badge }) => (
-          <button key={label} type="button" onClick={onClose} className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-colors ${label === "Dashboard" ? "bg-emerald-50 text-[#065f46]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}>
-            <Icon className="h-[18px] w-[18px]" />
-            <span className="flex-1">{label}</span>
-            {badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">{badge}</span>}
-          </button>
-        ))}
+        {config.navigation.map(({ label, icon: Icon, badge, href }) => {
+          const className = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-colors ${label === "Dashboard" ? "bg-emerald-50 text-[#065f46]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`;
+
+          if (href) {
+            return (
+              <Link
+                key={label}
+                href={href}
+                onClick={onClose}
+                className={className}
+              >
+                <Icon className="h-[18px] w-[18px]" />
+                <span className="flex-1">{label}</span>
+                {badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">{badge}</span>}
+              </Link>
+            );
+          }
+
+          return (
+            <button key={label} type="button" onClick={onClose} className={className}>
+              <Icon className="h-[18px] w-[18px]" />
+              <span className="flex-1">{label}</span>
+              {badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">{badge}</span>}
+            </button>
+          );
+        })}
       </nav>
 
       <div className="space-y-4 border-t border-slate-100 p-4">
@@ -420,8 +445,10 @@ function Sidebar({ config, isOpen, onClose, onSignOut, isSigningOut }: {
 
 export function RoleDashboard({ user, onSignOut, isSigningOut }: { user: AuthUser; onSignOut: () => void; isSigningOut: boolean }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const config = dashboardConfigs[user.role];
   const firstName = user.firstName || user.email.split("@")[0];
+  const rolePrefix = user.role.toLowerCase();
 
   return (
     <main className="min-h-screen bg-[#fbfdfc] text-slate-900">
@@ -442,11 +469,58 @@ export function RoleDashboard({ user, onSignOut, isSigningOut }: { user: AuthUse
               <button type="button" aria-label="Search" className="hidden rounded-xl p-2 text-slate-500 hover:bg-slate-50 md:block"><Search className="h-5 w-5" /></button>
               <button type="button" aria-label="Notifications" className="relative rounded-xl p-2 text-slate-600 hover:bg-slate-50"><Bell className="h-5 w-5" /><span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-white bg-emerald-500" /></button>
               <div className="hidden h-8 w-px bg-slate-200 sm:block" />
-              <button type="button" className="flex items-center gap-2 text-left" aria-label="Open account menu">
-                <Initials user={user} />
-                <span className="hidden leading-tight md:block"><span className="block text-sm font-bold text-slate-800">{user.firstName || "My account"} {user.lastName || ""}</span><span className="block text-xs text-slate-500">{config.roleName}</span></span>
-                <ChevronDown className="hidden h-4 w-4 text-slate-500 md:block" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen((open) => !open)}
+                  className="flex items-center gap-2 text-left rounded-xl p-1.5 hover:bg-slate-50"
+                  aria-label="Open account menu"
+                  aria-expanded={accountOpen}
+                >
+                  <Initials user={user} />
+                  <span className="hidden leading-tight md:block"><span className="block text-sm font-bold text-slate-800">{user.firstName || "My account"} {user.lastName || ""}</span><span className="block text-xs text-slate-500">{config.roleName}</span></span>
+                  <ChevronDown className={`hidden h-4 w-4 text-slate-500 md:block transition-transform ${accountOpen ? "rotate-180" : ""}`} />
+                </button>
+                {accountOpen && (
+                  <div role="menu" className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50">
+                    <Link
+                      href={`/dashboard/${rolePrefix}/profile`}
+                      onClick={() => setAccountOpen(false)}
+                      className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                      role="menuitem"
+                    >
+                      My profile
+                    </Link>
+                    <Link
+                      href={`/dashboard/${rolePrefix}/kyc`}
+                      onClick={() => setAccountOpen(false)}
+                      className="block rounded-xl px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-50"
+                      role="menuitem"
+                    >
+                      Identity & KYC
+                    </Link>
+                    <Link
+                      href={`/dashboard/${rolePrefix}/settings`}
+                      onClick={() => setAccountOpen(false)}
+                      className="block rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                      role="menuitem"
+                    >
+                      Account settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountOpen(false);
+                        onSignOut();
+                      }}
+                      className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50"
+                      role="menuitem"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </header>
 
