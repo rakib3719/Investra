@@ -1,6 +1,7 @@
 export const adminSections = [
   "overview",
   "campaigns",
+  "kyc",
   "users",
   "categories",
   "visitors",
@@ -36,6 +37,12 @@ export const adminPageMeta: Record<
     eyebrow: "Deal review",
     description:
       "Review entrepreneur submissions, audit funding goals and milestones, approve deals, or return with notes.",
+  },
+  kyc: {
+    title: "Identity & KYC Moderation Vault",
+    eyebrow: "Compliance Audit",
+    description:
+      "Inspect government documents, passports, and selfie liveness proofs stored in encrypted Cloudflare R2 private storage.",
   },
   users: {
     title: "User Management & Moderation",

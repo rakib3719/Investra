@@ -305,7 +305,7 @@ export class MediaService {
 
     // If PRIVATE, enforce authorization
     const isOwner = media.uploadedById === userId;
-    const isAdmin = userRole === UserRole.ADMIN;
+    const isAdmin = userRole === UserRole.ADMIN || (userRole as string) === 'SUB_ADMIN';
 
     if (!isOwner && !isAdmin) {
       throw new ForbiddenException(
@@ -346,7 +346,9 @@ export class MediaService {
       return { success: true, message: 'Media is already deleted.' };
     }
 
-    if (media.uploadedById !== userId && userRole !== UserRole.ADMIN) {
+    const isOwner = media.uploadedById === userId;
+    const isAdmin = userRole === UserRole.ADMIN || (userRole as string) === 'SUB_ADMIN';
+    if (!isOwner && !isAdmin) {
       throw new ForbiddenException('You do not have permission to delete this file.');
     }
 

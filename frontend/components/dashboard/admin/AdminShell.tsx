@@ -37,6 +37,7 @@ const navigation: {
 }[] = [
   { section: "overview", label: "Command Center", icon: LayoutDashboard },
   { section: "campaigns", label: "Moderation Queue", icon: Rocket },
+  { section: "kyc", label: "KYC Vault", icon: ShieldCheck },
   { section: "users", label: "User Directory", icon: Users },
   { section: "categories", label: "Categories", icon: FolderTree },
   { section: "visitors", label: "Traffic & Telemetry", icon: Activity },

@@ -55,12 +55,12 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
 
   return (
     <div
-      className={`relative flex items-center justify-between p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all ${className}`}
+      className={`relative flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-2xl hover:border-slate-300 transition-all ${className}`}
     >
       <div className="flex items-center space-x-3.5 overflow-hidden">
         {/* Thumbnail or Icon */}
         {isImage && url ? (
-          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-neutral-800 flex-shrink-0 border border-neutral-700">
+          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-slate-200">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={url}
@@ -69,15 +69,15 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
             />
           </div>
         ) : isPdf ? (
-          <div className="w-12 h-12 rounded-lg bg-red-950/40 border border-red-800/40 flex items-center justify-center flex-shrink-0 text-red-400">
+          <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center flex-shrink-0 text-rose-600">
             <FileText className="w-6 h-6" />
           </div>
         ) : isVideo ? (
-          <div className="w-12 h-12 rounded-lg bg-purple-950/40 border border-purple-800/40 flex items-center justify-center flex-shrink-0 text-purple-400">
+          <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center flex-shrink-0 text-purple-600">
             <Film className="w-6 h-6" />
           </div>
         ) : (
-          <div className="w-12 h-12 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center flex-shrink-0 text-neutral-400">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 text-slate-600">
             <FileText className="w-6 h-6" />
           </div>
         )}
@@ -85,36 +85,36 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
         {/* File Information */}
         <div className="flex-1 min-w-0 pr-2">
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium text-neutral-200 truncate">
+            <p className="text-xs font-bold text-slate-800 truncate">
               {fileName}
             </p>
             {status === 'ACTIVE' && (
-              <span className="inline-flex items-center text-[10px] font-semibold text-emerald-400 bg-emerald-950/50 border border-emerald-800/50 px-1.5 py-0.5 rounded-full">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
+              <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
                 Active
               </span>
             )}
             {status === 'UPLOADED' && (
-              <span className="inline-flex items-center text-[10px] font-semibold text-amber-400 bg-amber-950/50 border border-amber-800/50 px-1.5 py-0.5 rounded-full">
-                <Clock className="w-3 h-3 mr-1" />
+              <span className="inline-flex items-center text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                <Clock className="w-3 h-3 mr-1 text-amber-600" />
                 Ready to Save
               </span>
             )}
           </div>
           {formattedSize && (
-            <p className="text-xs text-neutral-400 mt-0.5">{formattedSize}</p>
+            <p className="text-[11px] font-medium text-slate-500 mt-0.5">{formattedSize}</p>
           )}
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center space-x-2 flex-shrink-0">
+      <div className="flex items-center space-x-1.5 flex-shrink-0">
         {url && (
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 rounded-lg transition-colors"
+            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors"
             title="View or Download"
           >
             <ExternalLink className="w-4 h-4" />
@@ -126,7 +126,7 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
             type="button"
             onClick={onRemove}
             disabled={disabled}
-            className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50"
+            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
             title="Remove file"
           >
             <Trash2 className="w-4 h-4" />
