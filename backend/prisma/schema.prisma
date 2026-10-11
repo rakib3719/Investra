@@ -48,6 +48,7 @@ model User {
   coverMediaId        String?                @unique @map("cover_media_id") @db.Uuid
   coverMedia          MediaFile?             @relation("UserCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
   uploadedMedia       MediaFile[]            @relation("UserUploadedMedia")
+  subscriptions       UserSubscription[]
 
   @@map("users")
 }
@@ -514,5 +515,106 @@ model MediaFile {
   @@index([status, createdAt])
   @@map("media_files")
 }
+
+enum PlanBillingInterval {
+  MONTHLY
+  YEARLY
+  LIFETIME
+
+  @@map("plan_billing_interval")
+}
+
+enum FeatureType {
+  BOOLEAN
+  NUMERIC_LIMIT
+
+  @@map("feature_type")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  TRIALING
+
+  @@map("subscription_status")
+}
+
+model PlatformFeature {
+  id           String          @id @default(uuid()) @db.Uuid
+  code         String          @unique @db.VarChar(255)
+  name         String          @db.VarChar(255)
+  description  String?         @db.Text
+  targetRole   UserRole        @map("target_role")
+  featureType  FeatureType     @default(BOOLEAN) @map("feature_type")
+  unit         String?         @db.VarChar(100)
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamp(6)
+
+  planFeatures PlanFeature[]
+
+  @@map("platform_features")
+}
+
+model PlanTier {
+  id                   String               @id @default(uuid()) @db.Uuid
+  slug                 String               @unique @db.VarChar(255)
+  name                 String               @db.VarChar(255)
+  badge                String?              @db.VarChar(255)
+  description          String?              @db.Text
+  targetRole           UserRole             @map("target_role")
+  priceMonthly         Decimal              @default(0) @map("price_monthly") @db.Decimal(12, 2)
+  priceYearly          Decimal              @default(0) @map("price_yearly") @db.Decimal(12, 2)
+  currency             String               @default("USD") @db.VarChar(50)
+  stripeMonthlyPriceId String?              @map("stripe_monthly_price_id") @db.VarChar(500)
+  stripeYearlyPriceId  String?              @map("stripe_yearly_price_id") @db.VarChar(500)
+  isPopular            Boolean              @default(false) @map("is_popular")
+  isActive             Boolean              @default(true) @map("is_active")
+  sortOrder            Int                  @default(0) @map("sort_order")
+  createdAt            DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt            DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  features             PlanFeature[]
+  subscriptions        UserSubscription[]
+
+  @@index([targetRole, isActive])
+  @@map("plan_tiers")
+}
+
+model PlanFeature {
+  id         String          @id @default(uuid()) @db.Uuid
+  planId     String          @map("plan_id") @db.Uuid
+  featureId  String          @map("feature_id") @db.Uuid
+  isEnabled  Boolean         @default(true) @map("is_enabled")
+  limitValue Int?            @map("limit_value")
+
+  plan       PlanTier        @relation(fields: [planId], references: [id], onDelete: Cascade)
+  feature    PlatformFeature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureId])
+  @@map("plan_features")
+}
+
+model UserSubscription {
+  id                 String              @id @default(uuid()) @db.Uuid
+  userId             String              @map("user_id") @db.Uuid
+  planId             String              @map("plan_id") @db.Uuid
+  billingInterval    PlanBillingInterval @default(MONTHLY) @map("billing_interval")
+  status             SubscriptionStatus  @default(ACTIVE)
+  currentPeriodStart DateTime            @default(now()) @map("current_period_start") @db.Timestamp(6)
+  currentPeriodEnd   DateTime            @map("current_period_end") @db.Timestamp(6)
+  cancelledAt        DateTime?           @map("cancelled_at") @db.Timestamp(6)
+  featureSnapshot    Json                @map("feature_snapshot")
+  usageCounters      Json                @default("{}") @map("usage_counters")
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan               PlanTier            @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+  @@map("user_subscriptions")
+}
+
 
 

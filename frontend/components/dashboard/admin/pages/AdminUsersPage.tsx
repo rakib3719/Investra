@@ -44,6 +44,7 @@ import type {
   UserRole,
 } from "@/lib/admin/admin-users-api";
 import { InvestraInlineLoader, InvestraLoader } from "@/components/ui/InvestraLoader";
+import { toast } from "@/lib/toast";
 
 const ROLES: { label: string; value: string }[] = [
   { label: "All Roles", value: "ALL" },
@@ -116,11 +117,10 @@ export function AdminUsersPage() {
         userId: confirmAction.userId,
         status: confirmAction.action,
       });
-      setStatusMessage(res.message);
+      toast.success(res.message);
       setConfirmAction(null);
-      setTimeout(() => setStatusMessage(null), 4000);
     } catch (err: any) {
-      alert(err?.response?.data?.message || err.message || "Failed to update status");
+      toast.apiError(err, "Failed to update status");
     }
   };
 

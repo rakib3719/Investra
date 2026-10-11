@@ -288,6 +288,355 @@ async function main() {
       console.log(`Campaign "${createdCamp.title}" seeded successfully.`);
     }
 
+    // Seed Subscription Platform Features Catalog
+    const platformFeatures = [
+      // ENTREPRENEUR FEATURES
+      {
+        code: 'campaign_post_limit',
+        name: 'Active Pitch Campaigns',
+        description: 'Number of active fundraising campaigns the entrepreneur can launch concurrently.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'NUMERIC_LIMIT',
+        unit: 'campaigns',
+      },
+      {
+        code: 'investor_analytics',
+        name: 'Deep Investor Telemetry',
+        description: 'Access real-time bookmarks, LP profile views, and demographic impressions.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'comparison_directory',
+        name: 'Comparison Matrix Placement',
+        description: 'Eligible to be compared side-by-side by active accredited investors.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'confidential_deck_limit',
+        name: 'Confidential Pitch Decks',
+        description: 'Maximum confidential pitch deck files and private audit rooms allowed.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'NUMERIC_LIMIT',
+        unit: 'decks',
+      },
+      {
+        code: 'direct_investor_messaging',
+        name: 'Direct Founder-to-Investor Chat',
+        description: 'Initiate or reply to high-conviction direct deal inquiry messages.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'featured_spotlight',
+        name: 'Featured Top Placement',
+        description: 'Featured top banner and spotlight badge in deal discovery listings.',
+        targetRole: UserRole.ENTREPRENEUR,
+        featureType: 'BOOLEAN',
+      },
+
+      // INVESTOR FEATURES
+      {
+        code: 'deal_bookmark_limit',
+        name: 'Opportunity Bookmarks',
+        description: 'Maximum startup campaigns the investor can save to their watchlist.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'NUMERIC_LIMIT',
+        unit: 'bookmarks',
+      },
+      {
+        code: 'deal_comparison_matrix',
+        name: 'Side-by-Side Comparison Matrix',
+        description: 'Analyze up to 4 startup metrics simultaneously with yield models.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'direct_founder_chat',
+        name: 'Real-time Founder Messaging',
+        description: 'Direct communication line with campaign founders and syndicate leads.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'due_diligence_vault',
+        name: 'Confidential Due Diligence Vault',
+        description: 'Download audited financials, term sheets, and confidential pitch decks.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'custom_csv_export',
+        name: 'Bulk Data CSV & Excel Export',
+        description: 'Export deal rosters, valuation metrics, and ESG telemetry into spreadsheets.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'syndicate_room_access',
+        name: 'Private LP Deal Syndication Room',
+        description: 'Co-invest alongside institutional lead syndicates in private allocations.',
+        targetRole: UserRole.INVESTOR,
+        featureType: 'BOOLEAN',
+      },
+
+      // CONSULTANT FEATURES
+      {
+        code: 'consultation_listing',
+        name: 'Marketplace Directory Listing',
+        description: 'Public listing in the verified startup advisor and mentor directory.',
+        targetRole: UserRole.CONSULTANT,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'client_booking_limit',
+        name: 'Monthly Client Bookings',
+        description: 'Maximum 1-on-1 advisory session bookings received per calendar month.',
+        targetRole: UserRole.CONSULTANT,
+        featureType: 'NUMERIC_LIMIT',
+        unit: 'sessions',
+      },
+      {
+        code: 'webinar_course_hosting',
+        name: 'Host Video Courses & Masterclasses',
+        description: 'Publish recorded webinars and sell educational modules to founders.',
+        targetRole: UserRole.CONSULTANT,
+        featureType: 'BOOLEAN',
+      },
+      {
+        code: 'featured_advisor_badge',
+        name: 'Top Rated Advisor Spotlight',
+        description: 'Verified badge and homepage placement under trusted mentors.',
+        targetRole: UserRole.CONSULTANT,
+        featureType: 'BOOLEAN',
+      },
+    ];
+
+    const featureRecordMap = {};
+    for (const feat of platformFeatures) {
+      const createdFeature = await prisma.platformFeature.upsert({
+        where: { code: feat.code },
+        update: {
+          name: feat.name,
+          description: feat.description,
+          targetRole: feat.targetRole,
+          featureType: feat.featureType,
+          unit: feat.unit || null,
+        },
+        create: feat,
+      });
+      featureRecordMap[feat.code] = createdFeature.id;
+    }
+    console.log(`Seeded ${platformFeatures.length} platform features in catalog.`);
+
+    // Seed Default Plan Tiers & Feature Associations
+    const defaultPlans = [
+      // INVESTOR PLANS
+      {
+        slug: 'investor-free',
+        name: 'Free Explorer',
+        badge: 'Standard Access',
+        description: 'Explore startup directories, inspect public pitch decks, and follow market trends.',
+        targetRole: UserRole.INVESTOR,
+        priceMonthly: 0,
+        priceYearly: 0,
+        currency: 'USD',
+        isPopular: false,
+        isActive: true,
+        sortOrder: 1,
+        features: [
+          { code: 'deal_bookmark_limit', isEnabled: true, limitValue: 50 },
+          { code: 'deal_comparison_matrix', isEnabled: false },
+          { code: 'direct_founder_chat', isEnabled: false },
+          { code: 'due_diligence_vault', isEnabled: false },
+          { code: 'custom_csv_export', isEnabled: false },
+          { code: 'syndicate_room_access', isEnabled: false },
+        ],
+      },
+      {
+        slug: 'investor-pro',
+        name: 'Investor Pro',
+        badge: 'Most Popular',
+        description: 'Side-by-side business comparison, unlimited bookmarks, and direct founder chat.',
+        targetRole: UserRole.INVESTOR,
+        priceMonthly: 39,
+        priceYearly: 375,
+        currency: 'USD',
+        isPopular: true,
+        isActive: true,
+        sortOrder: 2,
+        features: [
+          { code: 'deal_bookmark_limit', isEnabled: true, limitValue: -1 }, // -1 = Unlimited
+          { code: 'deal_comparison_matrix', isEnabled: true },
+          { code: 'direct_founder_chat', isEnabled: true },
+          { code: 'due_diligence_vault', isEnabled: true },
+          { code: 'custom_csv_export', isEnabled: false },
+          { code: 'syndicate_room_access', isEnabled: false },
+        ],
+      },
+      {
+        slug: 'investor-institutional',
+        name: 'Institutional LP',
+        badge: 'Enterprise & Funds',
+        description: 'Dedicated account management, custom CSV data exports, and private syndicate rooms.',
+        targetRole: UserRole.INVESTOR,
+        priceMonthly: 99,
+        priceYearly: 950,
+        currency: 'USD',
+        isPopular: false,
+        isActive: true,
+        sortOrder: 3,
+        features: [
+          { code: 'deal_bookmark_limit', isEnabled: true, limitValue: -1 },
+          { code: 'deal_comparison_matrix', isEnabled: true },
+          { code: 'direct_founder_chat', isEnabled: true },
+          { code: 'due_diligence_vault', isEnabled: true },
+          { code: 'custom_csv_export', isEnabled: true },
+          { code: 'syndicate_room_access', isEnabled: true },
+        ],
+      },
+
+      // ENTREPRENEUR PLANS
+      {
+        slug: 'entrepreneur-starter',
+        name: 'Starter Entrepreneur',
+        badge: 'Free Pitch',
+        description: 'Publish your initial startup proposal and monitor public visitor metrics.',
+        targetRole: UserRole.ENTREPRENEUR,
+        priceMonthly: 0,
+        priceYearly: 0,
+        currency: 'USD',
+        isPopular: false,
+        isActive: true,
+        sortOrder: 1,
+        features: [
+          { code: 'campaign_post_limit', isEnabled: true, limitValue: 1 },
+          { code: 'investor_analytics', isEnabled: false },
+          { code: 'comparison_directory', isEnabled: false },
+          { code: 'confidential_deck_limit', isEnabled: true, limitValue: 1 },
+          { code: 'direct_investor_messaging', isEnabled: false },
+          { code: 'featured_spotlight', isEnabled: false },
+        ],
+      },
+      {
+        slug: 'entrepreneur-pro',
+        name: 'Pro Accelerator',
+        badge: 'Recommended Founder',
+        description: 'Priority placement, investor telemetry insights, and comparison matrix inclusion.',
+        targetRole: UserRole.ENTREPRENEUR,
+        priceMonthly: 49,
+        priceYearly: 470,
+        currency: 'USD',
+        isPopular: true,
+        isActive: true,
+        sortOrder: 2,
+        features: [
+          { code: 'campaign_post_limit', isEnabled: true, limitValue: 3 },
+          { code: 'investor_analytics', isEnabled: true },
+          { code: 'comparison_directory', isEnabled: true },
+          { code: 'confidential_deck_limit', isEnabled: true, limitValue: 5 },
+          { code: 'direct_investor_messaging', isEnabled: true },
+          { code: 'featured_spotlight', isEnabled: true },
+        ],
+      },
+      {
+        slug: 'entrepreneur-syndicate',
+        name: 'Syndicate Growth',
+        badge: 'Scaleup & Series A',
+        description: 'Dedicated pitch production, syndicate introductions, and unlimited campaigns.',
+        targetRole: UserRole.ENTREPRENEUR,
+        priceMonthly: 119,
+        priceYearly: 1100,
+        currency: 'USD',
+        isPopular: false,
+        isActive: true,
+        sortOrder: 3,
+        features: [
+          { code: 'campaign_post_limit', isEnabled: true, limitValue: -1 },
+          { code: 'investor_analytics', isEnabled: true },
+          { code: 'comparison_directory', isEnabled: true },
+          { code: 'confidential_deck_limit', isEnabled: true, limitValue: 20 },
+          { code: 'direct_investor_messaging', isEnabled: true },
+          { code: 'featured_spotlight', isEnabled: true },
+        ],
+      },
+
+      // CONSULTANT PLANS
+      {
+        slug: 'consultant-starter',
+        name: 'Mentor Starter',
+        badge: 'Directory Listing',
+        description: 'Listed mentor in startup directory with direct client booking calendar.',
+        targetRole: UserRole.CONSULTANT,
+        priceMonthly: 0,
+        priceYearly: 0,
+        currency: 'USD',
+        isPopular: false,
+        isActive: true,
+        sortOrder: 1,
+        features: [
+          { code: 'consultation_listing', isEnabled: true },
+          { code: 'client_booking_limit', isEnabled: true, limitValue: 10 },
+          { code: 'webinar_course_hosting', isEnabled: false },
+          { code: 'featured_advisor_badge', isEnabled: false },
+        ],
+      },
+      {
+        slug: 'consultant-expert',
+        name: 'Advisory Partner',
+        badge: 'Top Mentor',
+        description: 'Unlimited monthly bookings, webinar hosting, and verified advisory spotlight.',
+        targetRole: UserRole.CONSULTANT,
+        priceMonthly: 29,
+        priceYearly: 290,
+        currency: 'USD',
+        isPopular: true,
+        isActive: true,
+        sortOrder: 2,
+        features: [
+          { code: 'consultation_listing', isEnabled: true },
+          { code: 'client_booking_limit', isEnabled: true, limitValue: -1 },
+          { code: 'webinar_course_hosting', isEnabled: true },
+          { code: 'featured_advisor_badge', isEnabled: true },
+        ],
+      },
+    ];
+
+    for (const plan of defaultPlans) {
+      const { features, ...planData } = plan;
+      const createdPlan = await prisma.planTier.upsert({
+        where: { slug: plan.slug },
+        update: planData,
+        create: planData,
+      });
+
+      for (const feat of features) {
+        const featureId = featureRecordMap[feat.code];
+        if (featureId) {
+          await prisma.planFeature.upsert({
+            where: {
+              planId_featureId: {
+                planId: createdPlan.id,
+                featureId,
+              },
+            },
+            update: {
+              isEnabled: feat.isEnabled,
+              limitValue: feat.limitValue !== undefined ? feat.limitValue : null,
+            },
+            create: {
+              planId: createdPlan.id,
+              featureId,
+              isEnabled: feat.isEnabled,
+              limitValue: feat.limitValue !== undefined ? feat.limitValue : null,
+            },
+          });
+        }
+      }
+      console.log(`Plan Tier "${createdPlan.name}" (${createdPlan.targetRole}) seeded with features.`);
+    }
+
     console.log('✅ Database seeding complete!');
   } finally {
     await prisma.$disconnect();
