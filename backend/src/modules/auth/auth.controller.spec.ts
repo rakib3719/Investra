@@ -109,6 +109,7 @@ describe('AuthController', () => {
       ).resolves.toEqual({
         message: 'Login successful',
         user: currentUser,
+        accessToken: 'access-token',
       });
 
       expect(authServiceMock.login).toHaveBeenCalledWith(loginDto);
@@ -160,6 +161,7 @@ describe('AuthController', () => {
         controller.refresh(request as never, response.response),
       ).resolves.toEqual({
         message: 'Tokens refreshed successfully',
+        accessToken: 'new-access-token',
       });
 
       expect(authServiceMock.refreshTokens).toHaveBeenCalledWith(

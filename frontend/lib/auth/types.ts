@@ -54,3 +54,14 @@ export interface ChangePasswordInput {
 export interface AuthMessage {
   message: string;
 }
+
+export interface LoginResponse {
+  user: AuthUser;
+  accessToken?: string;
+  message?: string;
+}
+
+export interface RefreshResponse {
+  message: string;
+  accessToken?: string;
+}

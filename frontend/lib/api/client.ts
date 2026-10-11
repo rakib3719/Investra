@@ -36,6 +36,12 @@ const refreshClient = axios.create({
 for (const client of [apiClient, refreshClient]) {
   client.interceptors.request.use((config) => {
     requireApiUrl();
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('investra_access_token');
+      if (token && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
   });
 }
@@ -64,14 +70,31 @@ apiClient.interceptors.response.use(
     try {
       refreshPromise ??= refreshClient
         .post('/auth/refresh')
-        .then(() => undefined)
+        .then((res) => {
+          const raw: any = res.data;
+          const data = raw?.data || raw;
+          const newToken = data?.accessToken;
+          if (typeof window !== 'undefined' && newToken) {
+            localStorage.setItem('investra_access_token', newToken);
+          }
+          return undefined;
+        })
         .finally(() => {
           refreshPromise = null;
         });
 
       await refreshPromise;
+      if (request.headers && typeof window !== 'undefined') {
+        const token = localStorage.getItem('investra_access_token');
+        if (token) {
+          request.headers.Authorization = `Bearer ${token}`;
+        }
+      }
       return apiClient(request);
     } catch {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('investra_access_token');
+      }
       return Promise.reject(error);
     }
   },

@@ -124,6 +124,7 @@ export class AuthController {
     return {
       message: 'Login successful',
       user: result.user,
+      accessToken: result.accessToken,
     };
   }
 
@@ -162,6 +163,7 @@ export class AuthController {
 
     return {
       message: result.message,
+      accessToken: result.accessToken,
     };
   }
 
@@ -307,10 +309,11 @@ export class AuthController {
   }
 
   private getCookieOptions() {
+    const isProdOrRender = process.env.NODE_ENV === 'production' || Boolean(process.env.RENDER);
     return {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: env.COOKIE_SAME_SITE,
+      secure: isProdOrRender,
+      sameSite: (process.env.COOKIE_SAME_SITE as any) || (isProdOrRender ? 'none' : 'lax'),
       path: '/',
       ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
     };

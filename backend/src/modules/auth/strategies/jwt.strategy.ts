@@ -14,12 +14,17 @@ interface JwtPayload {
 }
 
 const cookieExtractor = (req: Request): string | null => {
+  const bearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  if (bearerToken) {
+    return bearerToken;
+  }
+
   const cookies = req.cookies as Record<string, unknown> | undefined;
   const token = cookies?.accessToken;
 
-  return typeof token === 'string'
+  return typeof token === 'string' && token.trim().length > 0
     ? token
-    : ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    : null;
 };
 
 @Injectable()

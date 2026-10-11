@@ -73,6 +73,13 @@ export class UserResponseDto {
 export class LoginResponseDto {
   @ApiProperty({ type: () => UserResponseDto })
   user: UserResponseDto;
+
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'JWT access token for Authorization Bearer header fallback',
+    required: false,
+  })
+  accessToken?: string;
 }
 
 export class RegistrationResponseDto {
@@ -102,4 +109,11 @@ export class ForgotPasswordResponseDataDto {
 export class RefreshResponseDataDto {
   @ApiProperty({ example: 'Tokens refreshed successfully' })
   message: string;
+
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'JWT access token for Authorization Bearer header fallback',
+    required: false,
+  })
+  accessToken?: string;
 }

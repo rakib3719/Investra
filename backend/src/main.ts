@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const expressApp = app.getHttpAdapter().getInstance() as express.Express;
   expressApp.disable('x-powered-by');
-  if (env.NODE_ENV === 'production') {
+  if (env.NODE_ENV === 'production' || process.env.RENDER) {
     expressApp.set('trust proxy', 1);
   }
 
