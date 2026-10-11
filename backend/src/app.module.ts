@@ -14,6 +14,7 @@ import { BookmarksModule } from './modules/bookmarks/bookmarks.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { MediaModule } from './modules/media/media.module';
 import { KycModule } from './modules/kyc/kyc.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { KycModule } from './modules/kyc/kyc.module';
     AdminModule,
     MediaModule,
     KycModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [

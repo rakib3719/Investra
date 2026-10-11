@@ -12,6 +12,7 @@ import { AdminVisitorsPage } from "./pages/AdminVisitorsPage";
 import { AdminSettingsPage } from "./pages/AdminSettingsPage";
 import { AdminKycPage } from "./pages/AdminKycPage";
 import { AdminPendingUsersPage } from "./pages/AdminPendingUsersPage";
+import { AdminSubscriptionsPage } from "./pages/AdminSubscriptionsPage";
 
 const sectionComponents: Record<
   Exclude<AdminSection, "settings">,
@@ -23,6 +24,7 @@ const sectionComponents: Record<
   "pending-users": AdminPendingUsersPage,
   users: AdminUsersPage,
   categories: AdminCategoriesPage,
+  subscriptions: AdminSubscriptionsPage,
   visitors: AdminVisitorsPage,
 };
 

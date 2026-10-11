@@ -5,6 +5,7 @@ export const adminSections = [
   "pending-users",
   "users",
   "categories",
+  "subscriptions",
   "visitors",
   "settings",
 ] as const;
@@ -62,6 +63,12 @@ export const adminPageMeta: Record<
     eyebrow: "Sector & category control",
     description:
       "Review and organize investment verticals, industry categories, and deal tags.",
+  },
+  subscriptions: {
+    title: "Subscription & Tier Management",
+    eyebrow: "Monetization & Plans",
+    description:
+      "Configure role-based pricing plans, manage feature entitlements, and adjust limits for entrepreneurs, investors, and consultants.",
   },
   visitors: {
     title: "Visitor & Audience Insights",

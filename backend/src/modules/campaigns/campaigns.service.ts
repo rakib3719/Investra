@@ -47,6 +47,64 @@ export class CampaignsService {
   }
 
   async createCampaign(entrepreneurId: string, dto: CreateCampaignDto) {
+    // 1. Check user role and active subscription / free plan campaign limit
+    const user = await this.prisma.user.findUnique({
+      where: { id: entrepreneurId },
+      select: { role: true },
+    });
+
+    if (user && user.role === 'ENTREPRENEUR') {
+      const activeCampaignsCount = await this.prisma.business.count({
+        where: {
+          entrepreneurId,
+          status: { in: [CampaignStatus.ACTIVE, CampaignStatus.UNDER_REVIEW, CampaignStatus.DRAFT] },
+          deletedAt: null,
+        },
+      });
+
+      // Check user subscription snapshot
+      const sub = await this.prisma.userSubscription.findFirst({
+        where: {
+          userId: entrepreneurId,
+          status: 'ACTIVE',
+          currentPeriodEnd: { gte: new Date() },
+        },
+        include: { plan: true },
+      });
+
+      let allowedLimit = 1; // Default Free Tier limit
+      let planName = 'Free Tier';
+
+      if (sub && sub.featureSnapshot) {
+        const snapshot = sub.featureSnapshot as Record<string, any>;
+        const feat = snapshot['campaign_post_limit'];
+        if (feat && feat.limitValue !== undefined && feat.limitValue !== null) {
+          allowedLimit = feat.limitValue;
+          planName = sub.plan.name;
+        }
+      } else {
+        // Fallback to default starter plan from DB
+        const starterPlan = await this.prisma.planTier.findFirst({
+          where: { targetRole: 'ENTREPRENEUR', priceMonthly: 0, isActive: true },
+          include: {
+            features: {
+              where: { feature: { code: 'campaign_post_limit' } },
+            },
+          },
+        });
+        if (starterPlan && starterPlan.features.length > 0) {
+          allowedLimit = starterPlan.features[0].limitValue ?? 1;
+          planName = starterPlan.name;
+        }
+      }
+
+      if (allowedLimit !== -1 && activeCampaignsCount >= allowedLimit) {
+        throw new ForbiddenException(
+          `Your current subscription (${planName}) allows up to ${allowedLimit} active campaign(s). You currently have ${activeCampaignsCount}. Please upgrade your subscription plan to publish more campaigns.`
+        );
+      }
+    }
+
     const slug = await this.generateUniqueSlug(dto.title);
 
     return this.prisma.business.create({
