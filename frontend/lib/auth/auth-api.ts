@@ -5,6 +5,8 @@ import type {
   AuthMessage,
   AuthUser,
   LoginInput,
+  LoginResponse,
+  RefreshResponse,
   ChangePasswordInput,
   RegisterInput,
   ResetPasswordInput,
@@ -20,9 +22,9 @@ export const authApi = {
   register: (input: RegisterInput) =>
     unwrap(apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/register', input, noRefresh)),
   login: (input: LoginInput) =>
-    unwrap(apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/login', input, noRefresh)),
+    unwrap(apiClient.post<ApiResponse<LoginResponse>>('/auth/login', input, noRefresh)),
   me: () => unwrap(apiClient.get<ApiResponse<AuthUser>>('/auth/me')),
-  refresh: () => unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/refresh', undefined, noRefresh)),
+  refresh: () => unwrap(apiClient.post<ApiResponse<RefreshResponse>>('/auth/refresh', undefined, noRefresh)),
   logout: () => unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/logout', undefined, noRefresh)),
   verifyEmail: (token: string) =>
     unwrap(apiClient.post<ApiResponse<AuthMessage>>('/auth/verify-email', { token }, noRefresh)),
