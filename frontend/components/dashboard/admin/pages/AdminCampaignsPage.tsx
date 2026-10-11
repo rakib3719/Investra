@@ -37,6 +37,7 @@ import {
 } from "@/lib/campaigns/campaigns-hooks";
 import type { Campaign } from "@/lib/campaigns/types";
 import { InvestraInlineLoader, InvestraLoader } from "@/components/ui/InvestraLoader";
+import { toast } from "@/lib/toast";
 
 const STATUS_TABS: { label: string; value: string }[] = [
   { label: "Under Review", value: "UNDER_REVIEW" },
@@ -70,13 +71,12 @@ export function AdminCampaignsPage() {
         id: campaign.id,
         status: "ACTIVE",
       });
-      setStatusMessage(`Campaign "${campaign.title}" is now LIVE and active.`);
+      toast.success(`Campaign "${campaign.title}" is now LIVE and active.`);
       if (inspectCampaign?.id === campaign.id) {
         setInspectCampaign(null);
       }
-      setTimeout(() => setStatusMessage(null), 4000);
     } catch (err: any) {
-      alert(err?.response?.data?.message || err.message || "Failed to approve campaign");
+      toast.apiError(err, "Failed to approve campaign");
     }
   };
 
@@ -90,17 +90,16 @@ export function AdminCampaignsPage() {
         status: "REJECTED",
         rejectionReason: rejectionReason.trim() || undefined,
       });
-      setStatusMessage(
-        `Campaign "${rejectingCampaign.title}" has been rejected with feedback notes.`,
+      toast.success(
+        `Campaign "${rejectingCampaign.title}" has been rejected with feedback notes.`
       );
       setRejectingCampaign(null);
       setRejectionReason("");
       if (inspectCampaign?.id === rejectingCampaign.id) {
         setInspectCampaign(null);
       }
-      setTimeout(() => setStatusMessage(null), 4000);
     } catch (err: any) {
-      alert(err?.response?.data?.message || err.message || "Failed to reject campaign");
+      toast.apiError(err, "Failed to reject campaign");
     }
   };
 

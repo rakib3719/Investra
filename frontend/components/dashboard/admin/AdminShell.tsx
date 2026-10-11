@@ -9,6 +9,7 @@ import {
   ChevronDown,
   CircleHelp,
   Clock,
+  CreditCard,
   FolderTree,
   LayoutDashboard,
   LogOut,
@@ -42,6 +43,7 @@ const navigation: {
   { section: "pending-users", label: "Pending Users", icon: Clock },
   { section: "users", label: "User Directory", icon: Users },
   { section: "categories", label: "Categories", icon: FolderTree },
+  { section: "subscriptions", label: "Subscriptions", icon: CreditCard },
   { section: "visitors", label: "Traffic & Telemetry", icon: Activity },
   { section: "settings", label: "Settings", icon: Settings },
 ];

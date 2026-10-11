@@ -24,12 +24,29 @@ import {
   Crown,
   CheckCircle2,
   Lock,
-  ChevronRight
+  ChevronRight,
+  UserCheck,
 } from "lucide-react";
+import { usePublicPlansQuery } from "@/lib/admin/admin-subscription-hooks";
+import { adminSubscriptionsApi, type TargetRole } from "@/lib/admin/admin-subscriptions-api";
+import { useCurrentUserQuery } from "@/lib/auth/auth-hooks";
+import { toast } from "@/lib/toast";
 
 export default function MasterpieceSubscriptionPage() {
-  const [role, setRole] = useState<"investor" | "entrepreneur">("investor");
+  const [role, setRole] = useState<"investor" | "entrepreneur" | "consultant">("investor");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const { data: currentUser } = useCurrentUserQuery();
+
+  const targetRoleMap: Record<string, TargetRole> = {
+    investor: "INVESTOR",
+    entrepreneur: "ENTREPRENEUR",
+    consultant: "CONSULTANT",
+  };
+
+  const { data: remotePlans, isLoading, refetch } = usePublicPlansQuery(targetRoleMap[role]);
 
   const plans = {
     investor: [
@@ -138,10 +155,60 @@ export default function MasterpieceSubscriptionPage() {
         popular: false,
         buttonText: "Get Syndicate Growth",
       }
+    ],
+    consultant: [
+      {
+        id: "consultant-starter",
+        name: "Mentor Starter",
+        badge: "Directory Listing",
+        price: { monthly: 0, yearly: 0 },
+        description: "Listed mentor in startup directory with direct client booking calendar.",
+        features: [
+          "Marketplace directory listing",
+          "Up to 10 client bookings / month",
+          "Direct client messaging",
+          "Standard support desk"
+        ],
+        popular: false,
+        buttonText: "Join as Mentor",
+      },
+      {
+        id: "consultant-pro",
+        name: "Advisory Partner",
+        badge: "Top Mentor",
+        price: { monthly: 29, yearly: 290 },
+        description: "Unlimited monthly bookings, webinar hosting, and verified advisory spotlight.",
+        features: [
+          "Marketplace directory listing",
+          "Unlimited monthly client bookings",
+          "Host video courses & masterclasses",
+          "Top rated advisor spotlight badge",
+          "Priority payout schedules"
+        ],
+        popular: true,
+        buttonText: "Become Advisory Partner",
+      }
     ]
   };
 
-  const activePlans = plans[role];
+  const activePlans = (remotePlans && remotePlans.length > 0)
+    ? remotePlans.map((rp) => ({
+        id: rp.id,
+        name: rp.name,
+        badge: rp.badge || (rp.isPopular ? "Featured Tier" : "Standard Tier"),
+        price: { monthly: rp.priceMonthly, yearly: rp.priceYearly },
+        description: rp.description || "",
+        features: rp.features.map((f) => 
+          f.limitValue !== null && f.limitValue !== undefined
+            ? f.limitValue === -1
+              ? `${f.name} (Unlimited)`
+              : `${f.name} (Up to ${f.limitValue} ${f.unit || ""})`
+            : f.name
+        ),
+        popular: rp.isPopular,
+        buttonText: rp.priceMonthly === 0 ? "Get Started Free" : `Choose ${rp.name}`,
+      }))
+    : plans[role];
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
@@ -190,6 +257,14 @@ export default function MasterpieceSubscriptionPage() {
       {/* Main Pricing Section */}
       <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-16 flex-1 space-y-16">
         
+        {/* Success Feedback Alert */}
+        {successMessage && (
+          <div className="max-w-2xl mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-900 text-sm font-semibold flex items-center gap-3 shadow-md animate-in fade-in slide-in-from-top-4">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
         {/* Role & Billing Switcher */}
         <div className="flex flex-col items-center gap-6 text-center">
           
@@ -217,6 +292,18 @@ export default function MasterpieceSubscriptionPage() {
             >
               <Briefcase className="w-4 h-4" />
               <span>Entrepreneur Tiers</span>
+            </button>
+
+            <button
+              onClick={() => setRole("consultant")}
+              className={`px-6 py-3 rounded-xl text-xs font-bold font-heading transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                role === "consultant"
+                  ? "bg-[#064e3b] text-white shadow-sm scale-102"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Consultant Tiers</span>
             </button>
           </div>
 
@@ -336,14 +423,42 @@ export default function MasterpieceSubscriptionPage() {
                   {/* CTA Button */}
                   <div className="pt-8">
                     <button
-                      onClick={() => alert(`Selected ${plan.name} (${billingPeriod})... Directing to checkout!`)}
-                      className={`w-full py-3.5 rounded-xl text-xs font-extrabold font-heading transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs group-hover:shadow-md ${
+                      disabled={subscribingPlanId === plan.id}
+                      onClick={async () => {
+                        if (!currentUser) {
+                          window.location.href = "/login?redirect=/subscription";
+                          return;
+                        }
+                        try {
+                          setSubscribingPlanId(plan.id);
+                          await adminSubscriptionsApi.checkoutPlan(
+                            plan.id,
+                            billingPeriod === "monthly" ? "MONTHLY" : "YEARLY"
+                          );
+                          toast.success(
+                            `Successfully subscribed to ${plan.name} (${billingPeriod})! Your feature limits and privileges have been locked in.`,
+                            { title: "Subscription Activated" }
+                          );
+                        } catch (err: any) {
+                          toast.apiError(
+                            err,
+                            "Failed to activate subscription. Please try again."
+                          );
+                        } finally {
+                          setSubscribingPlanId(null);
+                        }
+                      }}
+                      className={`w-full py-3.5 rounded-xl text-xs font-extrabold font-heading transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs group-hover:shadow-md disabled:opacity-50 ${
                         isPopular
                           ? "bg-[#064e3b] hover:bg-[#043c2e] text-white"
                           : "bg-slate-100 hover:bg-slate-200 text-slate-800"
                       }`}
                     >
-                      <span>{plan.buttonText}</span>
+                      <span>
+                        {subscribingPlanId === plan.id
+                          ? "Activating Plan..."
+                          : plan.buttonText}
+                      </span>
                       <ArrowRight className="w-4 h-4 text-[#10b981] group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
