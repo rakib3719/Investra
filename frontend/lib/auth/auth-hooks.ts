@@ -28,8 +28,12 @@ export function useLoginMutation() {
 
   return useMutation({
     mutationFn: (input: LoginInput) => authApi.login(input),
-    onSuccess: ({ user }) =>
-      queryClient.setQueryData<AuthUser>(authKeys.me(), user),
+    onSuccess: ({ user, accessToken }) => {
+      if (typeof window !== 'undefined' && accessToken) {
+        localStorage.setItem('investra_access_token', accessToken);
+      }
+      queryClient.setQueryData<AuthUser>(authKeys.me(), user);
+    },
   });
 }
 
@@ -69,6 +73,9 @@ export function useChangePasswordMutation() {
   return useMutation({
     mutationFn: (input: ChangePasswordInput) => authApi.changePassword(input),
     onSuccess: async () => {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('investra_access_token');
+      }
       await queryClient.cancelQueries({ queryKey: authKeys.me() });
       queryClient.setQueryData<AuthUser | null>(authKeys.me(), null);
       queryClient.removeQueries({ queryKey: ['profile'] });
@@ -82,6 +89,9 @@ export function useLogoutMutation() {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: async () => {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('investra_access_token');
+      }
       // Keep the active AuthProvider query in place, but immediately replace its
       // data so every consumer (especially the navbar) re-renders as signed out.
       await queryClient.cancelQueries({ queryKey: authKeys.me() });
