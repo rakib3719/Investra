@@ -27,6 +27,7 @@ import { coursesApi } from "@/lib/courses/courses-api";
 import type { ConsultantCourseStudioItem, CourseLevel, CourseStatus } from "@/lib/courses/types";
 import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
 import { toast } from "@/lib/toast";
+import { FileUploadDropzone } from "@/components/ui/FileUploadDropzone";
 
 interface LessonFormState {
   id?: string;
@@ -605,15 +606,30 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Thumbnail Image URL (Cloudflare R2 or Web)
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Course Thumbnail (Direct Cloudflare R2 Upload)
                 </label>
-                <input
-                  type="url"
-                  value={courseForm.thumbnailUrl}
-                  onChange={(e) => setCourseForm({ ...courseForm, thumbnailUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/... or R2 public URL"
-                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none"
+                <FileUploadDropzone
+                  category="CAMPAIGN_COVER"
+                  label="Upload Course Thumbnail (JPEG, PNG, WebP up to 10MB)"
+                  description="Directly uploads to Cloudflare R2 with live progress."
+                  currentMedia={
+                    courseForm.thumbnailUrl
+                      ? {
+                          url: courseForm.thumbnailUrl,
+                          status: "ACTIVE",
+                        }
+                      : undefined
+                  }
+                  onUploadSuccess={(media) => {
+                    if (media.url) {
+                      setCourseForm((prev) => ({ ...prev, thumbnailUrl: media.url as string }));
+                      toast.success("Thumbnail uploaded directly to Cloudflare R2!");
+                    }
+                  }}
+                  onRemove={() => {
+                    setCourseForm((prev) => ({ ...prev, thumbnailUrl: "" }));
+                  }}
                 />
               </div>
 
@@ -808,18 +824,62 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Video Stream URL or Key
-                </label>
-                <input
-                  type="text"
-                  value={lessonForm.videoUrl}
-                  onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                  placeholder="https://...mp4 or https://youtube.com/watch?v=..."
-                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none"
-                />
-              </div>
+              {lessonForm.videoProvider === "HTML5" ? (
+                <div className="space-y-3">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Lesson Video (Direct Cloudflare R2 Upload)
+                  </label>
+                  <FileUploadDropzone
+                    category="VIDEO"
+                    accept="video/mp4,video/webm"
+                    label="Upload Lesson Video (MP4 or WebM up to 100MB)"
+                    description="Uploads directly to Cloudflare R2 with progress."
+                    currentMedia={
+                      lessonForm.videoUrl
+                        ? {
+                            url: lessonForm.videoUrl,
+                            status: "ACTIVE",
+                          }
+                        : undefined
+                    }
+                    onUploadSuccess={(media) => {
+                      if (media.url) {
+                        setLessonForm((prev) => ({ ...prev, videoUrl: media.url as string }));
+                        toast.success("Lesson video uploaded to Cloudflare R2!");
+                      }
+                    }}
+                    onRemove={() => {
+                      setLessonForm((prev) => ({ ...prev, videoUrl: "" }));
+                    }}
+                  />
+                  <div>
+                    <span className="text-[11px] text-slate-400 block mb-1">
+                      Or paste an existing stream / video URL:
+                    </span>
+                    <input
+                      type="text"
+                      value={lessonForm.videoUrl}
+                      onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                      placeholder="https://...mp4 or Cloudflare R2 URL"
+                      className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs focus:border-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    {lessonForm.videoProvider} Video URL or ID *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={lessonForm.videoUrl}
+                    onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                    placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none"
+                  />
+                </div>
+              )}
 
               <div className="flex items-center gap-6 pt-2">
                 <label className="flex items-center gap-2 cursor-pointer">
