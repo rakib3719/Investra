@@ -49,6 +49,7 @@ model User {
   coverMedia          MediaFile?             @relation("UserCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
   uploadedMedia       MediaFile[]            @relation("UserUploadedMedia")
   subscriptions       UserSubscription[]
+  subscriptionPayments SubscriptionPayment[]
 
   @@map("users")
 }
@@ -576,6 +577,7 @@ model PlanTier {
 
   features             PlanFeature[]
   subscriptions        UserSubscription[]
+  payments             SubscriptionPayment[]
 
   @@index([targetRole, isActive])
   @@map("plan_tiers")
@@ -611,9 +613,36 @@ model UserSubscription {
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan               PlanTier            @relation(fields: [planId], references: [id])
+  payments           SubscriptionPayment[]
 
   @@index([userId, status])
   @@map("user_subscriptions")
+}
+
+model SubscriptionPayment {
+  id                  String              @id @default(uuid()) @db.Uuid
+  userId              String              @map("user_id") @db.Uuid
+  planId              String              @map("plan_id") @db.Uuid
+  subscriptionId      String?             @map("subscription_id") @db.Uuid
+  amount              Decimal             @db.Decimal(12, 2)
+  currency            String              @default("USD") @db.VarChar(50)
+  billingInterval     PlanBillingInterval @default(MONTHLY) @map("billing_interval")
+  status              String              @default("PAID") @db.VarChar(50)
+  paymentProvider     String              @default("STRIPE") @map("payment_provider") @db.VarChar(50)
+  transactionId       String?             @unique @map("transaction_id") @db.VarChar(255)
+  receiptUrl          String?             @map("receipt_url") @db.Text
+  metadata            Json?               @default("{}")
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                PlanTier            @relation(fields: [planId], references: [id])
+  subscription        UserSubscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("subscription_payments")
 }
 
 

@@ -6,7 +6,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   const expressApp = app.getHttpAdapter().getInstance() as express.Express;
   expressApp.disable('x-powered-by');
   if (env.NODE_ENV === 'production' || process.env.RENDER) {

@@ -10,6 +10,7 @@ import {
   ChevronDown,
   CircleHelp,
   Compass,
+  CreditCard,
   FileBarChart,
   LayoutDashboard,
   Leaf,
@@ -44,6 +45,7 @@ const navigation: { section: InvestorSection; label: string; icon: LucideIcon; b
   { section: "reports", label: "Reports", icon: FileBarChart },
   { section: "watchlist", label: "Watchlist", icon: Bookmark, badge: "6" },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "3" },
+  { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

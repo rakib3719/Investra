@@ -3,6 +3,7 @@ export const entrepreneurSections = [
   "campaigns",
   "matches",
   "analytics",
+  "subscription",
   "profile",
   "kyc",
   "settings",
@@ -49,6 +50,12 @@ export const entrepreneurPageMeta: Record<
     eyebrow: "Performance insights",
     description:
       "Track deck views, pitch deck downloads, and investor interest trends.",
+  },
+  subscription: {
+    title: "Subscription & Limits",
+    eyebrow: "Founder Entitlements",
+    description:
+      "Manage campaign creation limits, active investor unlocks, and billing history.",
   },
   profile: {
     title: "Founder & Company Profile",
