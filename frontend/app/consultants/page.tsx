@@ -29,7 +29,7 @@ interface Consultant {
   hourlyRate: string;
   nextAvailable: string;
   avatar: string;
-  type: "Mentoring" | "Course" | "Workshop";
+  type: "Mentoring" | "Course" | "Workshop" | "Advisory" | "All";
   topic: string;
   enrolled: number;
   maxCapacity: number;
@@ -95,29 +95,40 @@ export default function ConsultantMarketplacePage() {
     const fetchVerifiedConsultants = async () => {
       try {
         const dbConsultants = await coursesApi.getVerifiedConsultants();
-        if (dbConsultants && dbConsultants.length > 0) {
-          const mappedDb: Consultant[] = dbConsultants.map((dbc: any) => ({
+        const list: any[] = Array.isArray(dbConsultants)
+          ? dbConsultants
+          : Array.isArray((dbConsultants as any)?.data)
+          ? (dbConsultants as any).data
+          : [];
+
+        if (list.length > 0) {
+          const mappedDb: Consultant[] = list.map((dbc: any) => ({
             id: dbc.id,
-            name: dbc.name,
-            role: dbc.headline || "Verified Strategic Advisor",
-            rating: dbc.rating || 5.0,
-            reviewsCount: dbc.reviewsCount || 12,
-            expertise: dbc.specialization ? [dbc.specialization, "Due Diligence"] : ["Venture Advisory"],
+            name: dbc.name || "Verified Advisor",
+            role: dbc.headline || "Strategic Venture Advisor",
+            rating: Number(dbc.rating) || 5.0,
+            reviewsCount: Number(dbc.reviewsCount) || 12,
+            expertise: dbc.specialization
+              ? [dbc.specialization, "Deal Structuring"]
+              : ["Venture Advisory", "Due Diligence"],
             hourlyRate: `$${dbc.consultationFee || 150}`,
             nextAvailable: "Open for Consultation",
-            avatar: dbc.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-            type: "Course",
-            topic: dbc.publishedCoursesCount > 0
+            avatar: dbc.image || "",
+            type: "All",
+            topic: Number(dbc.publishedCoursesCount) > 0
               ? `${dbc.publishedCoursesCount} Masterclasses Available`
               : "Venture Capital & Advisory Sessions",
             enrolled: 25,
             maxCapacity: 100,
-            isDbVerified: true,
-            publishedCoursesCount: dbc.publishedCoursesCount,
+            isDbVerified: dbc.isVerified ?? true,
+            publishedCoursesCount: Number(dbc.publishedCoursesCount) || 0,
           }));
 
-          // Merge: Mock consultants first, then real database verified consultants
-          setConsultantsList([...mockConsultants, ...mappedDb]);
+          setConsultantsList((prev) => {
+            const existingIds = new Set(prev.map((c) => c.id));
+            const newConsultants = mappedDb.filter((c) => !existingIds.has(c.id));
+            return [...prev, ...newConsultants];
+          });
         }
       } catch (err) {
         console.error("Failed to load verified consultants from DB", err);
@@ -128,10 +139,12 @@ export default function ConsultantMarketplacePage() {
   }, []);
 
   const filteredConsultants = consultantsList.filter((c) => {
-    const matchesTab = activeTab === "All" || c.type === activeTab;
-    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          c.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          c.expertise.some(e => e.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesTab = activeTab === "All" || c.type === activeTab || c.type === "All";
+    const matchesSearch =
+      (c.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (c.topic || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.role || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.expertise || []).some((e) => (e || "").toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesTab && matchesSearch;
   });
 
@@ -228,15 +241,21 @@ export default function ConsultantMarketplacePage() {
             >
               <div className="p-6 space-y-4">
                 <div className="flex items-start gap-4">
-                  <img
-                    src={c.avatar}
-                    alt={c.name}
-                    className="w-14 h-14 rounded-2xl object-cover border border-slate-200 group-hover:scale-105 transition-transform"
-                  />
+                  {c.avatar ? (
+                    <img
+                      src={c.avatar}
+                      alt={c.name}
+                      className="w-14 h-14 rounded-2xl object-cover border border-slate-200 group-hover:scale-105 transition-transform"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#064e3b] to-emerald-700 text-white font-extrabold text-base flex items-center justify-center border border-emerald-500/40 shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                      {(c.name || "Ad").slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
                   <div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#10b981]/15 text-[#064e3b]">
-                        {c.type}
+                        {c.type === "All" ? "Advisory" : c.type}
                       </span>
                       {c.isDbVerified && (
                         <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-0.5">
@@ -269,7 +288,7 @@ export default function ConsultantMarketplacePage() {
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
-                  {c.expertise.map((exp, i) => (
+                  {(c.expertise || []).map((exp, i) => (
                     <span key={i} className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold font-heading">
                       {exp}
                     </span>
@@ -290,11 +309,19 @@ export default function ConsultantMarketplacePage() {
 
               <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
-                  href="/courses"
+                  href={
+                    c.publishedCoursesCount && c.publishedCoursesCount > 0
+                      ? `/courses?search=${encodeURIComponent(c.name)}`
+                      : "/courses"
+                  }
                   className="text-xs font-bold text-[#064e3b] hover:underline flex items-center gap-1"
                 >
                   <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>View Courses</span>
+                  <span>
+                    {c.publishedCoursesCount && c.publishedCoursesCount > 0
+                      ? `Courses (${c.publishedCoursesCount})`
+                      : "View Courses"}
+                  </span>
                 </Link>
 
                 <button
