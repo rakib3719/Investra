@@ -11,6 +11,9 @@ import {
   ParseUUIDPipe,
   Headers,
   Req,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreatePlanTierDto, UpdatePlanTierDto } from './dto/plan-tier.dto';
@@ -62,6 +65,15 @@ export class SubscriptionsPublicController {
     return this.subscriptionsService.createCheckoutSession(userId, planId, billingInterval);
   }
 
+  @Post('verify-session')
+  @UseGuards(JwtAuthGuard)
+  async verifySession(
+    @CurrentUser('id') userId: string,
+    @Body('sessionId') sessionId: string,
+  ) {
+    return this.subscriptionsService.verifyAndActivateCheckoutSession(userId, sessionId);
+  }
+
   @Post('cancel')
   @UseGuards(JwtAuthGuard)
   async cancelMySubscription(@CurrentUser('id') userId: string) {
@@ -75,10 +87,14 @@ export class SubscriptionsPublicController {
   }
 
   @Post('webhook')
+  @HttpCode(HttpStatus.OK)
   async stripeWebhook(
     @Headers('stripe-signature') signature: string,
     @Req() req: any,
   ) {
+    if (!signature) {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
     const rawBody = req.rawBody || req.body;
     return this.subscriptionsService.handleStripeWebhook(signature, rawBody);
   }
