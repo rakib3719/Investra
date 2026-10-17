@@ -6,8 +6,8 @@ export const consultantSections = [
   "reports",
   "calendar",
   "messages",
+  "courses",
   "earnings",
-  "subscription",
   "profile",
   "kyc",
   "settings",
@@ -66,15 +66,15 @@ export const consultantPageMeta: Record<
     eyebrow: "Client Communication",
     description: "Direct messaging with client founders, corporate executives, and fund managers.",
   },
+  courses: {
+    title: "Course Creator Studio",
+    eyebrow: "Tutorials & Masterclasses",
+    description: "Build video tutorials, configure curriculum outlines, and track course enrollments.",
+  },
   earnings: {
     title: "Earnings & Payouts",
     eyebrow: "Financial Overview",
-    description: "Track logged advisory hours, completed milestones, and projected payouts.",
-  },
-  subscription: {
-    title: "Subscription & Advisory Tier",
-    eyebrow: "Account Entitlements",
-    description: "Review active client mandate quotas, private deal room access, and transaction history.",
+    description: "Track 90% creator sales revenue, view platform fee deductions, and request payouts.",
   },
   profile: {
     title: "Advisor Profile & Public Branding",

@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   User,
   WalletCards,
+  GraduationCap,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -42,6 +43,7 @@ const navigation: { section: InvestorSection; label: string; icon: LucideIcon; b
   { section: "investments", label: "Investments", icon: WalletCards },
   { section: "opportunities", label: "Opportunities", icon: Compass },
   { section: "impact", label: "Impact", icon: Leaf },
+  { section: "courses", label: "My Courses", icon: GraduationCap },
   { section: "reports", label: "Reports", icon: FileBarChart },
   { section: "watchlist", label: "Watchlist", icon: Bookmark, badge: "6" },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "3" },

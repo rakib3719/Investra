@@ -7,6 +7,7 @@ export const investorSections = [
   "reports",
   "watchlist",
   "messages",
+  "courses",
   "subscription",
   "profile",
   "kyc",
@@ -70,6 +71,11 @@ export const investorPageMeta: Record<
     title: "Messages",
     eyebrow: "Private conversations",
     description: "Stay connected with founders, advisors, and your Investra support team.",
+  },
+  courses: {
+    title: "My Courses & Masterclasses",
+    eyebrow: "Enrolled Curriculum",
+    description: "Access your enrolled video tutorials, track syllabus progress, and resume playback.",
   },
   subscription: {
     title: "Subscription & Entitlements",

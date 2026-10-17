@@ -107,7 +107,14 @@ export function getApiError(error: unknown) {
   if (axios.isAxiosError<ApiErrorResponse>(error)) {
     const response = error.response?.data;
     let message = response?.message;
-    if (Array.isArray(message)) {
+
+    // If explicit field-level errors exist, construct human-readable list
+    if (response?.errors && Object.keys(response.errors).length > 0) {
+      const detailed = Object.entries(response.errors)
+        .map(([field, msg]) => `${field}: ${msg}`)
+        .join(' • ');
+      message = detailed;
+    } else if (Array.isArray(message)) {
       message = message.join(', ');
     } else if (!message && error.message) {
       if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
@@ -150,8 +157,13 @@ export function handleFormApiError<T extends FieldValues>(
 ) {
   const apiError = getApiError(error);
 
-  // Show the toast error with cross button
-  showApiErrorToast(error, fallbackMessage ?? apiError.message);
+  // If there are explicit field errors, show them directly in the toast message!
+  const toastMessage =
+    apiError.fieldErrors && Object.keys(apiError.fieldErrors).length > 0
+      ? apiError.message
+      : (fallbackMessage ?? apiError.message);
+
+  showApiErrorToast(error, toastMessage);
 
   if (!setError) return apiError;
 

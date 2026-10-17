@@ -240,7 +240,6 @@ export function AdminSubscriptionsPage() {
           {[
             { role: "INVESTOR" as TargetRole, label: "Investors", icon: Building2 },
             { role: "ENTREPRENEUR" as TargetRole, label: "Entrepreneurs", icon: Briefcase },
-            { role: "CONSULTANT" as TargetRole, label: "Consultants", icon: UserCheck },
           ].map((item) => (
             <button
               key={item.role}

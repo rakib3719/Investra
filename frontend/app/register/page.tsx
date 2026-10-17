@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Sparkles,
   UserCheck,
+  AlertCircle,
 } from 'lucide-react';
 import Footer from '@/components/public-facing/shared/Footer';
 import Navbar from '@/components/public-facing/shared/Navbar';
@@ -84,8 +85,10 @@ export default function RegisterPage() {
   const [showMediaSection, setShowMediaSection] = useState(false);
   const [avatarMedia, setAvatarMedia] = useState<{ id: string; url: string | null } | null>(null);
   const [coverMedia, setCoverMedia] = useState<{ id: string; url: string | null } | null>(null);
+  const [serverErrorBanner, setServerErrorBanner] = useState<{ title: string; details: string[] } | null>(null);
 
   const onSubmit = async (values: RegisterFormValues) => {
+    setServerErrorBanner(null);
     try {
       const { user } = await registerAccount.mutateAsync({
         firstName: values.firstName,
@@ -104,7 +107,18 @@ export default function RegisterPage() {
       });
       router.push(`/verify-email?email=${encodeURIComponent(user.email)}`);
     } catch (err) {
-      handleFormApiError(err, setError, 'Unable to create account');
+      const apiError = handleFormApiError(err, setError, 'Unable to create account');
+      if (apiError.fieldErrors && Object.keys(apiError.fieldErrors).length > 0) {
+        setServerErrorBanner({
+          title: 'Validation failed for the following fields:',
+          details: Object.entries(apiError.fieldErrors).map(([field, msg]) => `${field}: ${msg}`),
+        });
+      } else if (apiError.message) {
+        setServerErrorBanner({
+          title: 'Registration Error',
+          details: [apiError.message],
+        });
+      }
     }
   };
 
@@ -129,6 +143,20 @@ export default function RegisterPage() {
                 Choose your primary role. After email verification and identity compliance (KYC), full marketplace capabilities will unlock.
               </p>
             </div>
+
+            {serverErrorBanner && (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/90 p-4 text-xs text-rose-800 space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center gap-2 font-bold text-rose-900">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{serverErrorBanner.title}</span>
+                </div>
+                <ul className="list-disc list-inside space-y-0.5 text-rose-700 pl-1">
+                  {serverErrorBanner.details.map((item, idx) => (
+                    <li key={idx} className="font-medium">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
               <input type="hidden" {...register('role')} />

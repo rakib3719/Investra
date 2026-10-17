@@ -117,12 +117,18 @@ class ToastManager {
           data?: {
             message?: string | string[];
             statusCode?: number;
+            errors?: Record<string, string>;
           };
         };
         message?: string;
       };
       const responseData = err.response?.data;
-      if (responseData?.message) {
+      if (responseData?.errors && Object.keys(responseData.errors).length > 0) {
+        msg = Object.entries(responseData.errors)
+          .map(([field, errMsg]) => `${field}: ${errMsg}`)
+          .join('\n');
+        title = 'Validation Failed';
+      } else if (responseData?.message) {
         msg = Array.isArray(responseData.message)
           ? responseData.message.join(', ')
           : String(responseData.message);

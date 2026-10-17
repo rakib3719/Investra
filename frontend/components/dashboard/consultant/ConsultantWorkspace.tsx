@@ -8,9 +8,9 @@ import {
   type ConsultantSection,
 } from "./navigation";
 import { ConsultantProfileKycView } from "./pages/ConsultantProfileKycView";
-import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
-
-import { UserSubscriptionDashboardView } from "@/components/dashboard/shared/UserSubscriptionDashboardView";
+import { ConsultantOverviewPage } from "./pages/ConsultantOverviewPage";
+import { ConsultantCoursesPage } from "./pages/ConsultantCoursesPage";
+import { ConsultantEarningsPage } from "./pages/ConsultantEarningsPage";
 
 export function ConsultantWorkspace({
   user,
@@ -25,26 +25,18 @@ export function ConsultantWorkspace({
 }) {
   const activeSection = getConsultantSection(section);
 
-  if (activeSection === "overview" && !section) {
-    return (
-      <RoleDashboard
-        user={user}
-        onSignOut={onSignOut}
-        isSigningOut={isSigningOut}
-      />
-    );
-  }
-
   let content: ReactNode;
 
-  if (activeSection === "subscription") {
-    content = <UserSubscriptionDashboardView user={user} />;
+  if (activeSection === "courses") {
+    content = <ConsultantCoursesPage user={user} />;
+  } else if (activeSection === "earnings") {
+    content = <ConsultantEarningsPage user={user} />;
   } else if (activeSection === "profile") {
     content = <ConsultantProfileKycView user={user} initialTab="profile" />;
   } else if (activeSection === "kyc") {
     content = <ConsultantProfileKycView user={user} initialTab="kyc" />;
   } else {
-    content = <ConsultantProfileKycView user={user} initialTab="profile" />;
+    content = <ConsultantOverviewPage user={user} />;
   }
 
   return (
