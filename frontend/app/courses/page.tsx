@@ -51,10 +51,17 @@ export default function CoursesCatalogPage() {
           level: selectedLevel !== "ALL" ? (selectedLevel as CourseLevel) : undefined,
           search: searchQuery.trim() || undefined,
         });
-        setCourses(res.data);
-        setTotal(res.total);
+        const courseList = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+          ? res
+          : [];
+        setCourses(courseList);
+        setTotal(res?.total ?? courseList.length);
       } catch (err) {
         console.error("Failed to load course catalog", err);
+        setCourses([]);
+        setTotal(0);
       } finally {
         setLoading(false);
       }
@@ -158,7 +165,7 @@ export default function CoursesCatalogPage() {
               />
             ))}
           </div>
-        ) : courses.length === 0 ? (
+        ) : !Array.isArray(courses) || courses.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white p-16 text-center">
             <BookOpen className="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 className="font-heading text-lg font-bold text-slate-800">
@@ -208,14 +215,14 @@ export default function CoursesCatalogPage() {
 
                   {/* Level & Duration */}
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2">
-                    <span className="text-emerald-700 font-bold">{course.level}</span>
+                    <span className="text-emerald-700 font-bold">{course.level || "ALL LEVELS"}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {course.totalDurationMinutes} mins
+                      {course.totalDurationMinutes || 0} mins
                     </span>
                     <span>•</span>
-                    <span>{course.lessonsCount} lessons</span>
+                    <span>{course.lessonsCount || 0} lessons</span>
                   </div>
 
                   {/* Title & Tagline */}
@@ -233,30 +240,30 @@ export default function CoursesCatalogPage() {
                 {/* Footer: Instructor Info & Enroll CTA */}
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    {course.consultant.image ? (
+                    {course.consultant?.image ? (
                       <img
                         src={course.consultant.image}
-                        alt={course.consultant.name}
+                        alt={course.consultant.name || "Advisor"}
                         className="h-8 w-8 rounded-full object-cover border border-emerald-200"
                       />
                     ) : (
                       <div className="grid h-8 w-8 place-items-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-800">
-                        {course.consultant.name.slice(0, 2).toUpperCase()}
+                        {(course?.consultant?.name || "Advisor").slice(0, 2).toUpperCase()}
                       </div>
                     )}
 
                     <div>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-bold text-slate-800 line-clamp-1">
-                          {course.consultant.name}
+                          {course.consultant?.name || "Advisor"}
                         </span>
-                        {course.consultant.isVerified && (
+                        {course.consultant?.isVerified && (
                           <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
                         )}
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-amber-500 font-bold">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span>{course.consultant.rating || 5.0}</span>
+                        <span>{course.consultant?.rating || 5.0}</span>
                       </div>
                     </div>
                   </div>

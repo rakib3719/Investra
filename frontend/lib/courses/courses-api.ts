@@ -39,13 +39,30 @@ export const coursesApi = {
     if (params?.limit) searchParams.set('limit', String(params.limit));
 
     const res = await apiClient.get<any>(`/courses/public?${searchParams.toString()}`);
-    return unwrap<{
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-      data: PublicCourseListItem[];
-    }>(res.data);
+    const unwrapped: any = unwrap(res.data);
+
+    const courseList: PublicCourseListItem[] = Array.isArray(unwrapped)
+      ? unwrapped
+      : Array.isArray(unwrapped?.courses)
+      ? unwrapped.courses
+      : Array.isArray(unwrapped?.data)
+      ? unwrapped.data
+      : Array.isArray(unwrapped?.items)
+      ? unwrapped.items
+      : [];
+
+    const totalCount: number =
+      unwrapped?.total ??
+      unwrapped?.meta?.total ??
+      courseList.length;
+
+    return {
+      total: totalCount,
+      page: unwrapped?.page || unwrapped?.meta?.page || 1,
+      limit: unwrapped?.limit || unwrapped?.meta?.limit || 12,
+      totalPages: unwrapped?.totalPages || unwrapped?.meta?.totalPages || Math.ceil(totalCount / 12) || 1,
+      data: courseList,
+    };
   },
 
   // 2. Public course detail with outline
@@ -57,7 +74,11 @@ export const coursesApi = {
   // 3. Public verified consultants
   getVerifiedConsultants: async () => {
     const res = await apiClient.get<any>('/courses/public/consultants');
-    return unwrap<any[]>(res.data);
+    const unwrapped: any = unwrap(res.data);
+    if (Array.isArray(unwrapped)) return unwrapped;
+    if (Array.isArray(unwrapped?.data)) return unwrapped.data;
+    if (Array.isArray(unwrapped?.items)) return unwrapped.items;
+    return [];
   },
 
   // 4. Enroll in course (Free or Paid Checkout)
