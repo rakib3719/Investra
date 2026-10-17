@@ -345,8 +345,20 @@ export default function MasterpieceSubscriptionPage() {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const checkoutStatus = urlParams.get("checkout");
+      const sessionId = urlParams.get("session_id");
 
       if (checkoutStatus === "success") {
+        if (sessionId) {
+          adminSubscriptionsApi
+            .verifyCheckoutSession(sessionId)
+            .then(() => {
+              queryClient.invalidateQueries({ queryKey: ["public", "subscriptions"] });
+              refetchMySubscription();
+            })
+            .catch((err) => {
+              console.error("Instant session verification fallback error:", err);
+            });
+        }
         const msg = "Payment successful! Your new subscription tier has been activated.";
         setSuccessMessage(msg);
         toast.success(msg, { title: "Payment Confirmed" });

@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole, PlanBillingInterval } from '@prisma/client';
@@ -11,6 +12,8 @@ import { StripeService } from './stripe.service';
 
 @Injectable()
 export class SubscriptionsService {
+  private readonly logger = new Logger(SubscriptionsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
@@ -689,9 +692,69 @@ export class SubscriptionsService {
     };
   }
 
+  // 11b. INSTANT VERIFICATION OF CHECKOUT SESSION (Synchronous Fallback)
+  async verifyAndActivateCheckoutSession(userId: string, sessionId: string) {
+    if (!sessionId) {
+      throw new BadRequestException('Session ID is required.');
+    }
+
+    const stripeClient = this.stripeService.getStripe();
+    if (!stripeClient) {
+      throw new BadRequestException('Stripe payment gateway is not configured.');
+    }
+
+    const session = await stripeClient.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status !== 'paid') {
+      throw new BadRequestException('Checkout session is not paid.');
+    }
+
+    const metadata = session.metadata || {};
+    const sessionUserId = metadata.userId;
+    const planId = metadata.planId;
+    const billingInterval = metadata.billingInterval;
+
+    if (sessionUserId !== userId) {
+      throw new BadRequestException('Checkout session does not belong to the authenticated user.');
+    }
+
+    if (!planId) {
+      throw new BadRequestException('Missing planId in session metadata.');
+    }
+
+    const amountTotal = session.amount_total ? session.amount_total / 100 : undefined;
+    const currency = session.currency ? session.currency.toUpperCase() : 'USD';
+    const transactionId = (session.payment_intent as string) || session.id;
+
+    const subscription = await this.subscribeUserToPlan(
+      userId,
+      planId,
+      billingInterval === 'YEARLY'
+        ? PlanBillingInterval.YEARLY
+        : PlanBillingInterval.MONTHLY,
+      {
+        provider: 'STRIPE',
+        transactionId,
+        amount: amountTotal,
+        currency,
+      },
+    );
+
+    this.logger.log(`Synchronously verified & activated subscription for user ${userId} on plan ${planId}`);
+    return subscription;
+  }
+
   // 12. STRIPE WEBHOOK HANDLER
   async handleStripeWebhook(signature: string, rawBody: Buffer | string) {
-    const event = await this.stripeService.constructEvent(rawBody, signature);
+    let event: any;
+    try {
+      event = await this.stripeService.constructEvent(rawBody, signature);
+    } catch (err: any) {
+      this.logger.error(`Webhook signature verification failed: ${err.message}`);
+      throw new BadRequestException(`Webhook Error: ${err.message}`);
+    }
+
+    this.logger.log(`Received Stripe Webhook event: ${event.type}`);
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as any;
@@ -716,6 +779,15 @@ export class SubscriptionsService {
             currency,
           },
         );
+        this.logger.log(`Successfully activated subscription for user ${userId} on plan ${planId}`);
+      }
+    } else if (event.type === 'customer.subscription.deleted') {
+      const subscription = event.data.object as any;
+      const metadata = subscription.metadata || {};
+      const { userId } = metadata;
+      if (userId) {
+        await this.cancelUserSubscription(userId);
+        this.logger.log(`Subscription cancelled for user ${userId} via Stripe webhook`);
       }
     }
 
