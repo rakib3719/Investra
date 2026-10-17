@@ -245,6 +245,13 @@ export const adminSubscriptionsApi = {
     return res.data.data;
   },
 
+  verifyCheckoutSession: async (sessionId: string): Promise<any> => {
+    const res = await apiClient.post<ApiResponse<any>>("/subscriptions/verify-session", {
+      sessionId,
+    });
+    return res.data.data;
+  },
+
   getMyEntitlements: async (): Promise<any> => {
     const res = await apiClient.get<ApiResponse<any>>("/subscriptions/my-entitlements");
     return res.data.data;
