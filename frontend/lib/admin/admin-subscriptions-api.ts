@@ -70,6 +70,67 @@ export interface CreatePlanTierPayload {
 
 export interface UpdatePlanTierPayload extends Partial<CreatePlanTierPayload> {}
 
+export interface SubscriberItem {
+  id: string;
+  userId: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    username: string | null;
+    email: string;
+    phone: string | null;
+    image: string | null;
+    role: TargetRole;
+    accountStatus: string;
+    createdAt: string;
+  };
+  planId: string;
+  plan: {
+    id: string;
+    name: string;
+    slug: string;
+    badge: string | null;
+    targetRole: TargetRole;
+    priceMonthly: number;
+    priceYearly: number;
+    currency: string;
+  };
+  billingInterval: "MONTHLY" | "YEARLY" | "LIFETIME";
+  status: "ACTIVE" | "PAST_DUE" | "CANCELLED" | "EXPIRED" | "TRIALING";
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelledAt: string | null;
+  featureSnapshot: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubscriptionPaymentItem {
+  id: string;
+  amount: number;
+  currency: string;
+  billingInterval: "MONTHLY" | "YEARLY" | "LIFETIME";
+  status: string;
+  paymentProvider: string;
+  transactionId: string | null;
+  receiptUrl: string | null;
+  createdAt: string;
+  user?: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    role: string;
+  };
+  plan: {
+    id: string;
+    name: string;
+    slug: string;
+    targetRole: TargetRole;
+  };
+}
+
 export const adminSubscriptionsApi = {
   getFeatures: async (role?: TargetRole): Promise<PlatformFeatureItem[]> => {
     const params = role ? { role } : undefined;
@@ -85,6 +146,29 @@ export const adminSubscriptionsApi = {
     const res = await apiClient.get<ApiResponse<PlanTierItem[]>>(
       "/admin/subscriptions/plans",
       { params }
+    );
+    return res.data.data;
+  },
+
+  getSubscribers: async (role?: TargetRole): Promise<SubscriberItem[]> => {
+    const params = role ? { role } : undefined;
+    const res = await apiClient.get<ApiResponse<SubscriberItem[]>>(
+      "/admin/subscriptions/subscribers",
+      { params }
+    );
+    return res.data.data;
+  },
+
+  getAdminPayments: async (): Promise<SubscriptionPaymentItem[]> => {
+    const res = await apiClient.get<ApiResponse<SubscriptionPaymentItem[]>>(
+      "/admin/subscriptions/payments"
+    );
+    return res.data.data;
+  },
+
+  cancelSubscriber: async (subscriptionId: string): Promise<any> => {
+    const res = await apiClient.patch<ApiResponse<any>>(
+      `/admin/subscriptions/subscribers/${subscriptionId}/cancel`
     );
     return res.data.data;
   },
@@ -119,13 +203,37 @@ export const adminSubscriptionsApi = {
     await apiClient.delete(`/admin/subscriptions/plans/${id}`);
   },
 
-  // Public endpoint helper
+  // Public & Subscriber endpoint helpers
   getPublicPlans: async (role?: TargetRole): Promise<PlanTierItem[]> => {
     const params = role ? { role } : undefined;
     const res = await apiClient.get<ApiResponse<PlanTierItem[]>>(
       "/subscriptions/plans",
       { params }
     );
+    return res.data.data;
+  },
+
+  getPublicFeatures: async (role?: TargetRole): Promise<PlatformFeatureItem[]> => {
+    const params = role ? { role } : undefined;
+    const res = await apiClient.get<ApiResponse<PlatformFeatureItem[]>>(
+      "/subscriptions/features",
+      { params }
+    );
+    return res.data.data;
+  },
+
+  getMySubscription: async (): Promise<any> => {
+    const res = await apiClient.get<ApiResponse<any>>("/subscriptions/my-subscription");
+    return res.data.data;
+  },
+
+  cancelMySubscription: async (): Promise<any> => {
+    const res = await apiClient.post<ApiResponse<any>>("/subscriptions/cancel");
+    return res.data.data;
+  },
+
+  getMyPayments: async (): Promise<SubscriptionPaymentItem[]> => {
+    const res = await apiClient.get<ApiResponse<SubscriptionPaymentItem[]>>("/subscriptions/my-payments");
     return res.data.data;
   },
 

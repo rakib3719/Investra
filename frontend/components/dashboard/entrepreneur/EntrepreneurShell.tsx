@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   User,
   Users,
+  CreditCard,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -41,6 +42,7 @@ const navigation: {
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
   { section: "analytics", label: "Analytics", icon: LineChart },
+  { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

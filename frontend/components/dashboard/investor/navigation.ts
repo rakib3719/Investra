@@ -7,6 +7,7 @@ export const investorSections = [
   "reports",
   "watchlist",
   "messages",
+  "subscription",
   "profile",
   "kyc",
   "settings",
@@ -70,6 +71,11 @@ export const investorPageMeta: Record<
     eyebrow: "Private conversations",
     description: "Stay connected with founders, advisors, and your Investra support team.",
   },
+  subscription: {
+    title: "Subscription & Entitlements",
+    eyebrow: "Account Tier & Billing",
+    description: "Review your current active tier, manage quotas, upgrade plan, and inspect payment transactions.",
+  },
   profile: {
     title: "Investor Profile & Branding",
     eyebrow: "Public Identity",
@@ -86,3 +92,6 @@ export const investorPageMeta: Record<
     description: "Manage your security, investment preferences, and notifications.",
   },
 };
+
+
+// test

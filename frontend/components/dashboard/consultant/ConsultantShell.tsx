@@ -23,6 +23,7 @@ import {
   User,
   Users,
   WalletCards,
+  CreditCard,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -51,6 +52,7 @@ const navigation: {
   { section: "calendar", label: "Calendar", icon: CalendarDays },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "2" },
   { section: "earnings", label: "Earnings", icon: WalletCards },
+  { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

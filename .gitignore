@@ -1,2 +1,31 @@
 # Local Design System Presentations (Ignored)
 homepage_redesign_presentation.md
+
+# Environment variable files
+.env
+.env*.local
+.env.local
+.env.development
+.env.production
+backend/.env
+frontend/.env
+*.env
+
+# Dependencies & build output
+node_modules/
+.next/
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
