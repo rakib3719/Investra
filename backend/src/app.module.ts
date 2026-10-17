@@ -15,6 +15,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { MediaModule } from './modules/media/media.module';
 import { KycModule } from './modules/kyc/kyc.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { CoursesModule } from './modules/courses/courses.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
     MediaModule,
     KycModule,
     SubscriptionsModule,
+    CoursesModule,
   ],
   controllers: [AppController],
   providers: [

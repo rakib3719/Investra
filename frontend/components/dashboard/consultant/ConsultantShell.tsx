@@ -23,7 +23,7 @@ import {
   User,
   Users,
   WalletCards,
-  CreditCard,
+  BookOpen,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -45,14 +45,14 @@ const navigation: {
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
   { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
   { section: "profile", label: "Profile", icon: User },
+  { section: "courses", label: "Course Studio", icon: BookOpen },
+  { section: "earnings", label: "Earnings & Payouts", icon: WalletCards },
   { section: "clients", label: "Client workspace", icon: Users },
   { section: "advisory", label: "Advisory work", icon: Handshake },
   { section: "deal-room", label: "Deal room", icon: BriefcaseBusiness },
   { section: "reports", label: "Reports", icon: FileBarChart },
   { section: "calendar", label: "Calendar", icon: CalendarDays },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "2" },
-  { section: "earnings", label: "Earnings", icon: WalletCards },
-  { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];
 

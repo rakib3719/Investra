@@ -50,6 +50,11 @@ model User {
   uploadedMedia       MediaFile[]            @relation("UserUploadedMedia")
   subscriptions       UserSubscription[]
   subscriptionPayments SubscriptionPayment[]
+  coursesCreated      Course[]               @relation("ConsultantCourses")
+  courseEnrollments   CourseEnrollment[]     @relation("UserCourseEnrollments")
+  buyerCoursePayments CoursePayment[]        @relation("BuyerCoursePayments")
+  consultantEarnings  CoursePayment[]        @relation("ConsultantCourseEarnings")
+  payoutRequests      ConsultantPayout[]     @relation("ConsultantPayoutRequests")
 
   @@map("users")
 }
@@ -645,5 +650,149 @@ model SubscriptionPayment {
   @@map("subscription_payments")
 }
 
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 
+  @@map("course_status")
+}
 
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL_LEVELS
+
+  @@map("course_level")
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  PAID
+  REJECTED
+
+  @@map("payout_status")
+}
+
+model Course {
+  id                   String             @id @default(uuid()) @db.Uuid
+  consultantId         String             @map("consultant_id") @db.Uuid
+  title                String             @db.VarChar(255)
+  slug                 String             @unique @db.VarChar(255)
+  tagline              String?            @db.VarChar(500)
+  description          String?            @db.Text
+  thumbnailUrl         String?            @map("thumbnail_url") @db.Text
+  category             String?            @db.VarChar(100)
+  level                CourseLevel        @default(ALL_LEVELS)
+  price                Decimal            @default(0) @db.Decimal(12, 2)
+  currency             String             @default("USD") @db.VarChar(50)
+  status               CourseStatus       @default(DRAFT)
+  isFeatured           Boolean            @default(false) @map("is_featured")
+  totalDurationMinutes Int                @default(0) @map("total_duration_minutes")
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  consultant           User               @relation("ConsultantCourses", fields: [consultantId], references: [id], onDelete: Cascade)
+  lessons              CourseLesson[]
+  enrollments          CourseEnrollment[]
+  payments             CoursePayment[]
+
+  @@index([consultantId])
+  @@index([status])
+  @@index([category])
+  @@map("courses")
+}
+
+model CourseLesson {
+  id              String       @id @default(uuid()) @db.Uuid
+  courseId        String       @map("course_id") @db.Uuid
+  title           String       @db.VarChar(255)
+  slug            String       @db.VarChar(255)
+  description     String?      @db.Text
+  sortOrder       Int          @default(0) @map("sort_order")
+  videoProvider   String       @default("HTML5") @map("video_provider") @db.VarChar(50)
+  videoUrl        String?      @map("video_url") @db.Text
+  durationMinutes Int          @default(0) @map("duration_minutes")
+  isPreview       Boolean      @default(false) @map("is_preview")
+  isPublished     Boolean      @default(true) @map("is_published")
+  resources       Json?        @default("[]")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  course          Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, sortOrder])
+  @@map("course_lessons")
+}
+
+model CourseEnrollment {
+  id                 String       @id @default(uuid()) @db.Uuid
+  courseId           String       @map("course_id") @db.Uuid
+  userId             String       @map("user_id") @db.Uuid
+  pricePaid          Decimal      @default(0) @map("price_paid") @db.Decimal(12, 2)
+  currency           String       @default("USD") @db.VarChar(50)
+  paymentProvider    String       @default("FREE") @map("payment_provider") @db.VarChar(50)
+  transactionId      String?      @map("transaction_id") @db.VarChar(255)
+  completedLessonIds String[]     @default([]) @map("completed_lesson_ids")
+  progressPercent    Int          @default(0) @map("progress_percent")
+  enrolledAt         DateTime     @default(now()) @map("enrolled_at") @db.Timestamp(6)
+  updatedAt          DateTime     @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  course             Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user               User         @relation("UserCourseEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, userId])
+  @@index([userId])
+  @@index([courseId])
+  @@map("course_enrollments")
+}
+
+model CoursePayment {
+  id                 String       @id @default(uuid()) @db.Uuid
+  courseId           String       @map("course_id") @db.Uuid
+  buyerId            String       @map("buyer_id") @db.Uuid
+  consultantId       String       @map("consultant_id") @db.Uuid
+  grossAmount        Decimal      @map("gross_amount") @db.Decimal(12, 2)
+  platformFeeRate    Decimal      @default(0.10) @map("platform_fee_rate") @db.Decimal(5, 4)
+  platformFeeAmount  Decimal      @map("platform_fee_amount") @db.Decimal(12, 2)
+  consultantEarnings Decimal      @map("consultant_earnings") @db.Decimal(12, 2)
+  currency           String       @default("USD") @db.VarChar(50)
+  paymentProvider    String       @default("STRIPE") @map("payment_provider") @db.VarChar(50)
+  transactionId      String?      @unique @map("transaction_id") @db.VarChar(255)
+  status             String       @default("PAID") @db.VarChar(50)
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  course             Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  buyer              User         @relation("BuyerCoursePayments", fields: [buyerId], references: [id], onDelete: Cascade)
+  consultant         User         @relation("ConsultantCourseEarnings", fields: [consultantId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([buyerId])
+  @@index([consultantId])
+  @@index([createdAt])
+  @@map("course_payments")
+}
+
+model ConsultantPayout {
+  id             String       @id @default(uuid()) @db.Uuid
+  consultantId   String       @map("consultant_id") @db.Uuid
+  amount         Decimal      @db.Decimal(12, 2)
+  currency       String       @default("USD") @db.VarChar(50)
+  status         PayoutStatus @default(PENDING)
+  payoutMethod   String       @default("BANK_TRANSFER") @map("payout_method") @db.VarChar(50)
+  accountDetails Json?        @default("{}") @map("account_details")
+  adminNotes     String?      @map("admin_notes") @db.Text
+  processedBy    String?      @map("processed_by") @db.Uuid
+  processedAt    DateTime?    @map("processed_at") @db.Timestamp(6)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  consultant     User         @relation("ConsultantPayoutRequests", fields: [consultantId], references: [id], onDelete: Cascade)
+
+  @@index([consultantId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("consultant_payouts")
+}

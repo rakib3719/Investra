@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -43,18 +44,22 @@ export class RegisterDto {
   role: UserRole;
 
   @ApiProperty({ required: false, description: 'Optional avatar media ID uploaded to Cloudflare R2' })
+  @IsOptional()
   @IsString()
   avatarMediaId?: string;
 
   @ApiProperty({ required: false, description: 'Optional public avatar URL' })
+  @IsOptional()
   @IsString()
   image?: string;
 
   @ApiProperty({ required: false, description: 'Optional cover media ID uploaded to Cloudflare R2' })
+  @IsOptional()
   @IsString()
   coverMediaId?: string;
 
   @ApiProperty({ required: false, description: 'Optional public cover photo URL' })
+  @IsOptional()
   @IsString()
   coverImage?: string;
 }
