@@ -52,8 +52,8 @@ export function InvestorOverviewPage() {
         </div>
       </div>
 
-      {/* Profile & KYC Status Quick Alert */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Profile, KYC & Subscription Status Quick Alert */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/dashboard/investor/profile"
           className="group block p-4 rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 transition-all shadow-xs"
@@ -64,7 +64,7 @@ export function InvestorOverviewPage() {
                 Investor Profile & Branding
               </p>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Customize Facebook-style cover photo, avatar, and accreditation details.
+                Customize cover photo, avatar, and accreditation details.
               </p>
             </div>
             <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
@@ -85,11 +85,28 @@ export function InvestorOverviewPage() {
                   Regulatory KYC Verification
                 </p>
                 <p className="text-[11px] text-emerald-700 mt-0.5">
-                  Submit Government ID (NID/Passport) & selfie to unlock deal access.
+                  Submit ID & selfie to unlock deal access.
                 </p>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-all" />
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/investor/subscription"
+          className="group block p-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/30 hover:border-emerald-400 transition-all shadow-xs"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Subscription & Quotas
+              </p>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Manage active tier, feature snapshots & invoices.
+              </p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
           </div>
         </Link>
       </div>

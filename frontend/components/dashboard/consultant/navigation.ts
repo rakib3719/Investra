@@ -7,6 +7,7 @@ export const consultantSections = [
   "calendar",
   "messages",
   "earnings",
+  "subscription",
   "profile",
   "kyc",
   "settings",
@@ -69,6 +70,11 @@ export const consultantPageMeta: Record<
     title: "Earnings & Payouts",
     eyebrow: "Financial Overview",
     description: "Track logged advisory hours, completed milestones, and projected payouts.",
+  },
+  subscription: {
+    title: "Subscription & Advisory Tier",
+    eyebrow: "Account Entitlements",
+    description: "Review active client mandate quotas, private deal room access, and transaction history.",
   },
   profile: {
     title: "Advisor Profile & Public Branding",

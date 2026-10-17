@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
   ParseUUIDPipe,
+  Headers,
+  Req,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreatePlanTierDto, UpdatePlanTierDto } from './dto/plan-tier.dto';
@@ -29,6 +31,17 @@ export class SubscriptionsPublicController {
     return this.subscriptionsService.getPublicPlans(query.role);
   }
 
+  @Get('features')
+  async getPublicFeatures(@Query() query: QueryPlansDto) {
+    return this.subscriptionsService.getPlatformFeatures(query.role);
+  }
+
+  @Get('my-subscription')
+  @UseGuards(JwtAuthGuard)
+  async getMySubscription(@CurrentUser('id') userId: string) {
+    return this.subscriptionsService.getUserActiveSubscription(userId);
+  }
+
   @Get('my-entitlements')
   @UseGuards(JwtAuthGuard)
   async getMyEntitlements(
@@ -46,7 +59,28 @@ export class SubscriptionsPublicController {
     @Body('planId', ParseUUIDPipe) planId: string,
     @Body('billingInterval') billingInterval?: any,
   ) {
-    return this.subscriptionsService.subscribeUserToPlan(userId, planId, billingInterval);
+    return this.subscriptionsService.createCheckoutSession(userId, planId, billingInterval);
+  }
+
+  @Post('cancel')
+  @UseGuards(JwtAuthGuard)
+  async cancelMySubscription(@CurrentUser('id') userId: string) {
+    return this.subscriptionsService.cancelUserSubscription(userId);
+  }
+
+  @Get('my-payments')
+  @UseGuards(JwtAuthGuard)
+  async getMyPayments(@CurrentUser('id') userId: string) {
+    return this.subscriptionsService.getUserPaymentHistory(userId);
+  }
+
+  @Post('webhook')
+  async stripeWebhook(
+    @Headers('stripe-signature') signature: string,
+    @Req() req: any,
+  ) {
+    const rawBody = req.rawBody || req.body;
+    return this.subscriptionsService.handleStripeWebhook(signature, rawBody);
   }
 }
 
@@ -64,6 +98,21 @@ export class SubscriptionsAdminController {
   @Get('plans')
   async getPlans(@Query() query: QueryPlansDto) {
     return this.subscriptionsService.getAdminPlans(query.role);
+  }
+
+  @Get('subscribers')
+  async getSubscribers(@Query() query: QueryPlansDto) {
+    return this.subscriptionsService.getAdminSubscribers(query.role);
+  }
+
+  @Get('payments')
+  async getPayments() {
+    return this.subscriptionsService.getAdminPayments();
+  }
+
+  @Patch('subscribers/:id/cancel')
+  async cancelSubscriber(@Param('id', ParseUUIDPipe) id: string) {
+    return this.subscriptionsService.adminCancelSubscription(id);
   }
 
   @Get('plans/:id')

@@ -10,6 +10,8 @@ import {
 import { ConsultantProfileKycView } from "./pages/ConsultantProfileKycView";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 
+import { UserSubscriptionDashboardView } from "@/components/dashboard/shared/UserSubscriptionDashboardView";
+
 export function ConsultantWorkspace({
   user,
   section,
@@ -35,7 +37,9 @@ export function ConsultantWorkspace({
 
   let content: ReactNode;
 
-  if (activeSection === "profile") {
+  if (activeSection === "subscription") {
+    content = <UserSubscriptionDashboardView user={user} />;
+  } else if (activeSection === "profile") {
     content = <ConsultantProfileKycView user={user} initialTab="profile" />;
   } else if (activeSection === "kyc") {
     content = <ConsultantProfileKycView user={user} initialTab="kyc" />;

@@ -79,6 +79,12 @@ export const env = {
   R2_PRIVATE_BUCKET_NAME: process.env.R2_PRIVATE_BUCKET_NAME || 'investra-private',
   R2_PUBLIC_URL: (process.env.R2_PUBLIC_URL || '').replace(/\/+$/, ''),
   MEDIA_CLEANUP_SECRET: process.env.MEDIA_CLEANUP_SECRET || 'dev-cleanup-secret',
+
+  // Stripe Payment Gateway
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
+  STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || '',
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+  STRIPE_CURRENCY: (process.env.STRIPE_CURRENCY || 'usd').toLowerCase(),
 };
 
 // Export the inferred type for type-safety elsewhere
