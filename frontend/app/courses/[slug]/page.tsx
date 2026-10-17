@@ -180,27 +180,27 @@ export default function CourseDetailPage() {
 
             {/* Instructor Quick Info */}
             <div className="pt-3 flex items-center gap-3">
-              {course.consultant.image ? (
+              {course.consultant?.image ? (
                 <img
                   src={course.consultant.image}
-                  alt={course.consultant.name}
+                  alt={course.consultant.name || "Advisor"}
                   className="h-11 w-11 rounded-full object-cover border-2 border-emerald-400"
                 />
               ) : (
                 <div className="grid h-11 w-11 place-items-center rounded-full bg-emerald-700 text-sm font-bold text-white">
-                  {course.consultant.name.slice(0, 2).toUpperCase()}
+                  {(course.consultant?.name || "Advisor").slice(0, 2).toUpperCase()}
                 </div>
               )}
 
               <div>
                 <div className="flex items-center gap-1.5 font-bold text-white text-sm">
-                  <span>Taught by {course.consultant.name}</span>
-                  {course.consultant.isVerified && (
+                  <span>Taught by {course.consultant?.name || "Advisor"}</span>
+                  {course.consultant?.isVerified && (
                     <ShieldCheck className="h-4 w-4 text-emerald-400" />
                   )}
                 </div>
                 <div className="text-xs text-emerald-200/80">
-                  {course.consultant.headline || "Verified Venture Advisor"}
+                  {course.consultant?.headline || "Verified Venture Advisor"}
                 </div>
               </div>
             </div>

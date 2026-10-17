@@ -8,7 +8,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { StripeService } from '../subscriptions/stripe.service';
 import { env } from '../../common/config/env.config';
-import { CourseStatus, CourseLevel, PayoutStatus, UserRole } from '@prisma/client';
+import { CourseStatus, CourseLevel, PayoutStatus, UserRole, AccountStatus } from '@prisma/client';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
@@ -101,11 +101,7 @@ export class CoursesService {
     ]);
 
     return {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      data: courses.map((c) => ({
+      courses: courses.map((c) => ({
         id: c.id,
         title: c.title,
         slug: c.slug,
@@ -123,14 +119,18 @@ export class CoursesService {
           id: c.consultant.id,
           name: `${c.consultant.firstName || ''} ${c.consultant.lastName || ''}`.trim() || 'Advisor',
           image: c.consultant.image,
-          headline: c.consultant.consultantProfile?.headline || '',
-          specialization: c.consultant.consultantProfile?.specialization || '',
+          headline: c.consultant.consultantProfile?.headline || 'Strategic Venture Advisor',
+          specialization: c.consultant.consultantProfile?.specialization || 'Venture Advisory',
           isVerified: c.consultant.consultantProfile?.verificationStatus === 'VERIFIED',
           rating: Number(c.consultant.consultantProfile?.averageRating || 5),
         },
         lessonsCount: c._count.lessons,
         enrollmentsCount: c._count.enrollments,
       })),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     };
   }
 
@@ -271,9 +271,7 @@ export class CoursesService {
     const consultants = await this.prisma.user.findMany({
       where: {
         role: UserRole.CONSULTANT,
-        consultantProfile: {
-          verificationStatus: 'VERIFIED',
-        },
+        accountStatus: AccountStatus.ACTIVE,
       },
       select: {
         id: true,
@@ -316,7 +314,7 @@ export class CoursesService {
       rating: Number(c.consultantProfile?.averageRating || 5),
       reviewsCount: c.consultantProfile?.totalReviews || 12,
       publishedCoursesCount: c._count.coursesCreated,
-      isVerified: true,
+      isVerified: c.consultantProfile?.verificationStatus === 'VERIFIED',
     }));
   }
 
