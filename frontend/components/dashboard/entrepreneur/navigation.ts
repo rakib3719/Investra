@@ -3,6 +3,7 @@ export const entrepreneurSections = [
   "campaigns",
   "matches",
   "analytics",
+  "courses",
   "subscription",
   "profile",
   "kyc",
@@ -50,6 +51,12 @@ export const entrepreneurPageMeta: Record<
     eyebrow: "Performance insights",
     description:
       "Track deck views, pitch deck downloads, and investor interest trends.",
+  },
+  courses: {
+    title: "My Courses & Masterclasses",
+    eyebrow: "Founder Education",
+    description:
+      "Watch video masterclasses, learn term sheet negotiations, and track syllabus completion.",
   },
   subscription: {
     title: "Subscription & Limits",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/public-facing/shared/Navbar";
 import Footer from "@/components/public-facing/shared/Footer";
 import Link from "next/link";
@@ -13,8 +13,11 @@ import {
   Search, 
   ArrowRight,
   ShieldCheck,
-  DollarSign
+  DollarSign,
+  BookOpen,
+  Sparkles,
 } from "lucide-react";
+import { coursesApi } from "@/lib/courses/courses-api";
 
 interface Consultant {
   id: string;
@@ -30,6 +33,8 @@ interface Consultant {
   topic: string;
   enrolled: number;
   maxCapacity: number;
+  isDbVerified?: boolean;
+  publishedCoursesCount?: number;
 }
 
 const mockConsultants: Consultant[] = [
@@ -84,8 +89,45 @@ export default function ConsultantMarketplacePage() {
   const [activeTab, setActiveTab] = useState<"All" | "Mentoring" | "Workshop" | "Course">("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConsultant, setSelectedConsultant] = useState<Consultant | null>(null);
+  const [consultantsList, setConsultantsList] = useState<Consultant[]>(mockConsultants);
 
-  const filteredConsultants = mockConsultants.filter((c) => {
+  useEffect(() => {
+    const fetchVerifiedConsultants = async () => {
+      try {
+        const dbConsultants = await coursesApi.getVerifiedConsultants();
+        if (dbConsultants && dbConsultants.length > 0) {
+          const mappedDb: Consultant[] = dbConsultants.map((dbc: any) => ({
+            id: dbc.id,
+            name: dbc.name,
+            role: dbc.headline || "Verified Strategic Advisor",
+            rating: dbc.rating || 5.0,
+            reviewsCount: dbc.reviewsCount || 12,
+            expertise: dbc.specialization ? [dbc.specialization, "Due Diligence"] : ["Venture Advisory"],
+            hourlyRate: `$${dbc.consultationFee || 150}`,
+            nextAvailable: "Open for Consultation",
+            avatar: dbc.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            type: "Course",
+            topic: dbc.publishedCoursesCount > 0
+              ? `${dbc.publishedCoursesCount} Masterclasses Available`
+              : "Venture Capital & Advisory Sessions",
+            enrolled: 25,
+            maxCapacity: 100,
+            isDbVerified: true,
+            publishedCoursesCount: dbc.publishedCoursesCount,
+          }));
+
+          // Merge: Mock consultants first, then real database verified consultants
+          setConsultantsList([...mockConsultants, ...mappedDb]);
+        }
+      } catch (err) {
+        console.error("Failed to load verified consultants from DB", err);
+      }
+    };
+
+    fetchVerifiedConsultants();
+  }, []);
+
+  const filteredConsultants = consultantsList.filter((c) => {
     const matchesTab = activeTab === "All" || c.type === activeTab;
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           c.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,7 +139,7 @@ export default function ConsultantMarketplacePage() {
     <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
 
-      {/* Hero Banner - Unified Design System */}
+      {/* Hero Banner */}
       <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
         <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
@@ -111,17 +153,24 @@ export default function ConsultantMarketplacePage() {
             <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
               Advisory Marketplace.<br />
               Masterclass Sessions,<br />
-              <ShinyText text="80/20 Revenue Share." speed={4.5} />
+              <ShinyText text="90/10 Revenue Share." speed={4.5} />
             </h1>
 
             <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
               Accelerate your fundraising journey or refine your investment thesis with vetted venture partners, legal advisors, and financial modelers.
             </p>
 
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064e3b] bg-[#10b981]/15 px-3 py-1.5 rounded-lg font-heading">
-                <ShieldCheck className="w-4 h-4 text-[#10b981]" /> 80/20 Consultant Revenue Share
+                <ShieldCheck className="w-4 h-4 text-[#10b981]" /> 90% Consultant Yield / 10% Platform Fee
               </span>
+              <Link
+                href="/courses"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#078457] hover:bg-[#06734d] px-4 py-2 rounded-lg font-heading shadow-sm transition"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Browse All Courses &rarr;</span>
+              </Link>
             </div>
           </div>
 
@@ -185,9 +234,16 @@ export default function ConsultantMarketplacePage() {
                     className="w-14 h-14 rounded-2xl object-cover border border-slate-200 group-hover:scale-105 transition-transform"
                   />
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#10b981]/15 text-[#064e3b]">
-                      {c.type}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#10b981]/15 text-[#064e3b]">
+                        {c.type}
+                      </span>
+                      {c.isDbVerified && (
+                        <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-0.5">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> KYC Verified
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-heading font-extrabold text-base text-slate-800 mt-1">
                       {c.name}
                     </h3>
@@ -232,11 +288,18 @@ export default function ConsultantMarketplacePage() {
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[10px] font-bold text-[#064e3b] uppercase">80% Consultant Yield</span>
+              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+                <Link
+                  href="/courses"
+                  className="text-xs font-bold text-[#064e3b] hover:underline flex items-center gap-1"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>View Courses</span>
+                </Link>
+
                 <button
                   onClick={() => setSelectedConsultant(c)}
-                  className="bg-[#064e3b] hover:bg-[#043c2e] text-white px-4 py-2 rounded-xl text-xs font-bold font-heading transition-colors inline-flex items-center gap-1 cursor-pointer"
+                  className="bg-[#064e3b] hover:bg-[#043c2e] text-white px-3.5 py-2 rounded-xl text-xs font-bold font-heading transition-colors inline-flex items-center gap-1 cursor-pointer"
                 >
                   <span>Book Session</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#10b981]" />

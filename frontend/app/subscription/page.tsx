@@ -31,7 +31,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/lib/toast";
 
 export default function MasterpieceSubscriptionPage() {
-  const [role, setRole] = useState<"investor" | "entrepreneur" | "consultant">("investor");
+  const [role, setRole] = useState<"investor" | "entrepreneur">("investor");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -46,15 +46,14 @@ export default function MasterpieceSubscriptionPage() {
   const targetRoleMap: Record<string, TargetRole> = {
     investor: "INVESTOR",
     entrepreneur: "ENTREPRENEUR",
-    consultant: "CONSULTANT",
   };
 
   // Restrict role selection:
-  // If user is logged in as INVESTOR, ENTREPRENEUR, or CONSULTANT: lock to their role.
+  // If user is logged in as INVESTOR or ENTREPRENEUR: lock to their role.
   // If not logged in, or ADMIN: they can browse any role.
   const userRole = currentUser?.role?.toUpperCase();
   const isRoleRestricted = Boolean(
-    userRole && (userRole === "INVESTOR" || userRole === "ENTREPRENEUR" || userRole === "CONSULTANT")
+    userRole && (userRole === "INVESTOR" || userRole === "ENTREPRENEUR")
   );
 
   useEffect(() => {
@@ -62,8 +61,6 @@ export default function MasterpieceSubscriptionPage() {
       setRole("investor");
     } else if (userRole === "ENTREPRENEUR") {
       setRole("entrepreneur");
-    } else if (userRole === "CONSULTANT") {
-      setRole("consultant");
     }
   }, [userRole]);
 
@@ -515,13 +512,36 @@ export default function MasterpieceSubscriptionPage() {
         {/* Role & Billing Switcher */}
         <div className="flex flex-col items-center gap-6 text-center">
           
+          {/* Consultant Account Notice */}
+          {userRole === "CONSULTANT" && (
+            <div className="max-w-3xl mx-auto rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 p-6 sm:p-8 text-center space-y-4 shadow-sm mb-4">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
+                <Sparkles className="w-6 h-6 text-emerald-100" />
+              </div>
+              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-slate-900">
+                Consultants Do Not Need a Subscription
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
+                As an advisor and course creator, you have full platform access without monthly subscription fees. You earn 90% net revenue on every student course enrollment!
+              </p>
+              <div className="pt-2 flex justify-center gap-3">
+                <Link
+                  href="/dashboard/consultant/courses"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 transition shadow-sm"
+                >
+                  <span>Go to Course Studio</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Role Switcher Pills with Live Plan Counts */}
           {isRoleRestricted ? (
             <div className="flex items-center gap-3 bg-emerald-50/80 px-5 py-3 rounded-2xl border border-emerald-200 shadow-xs">
               <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
                 {role === "investor" && <Building2 className="w-4 h-4" />}
                 {role === "entrepreneur" && <Briefcase className="w-4 h-4" />}
-                {role === "consultant" && <UserCheck className="w-4 h-4" />}
               </span>
               <div className="text-left">
                 <p className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
@@ -571,25 +591,6 @@ export default function MasterpieceSubscriptionPage() {
                     role === "entrepreneur" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
                   }`}>
                     {roleCounts.entrepreneur}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => setRole("consultant")}
-                className={`px-6 py-3 rounded-xl text-xs font-bold font-heading transition-all duration-300 flex items-center gap-2 cursor-pointer ${
-                  role === "consultant"
-                    ? "bg-[#064e3b] text-white shadow-sm scale-102"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>Consultant Tiers</span>
-                {roleCounts.consultant > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                    role === "consultant" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
-                  }`}>
-                    {roleCounts.consultant}
                   </span>
                 )}
               </button>

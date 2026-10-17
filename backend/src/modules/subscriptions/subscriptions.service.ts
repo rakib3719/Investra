@@ -761,7 +761,50 @@ export class SubscriptionsService {
       const metadata = session.metadata || {};
       const { userId, planId, billingInterval } = metadata;
 
-      if (userId && planId) {
+      if (metadata.type === 'COURSE_PURCHASE' && metadata.courseId && metadata.buyerId) {
+        const { courseId, buyerId, consultantId } = metadata;
+        const grossAmount = session.amount_total ? session.amount_total / 100 : 0;
+        const currency = session.currency ? session.currency.toUpperCase() : 'USD';
+        const transactionId = session.payment_intent || session.id;
+        const platformFeeRate = 0.10;
+        const platformFeeAmount = Number((grossAmount * platformFeeRate).toFixed(2));
+        const consultantEarnings = Number((grossAmount - platformFeeAmount).toFixed(2));
+
+        await this.prisma.courseEnrollment.upsert({
+          where: { courseId_userId: { courseId, userId: buyerId } },
+          update: {},
+          create: {
+            courseId,
+            userId: buyerId,
+            pricePaid: grossAmount,
+            currency,
+            paymentProvider: 'STRIPE',
+            transactionId,
+          },
+        });
+
+        const existingPayment = await this.prisma.coursePayment.findUnique({
+          where: { transactionId },
+        });
+        if (!existingPayment) {
+          await this.prisma.coursePayment.create({
+            data: {
+              courseId,
+              buyerId,
+              consultantId: consultantId || buyerId,
+              grossAmount,
+              platformFeeRate,
+              platformFeeAmount,
+              consultantEarnings,
+              currency,
+              paymentProvider: 'STRIPE',
+              transactionId,
+              status: 'PAID',
+            },
+          });
+        }
+        this.logger.log(`Webhook handled course purchase for course ${courseId}, buyer ${buyerId}`);
+      } else if (userId && planId) {
         const amountTotal = session.amount_total ? session.amount_total / 100 : undefined;
         const currency = session.currency ? session.currency.toUpperCase() : 'USD';
         const transactionId = session.payment_intent || session.id;

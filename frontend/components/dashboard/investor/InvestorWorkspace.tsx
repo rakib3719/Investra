@@ -14,9 +14,10 @@ import { WatchlistPage } from "./pages/WatchlistPage";
 import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
 import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 import { UserSubscriptionDashboardView } from "@/components/dashboard/shared/UserSubscriptionDashboardView";
+import { MyCoursesPage } from "@/components/dashboard/shared/MyCoursesPage";
 
 const sectionComponents: Record<
-  Exclude<InvestorSection, "settings" | "profile" | "kyc" | "subscription">,
+  Exclude<InvestorSection, "settings" | "profile" | "kyc" | "subscription" | "courses">,
   ComponentType
 > = {
   overview: InvestorOverviewPage,
@@ -51,6 +52,8 @@ export function InvestorWorkspace({
     content = <KycVerificationCard user={user} />;
   } else if (activeSection === "subscription") {
     content = <UserSubscriptionDashboardView user={user} />;
+  } else if (activeSection === "courses") {
+    content = <MyCoursesPage user={user} />;
   } else {
     const SectionComponent = sectionComponents[activeSection];
     content = <SectionComponent />;
