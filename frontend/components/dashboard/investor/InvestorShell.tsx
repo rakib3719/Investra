@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   Bell,
   Bookmark,
@@ -12,6 +12,7 @@ import {
   Compass,
   CreditCard,
   FileBarChart,
+  Inbox,
   LayoutDashboard,
   Leaf,
   LogOut,
@@ -34,9 +35,11 @@ import {
   investorSectionPath,
   type InvestorSection,
 } from "./navigation";
+import { getInvestorIncomingIntros, type InvestorIntroRequestItem } from "@/lib/api/portfolio";
 
-const navigation: { section: InvestorSection; label: string; icon: LucideIcon; badge?: string }[] = [
+const baseNavigation: { section: InvestorSection; label: string; icon: LucideIcon; badge?: string }[] = [
   { section: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { section: "intros", label: "Founder Intros", icon: Inbox },
   { section: "kyc", label: "Identity & KYC", icon: ShieldCheck },
   { section: "profile", label: "My Profile", icon: User },
   { section: "portfolio", label: "Portfolio", icon: BriefcaseBusiness },
@@ -80,8 +83,30 @@ export function InvestorShell({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [pendingIntrosCount, setPendingIntrosCount] = useState<number>(0);
   const { data: kycData } = useMyKycQuery();
   const meta = investorPageMeta[activeSection];
+
+  useEffect(() => {
+    async function loadPendingCount() {
+      try {
+        const res = await getInvestorIncomingIntros();
+        const items = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
+        const pending = items.filter((i: InvestorIntroRequestItem) => i.status === "PENDING").length;
+        setPendingIntrosCount(pending);
+      } catch {
+        // ignore error
+      }
+    }
+    loadPendingCount();
+  }, []);
+
+  const navigation = baseNavigation.map((item) => {
+    if (item.section === "intros" && pendingIntrosCount > 0) {
+      return { ...item, badge: `${pendingIntrosCount}` };
+    }
+    return item;
+  });
 
   const kycStatus = kycData?.status;
   const isKycVerified = kycStatus === "VERIFIED";
@@ -107,6 +132,7 @@ export function InvestorShell({
             {navigation.map(({ section, label, icon: Icon, badge }) => {
               const active = section === activeSection;
               const isKyc = section === "kyc";
+              const isIntros = section === "intros";
               return (
                 <Link key={section} href={investorSectionPath(section)} onClick={() => setSidebarOpen(false)} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${active ? "bg-emerald-50 text-[#065f46] shadow-[inset_3px_0_0_#10b981]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}>
                   <Icon className="h-[18px] w-[18px]" />
@@ -121,6 +147,10 @@ export function InvestorShell({
                     ) : (
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">Unverified</span>
                     )
+                  ) : isIntros && badge ? (
+                    <span className="grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-black bg-emerald-600 text-white shadow-xs">
+                      {badge}
+                    </span>
                   ) : (
                     badge && <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold ${active ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}`}>{badge}</span>
                   )}
@@ -154,6 +184,23 @@ export function InvestorShell({
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
+              <Link
+                href="/dashboard/investor/intros"
+                className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
+                  pendingIntrosCount > 0
+                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 shadow-xs"
+                    : "text-slate-600 hover:bg-slate-50 border border-slate-200"
+                }`}
+                title="Review Founder Pitches"
+              >
+                <Inbox className="h-4 w-4 text-emerald-600" />
+                <span className="hidden sm:inline">Founder Pitches</span>
+                {pendingIntrosCount > 0 && (
+                  <span className="rounded-full bg-emerald-600 text-white px-1.5 py-0.2 text-[10px] font-black">
+                    {pendingIntrosCount}
+                  </span>
+                )}
+              </Link>
               <button type="button" aria-label="Search" className="hidden rounded-xl p-2.5 text-slate-500 hover:bg-slate-50 sm:block"><Search className="h-5 w-5" /></button>
               <button type="button" aria-label="Notifications" className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-50"><Bell className="h-5 w-5" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-emerald-500" /></button>
               <div className="hidden h-8 w-px bg-slate-200 sm:block" />

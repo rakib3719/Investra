@@ -5,6 +5,7 @@ import { getInvestorSection, type InvestorSection } from "./navigation";
 import { ImpactPage } from "./pages/ImpactPage";
 import { InvestmentsPage } from "./pages/InvestmentsPage";
 import { InvestorOverviewPage } from "./pages/InvestorOverviewPage";
+import { InvestorIntrosPage } from "./pages/InvestorIntrosPage";
 import { MessagesPage } from "./pages/MessagesPage";
 import { OpportunitiesPage } from "./pages/OpportunitiesPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
@@ -21,6 +22,7 @@ const sectionComponents: Record<
   ComponentType
 > = {
   overview: InvestorOverviewPage,
+  intros: InvestorIntrosPage,
   portfolio: PortfolioPage,
   investments: InvestmentsPage,
   opportunities: OpportunitiesPage,
