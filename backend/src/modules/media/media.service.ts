@@ -308,9 +308,29 @@ export class MediaService {
     const isAdmin = userRole === UserRole.ADMIN || (userRole as string) === 'SUB_ADMIN';
 
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenException(
-        'You are not authorized to view or download this private file.',
-      );
+      // Check if this is a portfolio document/certificate/video accessible to subscribed members
+      if (
+        media.category === (MediaCategory as any).PORTFOLIO_DOCUMENT ||
+        media.category === (MediaCategory as any).PORTFOLIO_CERTIFICATE ||
+        media.category === (MediaCategory as any).PORTFOLIO_VIDEO
+      ) {
+        const activeSub = await this.prisma.userSubscription.findFirst({
+          where: {
+            userId,
+            status: 'ACTIVE',
+            currentPeriodEnd: { gte: new Date() },
+          },
+        });
+        if (!activeSub) {
+          throw new ForbiddenException(
+            'Viewing private investor portfolio documents requires an active Premium Subscription.',
+          );
+        }
+      } else {
+        throw new ForbiddenException(
+          'You are not authorized to view or download this private file.',
+        );
+      }
     }
 
     const expiresInSeconds = 900; // 15 minutes

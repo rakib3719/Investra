@@ -39,16 +39,24 @@ export const MEDIA_POLICY: Record<MediaCategory, CategoryPolicy> = {
     accessType: MediaAccessType.PUBLIC,
     targetBucketEnv: 'R2_PUBLIC_BUCKET_NAME',
     maxSizeBytes: 50 * 1024 * 1024, // 50 MB
-    allowedMimeTypes: ['application/pdf'],
-    allowedExtensions: ['pdf'],
+    allowedMimeTypes: [
+      'application/pdf',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    allowedExtensions: ['pdf', 'ppt', 'pptx'],
     keyPrefix: 'campaigns',
   },
   CONFIDENTIAL_PITCH_DECK: {
     accessType: MediaAccessType.PRIVATE,
     targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
     maxSizeBytes: 50 * 1024 * 1024, // 50 MB
-    allowedMimeTypes: ['application/pdf'],
-    allowedExtensions: ['pdf'],
+    allowedMimeTypes: [
+      'application/pdf',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    allowedExtensions: ['pdf', 'ppt', 'pptx'],
     keyPrefix: 'campaigns',
   },
   FINANCIAL_REPORT: {
@@ -78,6 +86,30 @@ export const MEDIA_POLICY: Record<MediaCategory, CategoryPolicy> = {
     allowedMimeTypes: ['video/mp4', 'video/webm'],
     allowedExtensions: ['mp4', 'webm'],
     keyPrefix: 'campaigns',
+  },
+  PORTFOLIO_CERTIFICATE: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 20 * 1024 * 1024, // 20 MB
+    allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+    keyPrefix: 'portfolio/certificates',
+  },
+  PORTFOLIO_DOCUMENT: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 50 * 1024 * 1024, // 50 MB
+    allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+    keyPrefix: 'portfolio/documents',
+  },
+  PORTFOLIO_VIDEO: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 150 * 1024 * 1024, // 150 MB
+    allowedMimeTypes: ['video/mp4', 'video/webm', 'video/quicktime'],
+    allowedExtensions: ['mp4', 'webm', 'mov'],
+    keyPrefix: 'portfolio/videos',
   },
 };
 

@@ -8,7 +8,10 @@ export type MediaCategory =
   | 'CONFIDENTIAL_PITCH_DECK'
   | 'FINANCIAL_REPORT'
   | 'KYC_DOCUMENT'
-  | 'VIDEO';
+  | 'VIDEO'
+  | 'PORTFOLIO_DOCUMENT'
+  | 'PORTFOLIO_CERTIFICATE'
+  | 'PORTFOLIO_VIDEO';
 
 export interface PresignedUploadResponse {
   mediaId: string;
