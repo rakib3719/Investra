@@ -105,24 +105,37 @@ model VisitorInsight {
 }
 
 model InvestorProfile {
-  id                 String             @id @default(uuid()) @db.Uuid
-  userId             String             @unique @map("user_id") @db.Uuid
-  headline           String?            @map("headline") @db.VarChar
-  investmentRangeMin Decimal?           @map("investment_range_min") @db.Decimal
-  investmentRangeMax Decimal?           @map("investment_range_max") @db.Decimal
-  preferredCurrency  String?            @map("preferred_currency") @db.VarChar
-  yearsOfExperience  Int?               @map("years_of_experience")
-  companyName        String?            @map("company_name") @db.VarChar
-  designation        String?            @map("designation") @db.VarChar
-  businessName       String?            @map("business_name") @db.VarChar
-  businessIndustry   String?            @map("business_industry") @db.VarChar
-  accreditedInvestor Boolean?           @map("accredited_investor")
-  preferredStage     BusinessStage?     @map("preferred_stage")
-  profileVisibility  Boolean?           @map("profile_visibility")
-  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String                  @id @default(uuid()) @db.Uuid
+  userId             String                  @unique @map("user_id") @db.Uuid
+  headline           String?                 @map("headline") @db.VarChar
+  investmentRangeMin Decimal?                @map("investment_range_min") @db.Decimal
+  investmentRangeMax Decimal?                @map("investment_range_max") @db.Decimal
+  preferredCurrency  String?                 @map("preferred_currency") @db.VarChar
+  yearsOfExperience  Int?                    @map("years_of_experience")
+  companyName        String?                 @map("company_name") @db.VarChar
+  designation        String?                 @map("designation") @db.VarChar
+  businessName       String?                 @map("business_name") @db.VarChar
+  businessIndustry   String?                 @map("business_industry") @db.VarChar
+  accreditedInvestor Boolean?                @map("accredited_investor")
+  preferredStage     BusinessStage?          @map("preferred_stage")
+  profileVisibility  Boolean?                @map("profile_visibility")
+  verificationStatus VerificationStatus      @default(PENDING) @map("verification_status")
+  investmentThesis   String?                 @map("investment_thesis") @db.Text
+  linkedinUrl        String?                 @map("linkedin_url") @db.VarChar(500)
+  twitterUrl         String?                 @map("twitter_url") @db.VarChar(500)
+  crunchbaseUrl      String?                 @map("crunchbase_url") @db.VarChar(500)
+  websiteUrl         String?                 @map("website_url") @db.VarChar(500)
+  videoIntroUrl      String?                 @map("video_intro_url") @db.VarChar(500)
+  videoIntroMediaId  String?                 @unique @map("video_intro_media_id") @db.Uuid
+  totalInvestmentsCount Int?                 @default(0) @map("total_investments_count")
+  totalExitsCount    Int?                    @default(0) @map("total_exits_count")
+  totalCapitalDeployed Decimal?              @map("total_capital_deployed") @db.Decimal(14, 2)
+  sectors            String[]                @default([])
+  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime                @updatedAt @map("updated_at") @db.Timestamp(6)
+  user               User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoIntroMedia    MediaFile?              @relation("InvestorVideoIntroMedia", fields: [videoIntroMediaId], references: [id], onDelete: SetNull)
+  portfolioItems     InvestorPortfolioItem[]
 
   @@map("investor_profiles")
 }
@@ -466,6 +479,9 @@ enum MediaCategory {
   FINANCIAL_REPORT
   KYC_DOCUMENT
   VIDEO
+  PORTFOLIO_DOCUMENT
+  PORTFOLIO_CERTIFICATE
+  PORTFOLIO_VIDEO
 
   @@map("media_category")
 }
@@ -515,6 +531,8 @@ model MediaFile {
   verificationProofOfFunds     UserVerification? @relation("VerificationProofOfFundsMedia")
   verificationTradeLicense     UserVerification? @relation("VerificationTradeLicenseMedia")
   verificationTinCertificate   UserVerification? @relation("VerificationTinCertificateMedia")
+  portfolioItems               InvestorPortfolioItem[] @relation("PortfolioItemMedia")
+  investorVideoIntro           InvestorProfile?        @relation("InvestorVideoIntroMedia")
 
   @@index([uploadedById])
   @@index([category, status])
@@ -795,4 +813,52 @@ model ConsultantPayout {
   @@index([status])
   @@index([createdAt])
   @@map("consultant_payouts")
+}
+
+enum PortfolioItemType {
+  INVESTMENT
+  CERTIFICATION
+  EXPERIENCE
+  VIDEO_PRESENTATION
+  CASE_STUDY
+
+  @@map("portfolio_item_type")
+}
+
+model InvestorPortfolioItem {
+  id                String            @id @default(uuid()) @db.Uuid
+  investorProfileId String            @map("investor_profile_id") @db.Uuid
+  type              PortfolioItemType @map("type")
+  title             String            @db.VarChar(255)
+  subtitle          String?           @db.VarChar(255)
+  description       String?           @db.Text
+  sector            String?           @db.VarChar(100)
+  stage             String?           @db.VarChar(100)
+  amountInvested    Decimal?          @map("amount_invested") @db.Decimal(14, 2)
+  valuation         Decimal?          @db.Decimal(14, 2)
+  returnMultiple    String?           @map("return_multiple") @db.VarChar(50)
+  status            String?           @db.VarChar(50)
+  year              Int?
+  startDate         DateTime?         @map("start_date") @db.Date
+  endDate           DateTime?         @map("end_date") @db.Date
+  issuer            String?           @db.VarChar(255)
+  credentialId      String?           @map("credential_id") @db.VarChar(255)
+  credentialUrl     String?           @map("credential_url") @db.VarChar(500)
+  videoProvider     String?           @map("video_provider") @db.VarChar(50)
+  videoUrl          String?           @map("video_url") @db.VarChar(500)
+  externalUrl       String?           @map("external_url") @db.VarChar(500)
+  logoUrl           String?           @map("logo_url") @db.Text
+  mediaFileId       String?           @map("media_file_id") @db.Uuid
+  isFeatured        Boolean           @default(false) @map("is_featured")
+  isPrivate         Boolean           @default(false) @map("is_private")
+  sortOrder         Int               @default(0) @map("sort_order")
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  investorProfile   InvestorProfile   @relation(fields: [investorProfileId], references: [id], onDelete: Cascade)
+  mediaFile         MediaFile?        @relation("PortfolioItemMedia", fields: [mediaFileId], references: [id], onDelete: SetNull)
+
+  @@index([investorProfileId, type])
+  @@index([sortOrder])
+  @@map("investor_portfolio_items")
 }

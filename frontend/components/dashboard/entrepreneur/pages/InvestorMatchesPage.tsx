@@ -1,5 +1,7 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Building2,
   Calendar,
@@ -16,6 +18,7 @@ import {
   PrimaryButton,
   StatusPill,
 } from "@/components/dashboard/investor/InvestorUI";
+import { listVerifiedInvestors } from "@/lib/api/portfolio";
 
 const matches = [
   {
@@ -176,12 +179,12 @@ export function InvestorMatchesPage() {
             <div className="flex items-center justify-between pt-1">
               <span className="text-[11px] text-slate-400">Verified institutional accredited</span>
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                <Link
+                  href={`/investors/${(inv as any).userId || inv.id}`}
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors inline-flex items-center"
                 >
                   View Profile
-                </button>
+                </Link>
                 <PrimaryButton>
                   <Calendar className="h-3.5 w-3.5" /> Request Intro
                 </PrimaryButton>

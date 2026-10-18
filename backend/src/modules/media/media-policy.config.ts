@@ -79,6 +79,30 @@ export const MEDIA_POLICY: Record<MediaCategory, CategoryPolicy> = {
     allowedExtensions: ['mp4', 'webm'],
     keyPrefix: 'campaigns',
   },
+  PORTFOLIO_CERTIFICATE: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 20 * 1024 * 1024, // 20 MB
+    allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+    keyPrefix: 'portfolio/certificates',
+  },
+  PORTFOLIO_DOCUMENT: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 50 * 1024 * 1024, // 50 MB
+    allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+    keyPrefix: 'portfolio/documents',
+  },
+  PORTFOLIO_VIDEO: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 150 * 1024 * 1024, // 150 MB
+    allowedMimeTypes: ['video/mp4', 'video/webm', 'video/quicktime'],
+    allowedExtensions: ['mp4', 'webm', 'mov'],
+    keyPrefix: 'portfolio/videos',
+  },
 };
 
 /**

@@ -79,6 +79,21 @@ const CATEGORY_LIMITS: Record<MediaCategory, { maxBytes: number; label: string; 
     label: 'Upload Short Video (MP4, WebM up to 100MB)',
     accept: 'video/mp4,video/webm',
   },
+  PORTFOLIO_DOCUMENT: {
+    maxBytes: 50 * 1024 * 1024,
+    label: 'Upload Portfolio Document (PDF, JPEG, PNG, WebP up to 50MB)',
+    accept: 'application/pdf,image/jpeg,image/png,image/webp',
+  },
+  PORTFOLIO_CERTIFICATE: {
+    maxBytes: 20 * 1024 * 1024,
+    label: 'Upload Certificate / Accreditation Document (PDF, Image up to 20MB)',
+    accept: 'application/pdf,image/jpeg,image/png,image/webp',
+  },
+  PORTFOLIO_VIDEO: {
+    maxBytes: 150 * 1024 * 1024,
+    label: 'Upload Pitch / Introduction Video (MP4, WebM, MOV up to 150MB)',
+    accept: 'video/mp4,video/webm,video/quicktime',
+  },
 };
 
 export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
