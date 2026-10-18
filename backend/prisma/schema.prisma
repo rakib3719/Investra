@@ -55,6 +55,8 @@ model User {
   buyerCoursePayments CoursePayment[]        @relation("BuyerCoursePayments")
   consultantEarnings  CoursePayment[]        @relation("ConsultantCourseEarnings")
   payoutRequests      ConsultantPayout[]     @relation("ConsultantPayoutRequests")
+  sentIntroRequests   InvestorIntroRequest[] @relation("SentIntroRequests")
+  receivedIntroRequests InvestorIntroRequest[] @relation("ReceivedIntroRequests")
 
   @@map("users")
 }
@@ -136,6 +138,7 @@ model InvestorProfile {
   user               User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   videoIntroMedia    MediaFile?              @relation("InvestorVideoIntroMedia", fields: [videoIntroMediaId], references: [id], onDelete: SetNull)
   portfolioItems     InvestorPortfolioItem[]
+  introRequests      InvestorIntroRequest[]
 
   @@map("investor_profiles")
 }
@@ -862,3 +865,42 @@ model InvestorPortfolioItem {
   @@index([sortOrder])
   @@map("investor_portfolio_items")
 }
+
+enum IntroRequestStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  DECLINED
+}
+
+model InvestorIntroRequest {
+  id                 String             @id @default(uuid()) @db.Uuid
+  entrepreneurId     String             @map("entrepreneur_id") @db.Uuid
+  investorId         String             @map("investor_id") @db.Uuid
+  investorProfileId  String?            @map("investor_profile_id") @db.Uuid
+  startupName        String             @map("startup_name") @db.VarChar(255)
+  pitchMessage       String             @map("pitch_message") @db.Text
+  businessOverview   String?            @map("business_overview") @db.Text
+  targetSector       String?            @map("target_sector") @db.VarChar(100)
+  roundStage         String?            @map("round_stage") @db.VarChar(50)
+  raisingAmount      String?            @map("raising_amount") @db.VarChar(100)
+  deckUrl            String?            @map("deck_url") @db.VarChar(500)
+  websiteUrl         String?            @map("website_url") @db.VarChar(500)
+  contactEmail       String?            @map("contact_email") @db.VarChar(255)
+  contactPhone       String?            @map("contact_phone") @db.VarChar(50)
+  status             IntroRequestStatus @default(PENDING) @map("status")
+  investorFeedback   String?            @map("investor_feedback") @db.Text
+  reviewedAt         DateTime?          @map("reviewed_at") @db.Timestamp(6)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  entrepreneur       User               @relation("SentIntroRequests", fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  investor           User               @relation("ReceivedIntroRequests", fields: [investorId], references: [id], onDelete: Cascade)
+  investorProfile    InvestorProfile?   @relation(fields: [investorProfileId], references: [id], onDelete: SetNull)
+
+  @@index([investorId])
+  @@index([entrepreneurId])
+  @@index([status])
+  @@map("investor_intro_requests")
+}
+

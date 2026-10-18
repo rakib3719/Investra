@@ -1,5 +1,6 @@
 export const investorSections = [
   "overview",
+  "intros",
   "portfolio",
   "investments",
   "opportunities",
@@ -36,6 +37,11 @@ export const investorPageMeta: Record<
     title: "Portfolio overview",
     eyebrow: "Investor workspace",
     description: "A clear view of your portfolio, activity, and next opportunities.",
+  },
+  intros: {
+    title: "Founder Introductions",
+    eyebrow: "Deal Inflow Pipeline",
+    description: "Review incoming pitch requests, business briefs, and executive summaries from verified entrepreneurs.",
   },
   portfolio: {
     title: "Portfolio",

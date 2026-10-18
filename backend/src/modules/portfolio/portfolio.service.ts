@@ -14,6 +14,9 @@ import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { CreatePortfolioItemDto } from './dto/create-portfolio-item.dto';
 import { UpdateInvestorPortfolioMetaDto } from './dto/update-investor-portfolio-meta.dto';
 import { UpdatePortfolioItemDto } from './dto/update-portfolio-item.dto';
+import { CreateIntroRequestDto } from './dto/create-intro-request.dto';
+import { UpdateIntroStatusDto } from './dto/update-intro-status.dto';
+import { IntroRequestStatus } from '@prisma/client';
 
 @Injectable()
 export class PortfolioService {
@@ -746,4 +749,202 @@ export class PortfolioService {
       })),
     };
   }
+
+  /**
+   * 8. CREATE INTRO REQUEST (Entrepreneur -> Investor, requires active subscription)
+   */
+  async createIntroRequest(entrepreneurId: string, dto: CreateIntroRequestDto) {
+    // A. Check entrepreneur subscription requirement
+    const activeSub = await this.prisma.userSubscription.findFirst({
+      where: {
+        userId: entrepreneurId,
+        status: 'ACTIVE',
+      },
+    });
+
+    if (!activeSub) {
+      throw new ForbiddenException(
+        'Pro Subscription Required. Only active Entrepreneur Pro subscribers can submit direct deal introductions to verified accredited investors.',
+      );
+    }
+
+    // B. Resolve target investor
+    let targetInvestorUserId: string | null = null;
+    let targetInvestorProfileId: string | null = null;
+
+    // Check if dto.investorId is a User with INVESTOR role
+    const investorUser = await this.prisma.user.findFirst({
+      where: { id: dto.investorId, role: UserRole.INVESTOR },
+      include: { investorProfile: true },
+    });
+
+    if (investorUser) {
+      targetInvestorUserId = investorUser.id;
+      targetInvestorProfileId = investorUser.investorProfile?.id || null;
+    } else {
+      // Check if dto.investorId is an InvestorProfile id
+      const investorProfile = await this.prisma.investorProfile.findUnique({
+        where: { id: dto.investorId },
+      });
+      if (investorProfile) {
+        targetInvestorProfileId = investorProfile.id;
+        targetInvestorUserId = investorProfile.userId;
+      }
+    }
+
+    if (!targetInvestorUserId) {
+      throw new NotFoundException('Target investor not found.');
+    }
+
+    if (targetInvestorUserId === entrepreneurId) {
+      throw new BadRequestException('You cannot send an introduction request to yourself.');
+    }
+
+    const intro = await this.prisma.investorIntroRequest.create({
+      data: {
+        entrepreneurId,
+        investorId: targetInvestorUserId,
+        investorProfileId: targetInvestorProfileId,
+        startupName: dto.startupName,
+        pitchMessage: dto.pitchMessage,
+        businessOverview: dto.businessOverview,
+        targetSector: dto.targetSector,
+        roundStage: dto.roundStage,
+        raisingAmount: dto.raisingAmount,
+        deckUrl: dto.deckUrl,
+        websiteUrl: dto.websiteUrl,
+        contactEmail: dto.contactEmail,
+        contactPhone: dto.contactPhone,
+        status: IntroRequestStatus.PENDING,
+      },
+      include: {
+        investor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+            image: true,
+          },
+        },
+        investorProfile: {
+          select: {
+            id: true,
+            companyName: true,
+            designation: true,
+            headline: true,
+          },
+        },
+      },
+    });
+
+    return {
+      message: 'Introduction request submitted successfully to investor!',
+      data: intro,
+    };
+  }
+
+  /**
+   * 9. GET SENT INTRO REQUESTS (Entrepreneur view)
+   */
+  async getEntrepreneurSentIntros(entrepreneurId: string) {
+    const intros = await this.prisma.investorIntroRequest.findMany({
+      where: { entrepreneurId },
+      include: {
+        investor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+            image: true,
+          },
+        },
+        investorProfile: {
+          select: {
+            id: true,
+            companyName: true,
+            designation: true,
+            headline: true,
+            sectors: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      total: intros.length,
+      data: intros,
+    };
+  }
+
+  /**
+   * 10. GET INCOMING INTRO REQUESTS (Investor view)
+   */
+  async getInvestorIncomingIntros(investorUserId: string) {
+    const intros = await this.prisma.investorIntroRequest.findMany({
+      where: { investorId: investorUserId },
+      include: {
+        entrepreneur: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+            image: true,
+            country: true,
+            city: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      total: intros.length,
+      data: intros,
+    };
+  }
+
+  /**
+   * 11. UPDATE INTRO STATUS (Investor accepts/declines/reviews)
+   */
+  async updateIntroStatus(investorUserId: string, introId: string, dto: UpdateIntroStatusDto) {
+    const existing = await this.prisma.investorIntroRequest.findFirst({
+      where: { id: introId, investorId: investorUserId },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Introduction request not found or unauthorized.');
+    }
+
+    const updated = await this.prisma.investorIntroRequest.update({
+      where: { id: introId },
+      data: {
+        status: dto.status,
+        investorFeedback: dto.investorFeedback !== undefined ? dto.investorFeedback : existing.investorFeedback,
+        reviewedAt: new Date(),
+      },
+      include: {
+        entrepreneur: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return {
+      message: `Introduction request marked as ${dto.status}`,
+      data: updated,
+    };
+  }
 }
+

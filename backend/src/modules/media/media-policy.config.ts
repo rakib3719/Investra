@@ -39,16 +39,24 @@ export const MEDIA_POLICY: Record<MediaCategory, CategoryPolicy> = {
     accessType: MediaAccessType.PUBLIC,
     targetBucketEnv: 'R2_PUBLIC_BUCKET_NAME',
     maxSizeBytes: 50 * 1024 * 1024, // 50 MB
-    allowedMimeTypes: ['application/pdf'],
-    allowedExtensions: ['pdf'],
+    allowedMimeTypes: [
+      'application/pdf',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    allowedExtensions: ['pdf', 'ppt', 'pptx'],
     keyPrefix: 'campaigns',
   },
   CONFIDENTIAL_PITCH_DECK: {
     accessType: MediaAccessType.PRIVATE,
     targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
     maxSizeBytes: 50 * 1024 * 1024, // 50 MB
-    allowedMimeTypes: ['application/pdf'],
-    allowedExtensions: ['pdf'],
+    allowedMimeTypes: [
+      'application/pdf',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    allowedExtensions: ['pdf', 'ppt', 'pptx'],
     keyPrefix: 'campaigns',
   },
   FINANCIAL_REPORT: {

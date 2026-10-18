@@ -48,6 +48,7 @@ import {
   ShieldCheck,
   Sparkles,
   TrendingUp,
+  UploadCloud,
   UserCheck,
   Video,
   X,
@@ -55,6 +56,9 @@ import {
 } from "lucide-react";
 import { FaLinkedin, FaTwitter } from "react-icons/fa";
 import { toast } from "@/lib/toast";
+import { createIntroRequest } from "@/lib/api/portfolio";
+import { uploadMediaPipeline } from "@/lib/api/media";
+import { useMySubscriptionQuery } from "@/lib/admin/admin-subscription-hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -64,6 +68,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const identifier = resolvedParams.id;
   const { user } = useAuth();
+  const { data: subscriptionData } = useMySubscriptionQuery();
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicInvestorResponse | null>(null);
@@ -75,9 +80,28 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
 
   const [holdingFilter, setHoldingFilter] = useState<"ALL" | "ACTIVE" | "EXITED">("ALL");
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Pitch modal states
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
-  const [pitchMessage, setPitchMessage] = useState("");
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false);
   const [isSubmittingPitch, setIsSubmittingPitch] = useState(false);
+  const [startupName, setStartupName] = useState("");
+  const [pitchMessage, setPitchMessage] = useState("");
+  const [targetAsk, setTargetAsk] = useState("");
+  const [businessModel, setBusinessModel] = useState("");
+  const [pitchDeckType, setPitchDeckType] = useState<"URL" | "FILE">("URL");
+  const [deckUrl, setDeckUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [isUploadingDeck, setIsUploadingDeck] = useState(false);
+  const [deckUploadProgress, setDeckUploadProgress] = useState<number | null>(null);
+  const [deckUploadedFileName, setDeckUploadedFileName] = useState<string | null>(null);
+
+  const hasActiveSub =
+    subscriptionData?.status === "ACTIVE" ||
+    (user as any)?.userSubscription?.status === "ACTIVE" ||
+    user?.role === "ADMIN";
 
   useEffect(() => {
     async function fetchProfile() {
@@ -107,19 +131,98 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
     }
   };
 
-  const handleSendPitch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pitchMessage.trim()) {
-      toast.error("Please enter a short intro message or pitch brief.");
+  const handleOpenPitchModal = () => {
+    if (!user) {
+      toast.error("Please log in to pitch directly to verified investors.");
       return;
     }
-    setIsSubmittingPitch(true);
-    setTimeout(() => {
-      setIsSubmittingPitch(false);
+    if (!hasActiveSub) {
+      setIsSubModalOpen(true);
+      return;
+    }
+    setContactEmail(user.email || "");
+    setIsPitchModalOpen(true);
+  };
+
+  const handleDeckFileUpload = async (file: File) => {
+    const validExtensions = [".pdf", ".ppt", ".pptx"];
+    const ext = "." + file.name.split(".").pop()?.toLowerCase();
+    if (!validExtensions.includes(ext) && file.type !== "application/pdf") {
+      toast.error("Please upload a PDF or PowerPoint (.ppt, .pptx) file.");
+      return;
+    }
+
+    try {
+      setIsUploadingDeck(true);
+      setDeckUploadProgress(15);
+      const res = await uploadMediaPipeline(
+        file,
+        "PITCH_DECK",
+        (progress) => setDeckUploadProgress(Math.max(15, progress))
+      );
+      if (res.url) {
+        setDeckUrl(res.url);
+      } else {
+        setDeckUrl(`/api/v1/media/${res.id}/signed-url`);
+      }
+      setDeckUploadedFileName(file.name);
+      toast.success("Pitch deck securely uploaded to Private Cloudflare R2!");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to upload deck. Please try pasting a link instead.");
+    } finally {
+      setIsUploadingDeck(false);
+      setDeckUploadProgress(null);
+    }
+  };
+
+  const handleSendPitch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!data?.investor?.id) return;
+    if (!startupName.trim()) {
+      toast.error("Please enter your startup name.");
+      return;
+    }
+    if (!pitchMessage.trim()) {
+      toast.error("Please write an executive pitch summary or teaser message.");
+      return;
+    }
+
+    try {
+      setIsSubmittingPitch(true);
+      await createIntroRequest({
+        investorId: data.investor.id,
+        startupName: startupName.trim(),
+        pitchMessage: pitchMessage.trim(),
+        raisingAmount: targetAsk.trim() || undefined,
+        businessOverview: businessModel.trim() || undefined,
+        deckUrl: deckUrl.trim() || undefined,
+        websiteUrl: websiteUrl.trim() || undefined,
+        contactEmail: contactEmail.trim() || undefined,
+        contactPhone: contactPhone.trim() || undefined,
+        targetSector: data.investor.sectors?.[0] || undefined,
+        roundStage: data.investor.preferredStage || undefined,
+      });
+
+      toast.success("Pitch introduction successfully delivered to this investor!");
       setIsPitchModalOpen(false);
+      setStartupName("");
       setPitchMessage("");
-      toast.success("Your pitch introduction has been signaled to the investor!");
-    }, 900);
+      setTargetAsk("");
+      setBusinessModel("");
+      setDeckUrl("");
+      setDeckUploadedFileName(null);
+      setWebsiteUrl("");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || "Failed to send pitch intro.";
+      if (msg.includes("Subscription") || msg.includes("Pro")) {
+        setIsPitchModalOpen(false);
+        setIsSubModalOpen(true);
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setIsSubmittingPitch(false);
+    }
   };
 
   if (loading) {
@@ -326,7 +429,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                   <div className="flex items-center gap-2 pt-1 w-full sm:w-auto">
                     <button
                       type="button"
-                      onClick={() => setIsPitchModalOpen(true)}
+                      onClick={handleOpenPitchModal}
                       className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2.5 text-xs font-bold font-heading text-white backdrop-blur-md transition-all cursor-pointer"
                     >
                       <MessageSquare className="h-4 w-4 text-emerald-300" />
@@ -340,7 +443,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                           if (investor.linkedinUrl) {
                             window.open(investor.linkedinUrl, "_blank");
                           } else {
-                            setIsPitchModalOpen(true);
+                            handleOpenPitchModal();
                           }
                         }}
                         className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 px-5 py-2.5 text-xs font-black font-heading text-slate-950 shadow-lg transition-all cursor-pointer"
@@ -1143,21 +1246,22 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
       </main>
 
       {/* ============================================================== */}
-      {/* 4. MODAL: PITCH THIS INVESTOR                                  */}
+      {/* 4. MODAL: PITCH THIS INVESTOR (DUAL DECK + FULL INTRO)         */}
       {/* ============================================================== */}
       {isPitchModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative w-full max-w-xl my-8 rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
-                  <Send className="h-4 w-4" />
+                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-100">
+                  <Send className="h-5 w-5" />
                 </span>
                 <div>
                   <h3 className="text-base font-heading font-black text-slate-900">
                     Pitch to {investor.name}
                   </h3>
-                  <p className="text-xs text-slate-400 font-body">
+                  <p className="text-xs text-slate-500 font-body">
+                    {investor.designation ? `${investor.designation} · ` : ""}
                     {investor.companyName || "Direct Syndicate Lead"}
                   </p>
                 </div>
@@ -1174,28 +1278,201 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
             <form onSubmit={handleSendPitch} className="space-y-4">
               <div className="rounded-2xl bg-emerald-50/70 p-3.5 border border-emerald-200/60 text-xs text-emerald-950 space-y-1">
                 <span className="font-bold font-heading flex items-center gap-1.5 text-emerald-800">
-                  <Sparkles className="h-3.5 w-3.5" /> Investor Fit Snapshot
+                  <Sparkles className="h-3.5 w-3.5" /> Investor Thesis Snapshot
                 </span>
                 <p className="text-[11px] text-emerald-900/80 font-body">
-                  Targets: {investor.sectors?.join(", ") || "Tech & FinTech"} • Stage: {investor.preferredStage || "Seed – Series A"}
+                  Focus: {investor.sectors?.join(", ") || "General Tech & FinTech"} • Stages: {investor.preferredStage || "Seed – Series A"} • Ticket: {investor.preferredCurrency || "USD"} {investor.investmentRangeMin?.toLocaleString() || "25k"} - {investor.investmentRangeMax?.toLocaleString() || "500k"}
                 </p>
               </div>
 
+              {/* Startup Name & Target Ask */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                    Startup / Company Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={startupName}
+                    onChange={(e) => setStartupName(e.target.value)}
+                    placeholder="e.g. Acme AI, PayFlow"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                    Target Ask / Round Size
+                  </label>
+                  <input
+                    type="text"
+                    value={targetAsk}
+                    onChange={(e) => setTargetAsk(e.target.value)}
+                    placeholder="e.g. $750k Seed at $6M Cap"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                  />
+                </div>
+              </div>
+
+              {/* Business Model */}
               <div>
-                <label className="block text-xs font-bold font-heading text-slate-700 mb-1.5">
-                  Executive Teaser & Traction Summary
+                <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                  Business Model & Core Traction
                 </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={pitchMessage}
-                  onChange={(e) => setPitchMessage(e.target.value)}
-                  placeholder="Introduce your startup name, current MRR / traction, round size target, and why your team matches this investor's thesis..."
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs text-slate-800 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-body"
+                <input
+                  type="text"
+                  value={businessModel}
+                  onChange={(e) => setBusinessModel(e.target.value)}
+                  placeholder="e.g. B2B SaaS, $35k MRR, 18% MoM growth, 4 enterprise pilots"
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-2">
+              {/* Pitch Message */}
+              <div>
+                <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                  Executive Pitch Teaser <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={pitchMessage}
+                  onChange={(e) => setPitchMessage(e.target.value)}
+                  placeholder="Summarize the core problem, your proprietary edge, and why this investor is a strategic match..."
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                />
+              </div>
+
+              {/* Pitch Deck Selector (Paste Link vs Upload File) */}
+              <div className="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold font-heading text-slate-800">
+                    Pitch Deck (URL or Cloudflare Upload)
+                  </label>
+                  <div className="flex items-center rounded-xl bg-slate-200/80 p-0.5 text-[11px] font-bold font-heading">
+                    <button
+                      type="button"
+                      onClick={() => setPitchDeckType("URL")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        pitchDeckType === "URL"
+                          ? "bg-white text-emerald-900 shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      Paste URL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPitchDeckType("FILE")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        pitchDeckType === "FILE"
+                          ? "bg-white text-emerald-900 shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      Upload File (PDF/PPT)
+                    </button>
+                  </div>
+                </div>
+
+                {pitchDeckType === "URL" ? (
+                  <div>
+                    <input
+                      type="url"
+                      value={deckUrl}
+                      onChange={(e) => setDeckUrl(e.target.value)}
+                      placeholder="https://docsend.com/view/xxx or Google Drive link"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1 font-body">
+                      We support DocSend, Google Drive, Notion, or custom presentation links.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-4 text-center hover:border-emerald-500 transition-colors">
+                      <UploadCloud className="mx-auto h-7 w-7 text-slate-400" />
+                      <p className="text-xs font-bold text-slate-700 font-heading mt-1">
+                        Securely upload to Cloudflare Private R2
+                      </p>
+                      <p className="text-[11px] text-slate-400 font-body mb-2">
+                        Supported: PDF, PPT, PPTX (max 50MB)
+                      </p>
+
+                      <label className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-slate-800 cursor-pointer transition-all">
+                        <UploadCloud className="h-3.5 w-3.5" />
+                        <span>Choose Deck File</span>
+                        <input
+                          type="file"
+                          accept=".pdf,.ppt,.pptx,application/pdf"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) handleDeckFileUpload(e.target.files[0]);
+                          }}
+                          disabled={isUploadingDeck}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {deckUploadedFileName && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-900 font-heading">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />
+                          <span>{deckUploadedFileName}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeckUrl("");
+                              setDeckUploadedFileName(null);
+                            }}
+                            className="text-emerald-700 hover:text-emerald-950 ml-1 font-bold cursor-pointer"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
+
+                      {deckUploadProgress !== null && (
+                        <div className="w-full max-w-xs mx-auto bg-slate-200 h-1.5 rounded-full overflow-hidden mt-2">
+                          <div
+                            className="bg-emerald-600 h-full transition-all duration-300"
+                            style={{ width: `${deckUploadProgress}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Website & Contacts */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                    Website / Product Demo Link
+                  </label>
+                  <input
+                    type="url"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    placeholder="https://yourstartup.com"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold font-heading text-slate-700 mb-1">
+                    Contact Phone / WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="+1 555 123 4567"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-body"
+                  />
+                </div>
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsPitchModalOpen(false)}
@@ -1215,13 +1492,71 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                     </>
                   ) : (
                     <>
-                      <Send className="h-3.5 w-3.5" />
-                      <span>Send Pitch Introduction</span>
+                      <Send className="h-3.5 w-3.5 text-emerald-300" />
+                      <span>Send Direct Pitch</span>
                     </>
                   )}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* 5. MODAL: PRO SUBSCRIPTION REQUIREMENT MODAL                   */}
+      {/* ============================================================== */}
+      {isSubModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-amber-200 text-center space-y-4">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-amber-50 text-amber-600 border border-amber-200">
+              <Crown className="h-8 w-8" />
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full font-heading">
+                Pro Entitlement Required
+              </span>
+              <h3 className="text-xl font-heading font-black text-slate-900 mt-2">
+                Upgrade to Pitch Verified Investors
+              </h3>
+            </div>
+
+            <p className="text-xs text-slate-500 font-body leading-relaxed max-w-xs mx-auto">
+              Direct pitch submissions to accredited investors like <span className="font-bold text-slate-800">{investor.name}</span> are exclusively available on the Entrepreneur Pro plan.
+            </p>
+
+            <div className="rounded-2xl bg-slate-50 p-3.5 text-xs text-left space-y-2 border border-slate-100">
+              <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Unlimited direct pitch requests to all accredited LPs</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Cloudflare Private Vault signed document inspection</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Direct response SLA guaranteed within 72 hours</span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2">
+              <Link
+                href="/subscription?role=entrepreneur"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#064e3b] hover:bg-[#043d2e] py-3 text-xs font-bold font-heading text-white shadow-lg transition-all"
+              >
+                <Crown className="h-4 w-4 text-amber-300" />
+                <span>Upgrade to Entrepreneur Pro</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsSubModalOpen(false)}
+                className="text-xs font-bold font-heading text-slate-400 hover:text-slate-600 py-1 cursor-pointer"
+              >
+                Maybe later
+              </button>
+            </div>
           </div>
         </div>
       )}

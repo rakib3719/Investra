@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -23,6 +24,8 @@ import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { CreatePortfolioItemDto } from './dto/create-portfolio-item.dto';
 import { UpdateInvestorPortfolioMetaDto } from './dto/update-investor-portfolio-meta.dto';
 import { UpdatePortfolioItemDto } from './dto/update-portfolio-item.dto';
+import { CreateIntroRequestDto } from './dto/create-intro-request.dto';
+import { UpdateIntroStatusDto } from './dto/update-intro-status.dto';
 import { PortfolioService } from './portfolio.service';
 
 @ApiTags('Investor Portfolio')
@@ -143,4 +146,57 @@ export class PortfolioController {
       query,
     );
   }
+
+  @Post('intros')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCookieAuth('accessToken')
+  @ApiOperation({
+    summary: 'Submit a direct deal pitch / intro request to a verified investor (Requires Pro Subscription)',
+  })
+  @ApiResponse({ status: 201, description: 'Intro request sent successfully' })
+  async createIntroRequest(
+    @CurrentUser('id') userId: string,
+    @Body() dto: CreateIntroRequestDto,
+  ) {
+    return this.portfolioService.createIntroRequest(userId, dto);
+  }
+
+  @Get('intros/my-sent')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCookieAuth('accessToken')
+  @ApiOperation({
+    summary: 'View all introduction requests sent by the current entrepreneur',
+  })
+  async getMySentIntros(@CurrentUser('id') userId: string) {
+    return this.portfolioService.getEntrepreneurSentIntros(userId);
+  }
+
+  @Get('intros/incoming')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCookieAuth('accessToken')
+  @ApiOperation({
+    summary: 'View all incoming founder pitch introductions sent to this investor',
+  })
+  async getIncomingIntros(@CurrentUser('id') userId: string) {
+    return this.portfolioService.getInvestorIncomingIntros(userId);
+  }
+
+  @Patch('intros/:id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCookieAuth('accessToken')
+  @ApiOperation({
+    summary: 'Investor updates introduction request status (Accepted, Declined, Reviewed)',
+  })
+  async updateIntroStatus(
+    @CurrentUser('id') userId: string,
+    @Param('id') introId: string,
+    @Body() dto: UpdateIntroStatusDto,
+  ) {
+    return this.portfolioService.updateIntroStatus(userId, introId, dto);
+  }
 }
+

@@ -288,3 +288,106 @@ export async function listVerifiedInvestors(params?: {
   const raw: any = response.data;
   return raw?.data || raw;
 }
+
+export interface CreateIntroRequestPayload {
+  investorId: string;
+  startupName: string;
+  pitchMessage: string;
+  businessOverview?: string;
+  targetSector?: string;
+  roundStage?: string;
+  raisingAmount?: string;
+  deckUrl?: string;
+  websiteUrl?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+}
+
+export interface InvestorIntroRequestItem {
+  id: string;
+  entrepreneurId: string;
+  investorId: string;
+  investorProfileId?: string | null;
+  startupName: string;
+  pitchMessage: string;
+  businessOverview?: string | null;
+  targetSector?: string | null;
+  roundStage?: string | null;
+  raisingAmount?: string | null;
+  deckUrl?: string | null;
+  websiteUrl?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  status: 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'DECLINED';
+  investorFeedback?: string | null;
+  reviewedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  entrepreneur?: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    email: string;
+    image?: string | null;
+    country?: string | null;
+    city?: string | null;
+  };
+  investor?: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    email: string;
+    image?: string | null;
+  };
+  investorProfile?: {
+    id: string;
+    companyName?: string | null;
+    designation?: string | null;
+    headline?: string | null;
+    sectors?: string[];
+  };
+}
+
+/**
+ * 8. Create intro request (Entrepreneur -> Investor, requires subscription)
+ */
+export async function createIntroRequest(
+  payload: CreateIntroRequestPayload,
+): Promise<{ message: string; data: InvestorIntroRequestItem }> {
+  const response = await apiClient.post('/api/v1/investor/portfolio/intros', payload);
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
+/**
+ * 9. Get intros sent by entrepreneur
+ */
+export async function getMySentIntros(): Promise<{ total: number; data: InvestorIntroRequestItem[] }> {
+  const response = await apiClient.get('/api/v1/investor/portfolio/intros/my-sent');
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
+/**
+ * 10. Get incoming intros received by investor
+ */
+export async function getInvestorIncomingIntros(): Promise<{ total: number; data: InvestorIntroRequestItem[] }> {
+  const response = await apiClient.get('/api/v1/investor/portfolio/intros/incoming');
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
+/**
+ * 11. Investor updates intro status
+ */
+export async function updateIntroStatus(
+  id: string,
+  payload: { status: 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'DECLINED'; investorFeedback?: string },
+): Promise<{ message: string; data: InvestorIntroRequestItem }> {
+  const response = await apiClient.patch(`/api/v1/investor/portfolio/intros/${id}/status`, payload);
+  const raw: any = response.data;
+  return raw?.data || raw;
+}
+
