@@ -1,26 +1,365 @@
-import { ArrowRight, CalendarDays, CircleDollarSign, Download, FileText, Landmark, TrendingUp, WalletCards } from "lucide-react";
-import { MetricCard, Panel, ProgressBar, SectionHeading, StatusPill } from "../InvestorUI";
+"use client";
 
-const positions = [
-  { name: "Solstice Energy", sector: "Clean energy", stage: "Series B", invested: "$185,000", value: "$238,650", change: "+29.0%", progress: 72, next: "Q2 update · Jun 28" },
-  { name: "Impact Fund II", sector: "Diversified impact", stage: "Fund", invested: "$210,000", value: "$224,775", change: "+7.0%", progress: 54, next: "Distribution · Jul 15" },
-  { name: "AgriNova", sector: "Agriculture", stage: "Series A", invested: "$145,000", value: "$192,850", change: "+33.0%", progress: 81, next: "Board report · Jul 02" },
-  { name: "GreenBuild REIT", sector: "Real assets", stage: "Income", invested: "$120,000", value: "$124,875", change: "+4.1%", progress: 43, next: "Distribution · Jun 30" },
-];
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  CheckCircle2,
+  CircleDollarSign,
+  Clock,
+  Download,
+  ExternalLink,
+  FileText,
+  Landmark,
+  MessageSquare,
+  Plus,
+  Scale,
+  ShieldCheck,
+  TrendingUp,
+  User,
+  WalletCards,
+  XCircle,
+} from "lucide-react";
+import {
+  CommitmentsApi,
+  InvestmentCommitmentItem,
+  InvestorCommitmentsResponse,
+} from "@/lib/api/commitments";
+import { IssueTermSheetModal } from "@/components/deals/IssueTermSheetModal";
+import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { MetricCard, Panel, SectionHeading, StatusPill } from "../InvestorUI";
 
 export function InvestmentsPage() {
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-4"><div><h2 className="text-2xl font-bold text-slate-950">Your positions</h2><p className="mt-1 text-sm text-slate-500">Monitor performance, milestones, and upcoming events.</p></div><button type="button" className="inline-flex items-center gap-2 rounded-xl bg-[#065f46] px-4 py-2.5 text-xs font-bold text-white">Download statement <Download className="h-4 w-4" /></button></div>
-      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4"><MetricCard label="Active positions" value="12" detail="Across 7 sectors" change="2 added this year" icon={WalletCards} /><MetricCard label="Capital deployed" value="$1.07M" detail="85.6% of portfolio" change="$50K this quarter" icon={Landmark} /><MetricCard label="Next distribution" value="$6,850" detail="Expected Jun 30" change="GreenBuild REIT" trend="neutral" icon={CalendarDays} /><MetricCard label="Lifetime distributions" value="$25,220" detail="From 4 positions" change="18.2% year over year" icon={CircleDollarSign} /></div>
+  const [data, setData] = useState<InvestorCommitmentsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"ALL" | "ACCEPTED" | "PROPOSED">("ALL");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-      <div className="grid gap-5 xl:grid-cols-12">
-        <Panel className="p-5 sm:p-6 xl:col-span-8"><SectionHeading title="Active investments" description="Latest value and company progress" action={<div className="flex gap-2"><select className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"><option>All statuses</option><option>Active</option><option>Income</option></select><button type="button" className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600">Newest</button></div>} /><div className="mt-5 space-y-3">{positions.map((position) => <article key={position.name} className="rounded-xl border border-slate-100 p-4 transition hover:border-emerald-200 hover:shadow-sm"><div className="flex flex-wrap items-start justify-between gap-4"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-700"><TrendingUp className="h-5 w-5" /></span><div><h3 className="text-sm font-bold text-slate-800">{position.name}</h3><p className="text-xs text-slate-500">{position.sector} · {position.stage}</p></div></div><div className="flex items-center gap-5"><div className="text-right"><span className="block text-xs text-slate-500">Current value</span><strong className="text-sm text-slate-900">{position.value}</strong></div><StatusPill>{position.change}</StatusPill></div></div><div className="mt-4 grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-[1fr_auto]"><div><div className="mb-1.5 flex justify-between text-[11px]"><span className="font-semibold text-slate-500">Milestone progress</span><span className="font-bold text-slate-700">{position.progress}%</span></div><ProgressBar value={position.progress} /></div><div className="flex items-center gap-2 text-xs text-slate-500"><CalendarDays className="h-3.5 w-3.5" />{position.next}</div></div></article>)}</div></Panel>
-        <div className="space-y-5 xl:col-span-4">
-          <Panel className="p-5"><SectionHeading title="Upcoming events" action={<button type="button" className="text-xs font-bold text-emerald-700">Calendar</button>} /><div className="mt-4 space-y-4">{[{ date: "28", month: "JUN", title: "Solstice quarterly update", type: "Portfolio update" }, { date: "30", month: "JUN", title: "GreenBuild distribution", type: "Expected $6,850" }, { date: "02", month: "JUL", title: "AgriNova board report", type: "New document" }].map((event) => <div key={event.title} className="flex items-center gap-3"><span className="grid h-12 w-12 place-items-center rounded-xl bg-slate-50 text-center"><span><strong className="block text-sm text-slate-800">{event.date}</strong><span className="block text-[8px] font-bold text-emerald-700">{event.month}</span></span></span><span className="min-w-0"><strong className="block truncate text-sm text-slate-800">{event.title}</strong><span className="text-xs text-slate-500">{event.type}</span></span></div>)}</div></Panel>
-          <Panel className="p-5"><SectionHeading title="Documents" /><div className="mt-4 divide-y divide-slate-100">{["Investment confirmations", "Quarterly company updates", "Distribution notices"].map((document, index) => <button key={document} type="button" className="flex w-full items-center gap-3 py-3 text-left first:pt-0 last:pb-0"><span className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><FileText className="h-4 w-4" /></span><span className="flex-1 text-xs font-semibold text-slate-700">{document}</span><span className="text-[10px] text-slate-400">{index + 2} files</span><ArrowRight className="h-3.5 w-3.5 text-slate-400" /></button>)}</div></Panel>
+  async function fetchCommitments() {
+    setLoading(true);
+    try {
+      const res = await CommitmentsApi.getInvestorCommitments();
+      setData(res);
+    } catch (err) {
+      console.error("Failed to load investor commitments", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchCommitments();
+  }, []);
+
+  const commitments = data?.commitments || [];
+  const stats = data?.stats || {
+    totalDeployed: 0,
+    totalProposed: 0,
+    activePositionsCount: 0,
+    proposedOffersCount: 0,
+    totalOffersCount: 0,
+  };
+
+  const filteredCommitments = commitments.filter((c) => {
+    if (filter === "ACCEPTED") return c.status === "ACCEPTED";
+    if (filter === "PROPOSED") return c.status === "PROPOSED" || c.status === "NEGOTIATING";
+    return true;
+  });
+
+  const formattedDeployed = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(stats.totalDeployed);
+
+  const formattedProposed = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(stats.totalProposed);
+
+  return (
+    <div className="space-y-6">
+      {/* Top Controls */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 font-serif">
+            Investment Positions & Term Sheets
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Manage your committed venture capital, executed SAFE notes, and formal indicative term sheets.
+          </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition"
+        >
+          <Plus className="h-4 w-4" /> Issue New Term Sheet
+        </button>
       </div>
+
+      {/* KPI Metrics */}
+      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        <MetricCard
+          label="Active Investments"
+          value={String(stats.activePositionsCount)}
+          detail="Executed deals & SAFEs"
+          change={`${stats.totalOffersCount} lifetime issued`}
+          icon={WalletCards}
+        />
+        <MetricCard
+          label="Capital Deployed"
+          value={formattedDeployed}
+          detail="Active portfolio equity"
+          change="Cleared due diligence"
+          icon={Landmark}
+        />
+        <MetricCard
+          label="Pending Term Sheets"
+          value={formattedProposed}
+          detail={`${stats.proposedOffersCount} offers awaiting founder`}
+          change="Soft-committed pipeline"
+          trend="neutral"
+          icon={Scale}
+        />
+        <MetricCard
+          label="Total Diligence Flow"
+          value={String(stats.totalOffersCount)}
+          detail="Across verified startups"
+          change="Institutional grade"
+          icon={TrendingUp}
+        />
+      </div>
+
+      {/* Main Table / Cards */}
+      <Panel className="p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
+          <SectionHeading
+            title="Portfolio & Dealflow Positions"
+            description="Real-time status of capital allocations and term sheet covenants"
+          />
+
+          <div className="flex items-center gap-2">
+            {(["ALL", "ACCEPTED", "PROPOSED"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setFilter(tab)}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
+                  filter === tab
+                    ? "bg-[#064e3b] text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {tab === "ALL"
+                  ? `All (${commitments.length})`
+                  : tab === "ACCEPTED"
+                  ? `Active Portfolio (${stats.activePositionsCount})`
+                  : `Pending Offers (${stats.proposedOffersCount})`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="py-16 text-center">
+            <InvestraInlineLoader className="text-emerald-700" />
+            <p className="mt-3 text-xs text-slate-500">Loading investment positions...</p>
+          </div>
+        ) : filteredCommitments.length === 0 ? (
+          <div className="py-16 text-center space-y-3">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-800">
+              <Scale className="h-6 w-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">No investment commitments found</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              When you accept a founder&apos;s introduction or issue a formal term sheet, your capital position will be tracked here with milestone progression.
+            </p>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition"
+              >
+                <Plus className="h-4 w-4" /> Issue Your First Term Sheet
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-5 space-y-4">
+            {filteredCommitments.map((c) => {
+              const formattedAmt = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: c.currency || "USD",
+                maximumFractionDigits: 0,
+              }).format(c.amount);
+
+              const formattedVal = c.valuation
+                ? new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    maximumFractionDigits: 0,
+                  }).format(c.valuation)
+                : null;
+
+              const isAccepted = c.status === "ACCEPTED";
+              const isDeclined = c.status === "DECLINED";
+              const isNegotiating = c.status === "NEGOTIATING";
+
+              return (
+                <article
+                  key={c.id}
+                  className="rounded-2xl border border-slate-200/80 bg-white p-5 transition hover:border-emerald-300 hover:shadow-sm"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex items-center gap-3.5">
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-800 font-bold border border-emerald-100">
+                        <Building2 className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-base font-bold text-slate-900 font-serif">
+                            {c.startupName}
+                          </h3>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700">
+                            {c.instrument.replace("_", " ")}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Founder: {c.entrepreneur?.name} · Issued{" "}
+                          {new Date(c.issuedAt).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <span className="block text-[11px] font-semibold text-slate-400">
+                          Committed Ticket
+                        </span>
+                        <strong className="text-lg font-bold text-slate-900">
+                          {formattedAmt}
+                        </strong>
+                      </div>
+
+                      {isAccepted ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 text-xs font-bold">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                          <span>Active Investment</span>
+                        </span>
+                      ) : isDeclined ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 text-xs font-bold">
+                          <XCircle className="h-3.5 w-3.5 text-rose-600" />
+                          <span>Term Sheet Declined</span>
+                        </span>
+                      ) : isNegotiating ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 text-xs font-bold">
+                          <Clock className="h-3.5 w-3.5 text-blue-600" />
+                          <span>In Terms Negotiation</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 text-xs font-bold">
+                          <Clock className="h-3.5 w-3.5 text-amber-600" />
+                          <span>Awaiting Founder Response</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Valuation & Terms row */}
+                  <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3 text-xs">
+                    {formattedVal && (
+                      <div className="bg-slate-50 rounded-xl p-2.5">
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                          Valuation Cap
+                        </span>
+                        <span className="font-bold text-slate-800">{formattedVal}</span>
+                      </div>
+                    )}
+                    {c.equityPercentage && (
+                      <div className="bg-slate-50 rounded-xl p-2.5">
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                          Target Ownership
+                        </span>
+                        <span className="font-bold text-slate-800">{c.equityPercentage}%</span>
+                      </div>
+                    )}
+                    <div className="bg-slate-50 rounded-xl p-2.5 sm:col-span-1">
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                        Due Diligence Status
+                      </span>
+                      <span className="font-semibold text-emerald-800">
+                        {isAccepted ? "Executed · Legal Closing" : "Indicative Offer"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Terms Summary */}
+                  <div className="mt-3 rounded-xl bg-emerald-50/40 border border-emerald-100 p-3 text-xs text-slate-700">
+                    <strong className="block text-[11px] font-bold text-emerald-900 mb-0.5">
+                      Terms Summary:
+                    </strong>
+                    <p className="leading-5">{c.termsSummary}</p>
+                  </div>
+
+                  {/* Founder Feedback if responded */}
+                  {c.entrepreneurNotes && (
+                    <div className="mt-2.5 rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-xs text-slate-600 italic">
+                      <strong className="font-bold text-slate-800 not-italic mr-1.5">Founder Note:</strong>
+                      &ldquo;{c.entrepreneurNotes}&rdquo;
+                    </div>
+                  )}
+
+                  {/* Actions Bar */}
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                      <span>Encrypted term sheet & non-binding commitment</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {c.termSheetDocUrl && (
+                        <a
+                          href={c.termSheetDocUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                        >
+                          <Download className="h-3.5 w-3.5" /> Term Sheet PDF
+                        </a>
+                      )}
+
+                      <Link
+                        href="/dashboard/investor/messages"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" /> Open Deal Room Chat
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
+
+      {/* Modal to Issue New Term Sheet */}
+      <IssueTermSheetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          fetchCommitments();
+        }}
+      />
     </div>
   );
 }

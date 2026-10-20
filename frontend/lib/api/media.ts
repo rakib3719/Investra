@@ -11,7 +11,9 @@ export type MediaCategory =
   | 'VIDEO'
   | 'PORTFOLIO_DOCUMENT'
   | 'PORTFOLIO_CERTIFICATE'
-  | 'PORTFOLIO_VIDEO';
+  | 'PORTFOLIO_VIDEO'
+  | 'CHAT_ATTACHMENT'
+  | 'TERM_SHEET_DOCUMENT';
 
 export interface PresignedUploadResponse {
   mediaId: string;

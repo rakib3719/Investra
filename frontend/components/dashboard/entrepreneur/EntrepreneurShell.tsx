@@ -19,6 +19,7 @@ import {
   Users,
   CreditCard,
   GraduationCap,
+  MessageSquare,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -42,6 +43,7 @@ const navigation: {
   { section: "profile", label: "Company Profile", icon: User },
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
+  { section: "messages", label: "Deal Messages", icon: MessageSquare },
   { section: "analytics", label: "Analytics", icon: LineChart },
   { section: "courses", label: "My Courses", icon: GraduationCap },
   { section: "subscription", label: "Subscription", icon: CreditCard },

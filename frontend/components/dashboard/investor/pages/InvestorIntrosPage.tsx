@@ -22,6 +22,7 @@ import {
   MessageSquare,
   Phone,
   RefreshCw,
+  Scale,
   Search,
   Send,
   ShieldCheck,
@@ -38,12 +39,14 @@ import {
   type InvestorIntroRequestItem,
 } from "@/lib/api/portfolio";
 import { toast } from "@/lib/toast";
+import { IssueTermSheetModal } from "@/components/deals/IssueTermSheetModal";
 
 export function InvestorIntrosPage() {
   const [loading, setLoading] = useState(true);
   const [intros, setIntros] = useState<InvestorIntroRequestItem[]>([]);
   const [filterStatus, setFilterStatus] = useState<"ALL" | "PENDING" | "ACCEPTED" | "DECLINED">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [termSheetTargetIntro, setTermSheetTargetIntro] = useState<InvestorIntroRequestItem | null>(null);
 
   // Action modal
   const [activeIntro, setActiveIntro] = useState<InvestorIntroRequestItem | null>(null);
@@ -497,20 +500,38 @@ export function InvestorIntrosPage() {
                     </button>
                   </div>
                 ) : intro.status === "ACCEPTED" ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 text-xs font-bold font-heading">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                       <span>Pitch Accepted · Diligence Active</span>
                     </span>
+
+                    <Link
+                      href="/dashboard/investor/messages"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 text-xs font-bold font-heading transition-colors"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5" />
+                      <span>Open Deal Chat</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => setTermSheetTargetIntro(intro)}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] text-white px-3.5 py-1.5 text-xs font-bold font-heading shadow-xs transition-all cursor-pointer"
+                    >
+                      <Scale className="h-3.5 w-3.5 text-emerald-300" />
+                      <span>Issue Term Sheet</span>
+                    </button>
+
                     {intro.contactEmail && (
                       <a
                         href={`mailto:${intro.contactEmail}?subject=Next Steps: ${encodeURIComponent(
                           intro.startupName
                         )} & Investra Syndicate`}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] text-white px-3.5 py-1.5 text-xs font-bold font-heading shadow-xs transition-all"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-all"
                       >
-                        <Mail className="h-3.5 w-3.5" />
-                        <span>Email Founder</span>
+                        <Mail className="h-3.5 w-3.5 text-slate-400" />
+                        <span>Email</span>
                       </a>
                     )}
                   </div>
@@ -607,6 +628,22 @@ export function InvestorIntrosPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* 6. MODAL: ISSUE FORMAL TERM SHEET                              */}
+      {/* ============================================================== */}
+      {termSheetTargetIntro && (
+        <IssueTermSheetModal
+          isOpen={Boolean(termSheetTargetIntro)}
+          onClose={() => setTermSheetTargetIntro(null)}
+          defaultEntrepreneurId={termSheetTargetIntro.entrepreneurId}
+          defaultStartupName={termSheetTargetIntro.startupName}
+          defaultIntroRequestId={termSheetTargetIntro.id}
+          onSuccess={() => {
+            fetchIncomingIntros();
+          }}
+        />
       )}
 
     </div>

@@ -2,6 +2,7 @@ export const entrepreneurSections = [
   "overview",
   "campaigns",
   "matches",
+  "messages",
   "analytics",
   "courses",
   "subscription",
@@ -45,6 +46,12 @@ export const entrepreneurPageMeta: Record<
     eyebrow: "Deal flow & outreach",
     description:
       "Manage verified accredited investor conversations and diligence data rooms.",
+  },
+  messages: {
+    title: "Deal Rooms & Messages",
+    eyebrow: "Investor Communications",
+    description:
+      "Direct conversations and diligence rooms with verified investors reviewing your startup.",
   },
   analytics: {
     title: "Profile & Round Analytics",

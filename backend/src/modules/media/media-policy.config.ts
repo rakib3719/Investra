@@ -111,6 +111,35 @@ export const MEDIA_POLICY: Record<MediaCategory, CategoryPolicy> = {
     allowedExtensions: ['mp4', 'webm', 'mov'],
     keyPrefix: 'portfolio/videos',
   },
+  CHAT_ATTACHMENT: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 50 * 1024 * 1024, // 50 MB
+    allowedMimeTypes: [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/zip',
+      'application/x-zip-compressed',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+    ],
+    allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'zip', 'docx', 'doc'],
+    keyPrefix: 'chat/attachments',
+  },
+  TERM_SHEET_DOCUMENT: {
+    accessType: MediaAccessType.PRIVATE,
+    targetBucketEnv: 'R2_PRIVATE_BUCKET_NAME',
+    maxSizeBytes: 25 * 1024 * 1024, // 25 MB
+    allowedMimeTypes: [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+    ],
+    allowedExtensions: ['pdf', 'docx', 'doc'],
+    keyPrefix: 'commitments/termsheets',
+  },
 };
 
 /**

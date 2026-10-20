@@ -57,6 +57,11 @@ model User {
   payoutRequests      ConsultantPayout[]     @relation("ConsultantPayoutRequests")
   sentIntroRequests   InvestorIntroRequest[] @relation("SentIntroRequests")
   receivedIntroRequests InvestorIntroRequest[] @relation("ReceivedIntroRequests")
+  conversationsAsUser1 Conversation[]     @relation("ConversationUser1")
+  conversationsAsUser2 Conversation[]     @relation("ConversationUser2")
+  messagesSent         DirectMessage[]    @relation("SentMessages")
+  investorCommitments  InvestmentCommitment[] @relation("InvestorCommitments")
+  entrepreneurCommitments InvestmentCommitment[] @relation("EntrepreneurCommitments")
 
   @@map("users")
 }
@@ -393,6 +398,7 @@ model Business {
   milestones      CampaignMilestone[]
   pitchDecks      PitchDeck[]
   bookmarks       Bookmark[]
+  commitments     InvestmentCommitment[]
 
   @@index([categoryId, status])
   @@index([entrepreneurId])
@@ -485,6 +491,8 @@ enum MediaCategory {
   PORTFOLIO_DOCUMENT
   PORTFOLIO_CERTIFICATE
   PORTFOLIO_VIDEO
+  CHAT_ATTACHMENT
+  TERM_SHEET_DOCUMENT
 
   @@map("media_category")
 }
@@ -536,6 +544,8 @@ model MediaFile {
   verificationTinCertificate   UserVerification? @relation("VerificationTinCertificateMedia")
   portfolioItems               InvestorPortfolioItem[] @relation("PortfolioItemMedia")
   investorVideoIntro           InvestorProfile?        @relation("InvestorVideoIntroMedia")
+  messageAttachments           DirectMessage[]         @relation("MessageMedia")
+  commitmentTermSheets         InvestmentCommitment[]  @relation("CommitmentTermSheetMedia")
 
   @@index([uploadedById])
   @@index([category, status])
@@ -897,10 +907,117 @@ model InvestorIntroRequest {
   entrepreneur       User               @relation("SentIntroRequests", fields: [entrepreneurId], references: [id], onDelete: Cascade)
   investor           User               @relation("ReceivedIntroRequests", fields: [investorId], references: [id], onDelete: Cascade)
   investorProfile    InvestorProfile?   @relation(fields: [investorProfileId], references: [id], onDelete: SetNull)
+  conversations      Conversation[]
+  commitments        InvestmentCommitment[]
 
   @@index([investorId])
   @@index([entrepreneurId])
   @@index([status])
   @@map("investor_intro_requests")
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Conversation {
+  id                 String             @id @default(uuid()) @db.Uuid
+  introRequestId     String?            @map("intro_request_id") @db.Uuid
+  participant1Id     String             @map("participant1_id") @db.Uuid
+  participant2Id     String             @map("participant2_id") @db.Uuid
+  subject            String             @db.VarChar(255)
+  lastMessageAt      DateTime           @default(now()) @map("last_message_at") @db.Timestamp(6)
+  lastMessageText    String?            @map("last_message_text") @db.Text
+  unreadCountUser1   Int                @default(0) @map("unread_count_user1")
+  unreadCountUser2   Int                @default(0) @map("unread_count_user2")
+  status             ConversationStatus @default(ACTIVE)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  participant1       User               @relation("ConversationUser1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2       User               @relation("ConversationUser2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  introRequest       InvestorIntroRequest? @relation(fields: [introRequestId], references: [id], onDelete: SetNull)
+  messages           DirectMessage[]
+
+  @@index([participant1Id, lastMessageAt])
+  @@index([participant2Id, lastMessageAt])
+  @@index([introRequestId])
+  @@map("conversations")
+}
+
+model DirectMessage {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  senderId       String       @map("sender_id") @db.Uuid
+  content        String       @db.Text
+  mediaFileId    String?      @map("media_file_id") @db.Uuid
+  attachmentName String?      @map("attachment_name") @db.VarChar(255)
+  attachmentUrl  String?      @map("attachment_url") @db.VarChar(500)
+  isRead         Boolean      @default(false) @map("is_read")
+  readAt         DateTime?    @map("read_at") @db.Timestamp(6)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  mediaFile      MediaFile?   @relation("MessageMedia", fields: [mediaFileId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("direct_messages")
+}
+
+enum InvestmentInstrument {
+  EQUITY
+  SAFE
+  CONVERTIBLE_NOTE
+  DEBT
+  REVENUE_SHARE
+}
+
+enum CommitmentStatus {
+  DRAFT
+  PROPOSED
+  NEGOTIATING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+model InvestmentCommitment {
+  id                 String               @id @default(uuid()) @db.Uuid
+  investorId         String               @map("investor_id") @db.Uuid
+  entrepreneurId     String               @map("entrepreneur_id") @db.Uuid
+  businessId         String?              @map("business_id") @db.Uuid
+  introRequestId     String?              @map("intro_request_id") @db.Uuid
+  startupName        String               @map("startup_name") @db.VarChar(255)
+  amount             Decimal              @db.Decimal(14, 2)
+  currency           String               @default("USD") @db.VarChar(50)
+  instrument         InvestmentInstrument @default(SAFE)
+  valuation          Decimal?             @db.Decimal(14, 2)
+  equityPercentage   Decimal?             @map("equity_percentage") @db.Decimal(5, 2)
+  termSheetDocUrl    String?              @map("term_sheet_doc_url") @db.VarChar(500)
+  termSheetMediaId   String?              @map("term_sheet_media_id") @db.Uuid
+  termsSummary       String               @map("terms_summary") @db.Text
+  status             CommitmentStatus     @default(PROPOSED)
+  investorNotes      String?              @map("investor_notes") @db.Text
+  entrepreneurNotes  String?              @map("entrepreneur_notes") @db.Text
+  issuedAt           DateTime             @default(now()) @map("issued_at") @db.Timestamp(6)
+  respondedAt        DateTime?            @map("responded_at") @db.Timestamp(6)
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  investor           User                 @relation("InvestorCommitments", fields: [investorId], references: [id], onDelete: Cascade)
+  entrepreneur       User                 @relation("EntrepreneurCommitments", fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  business           Business?            @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  introRequest       InvestorIntroRequest? @relation(fields: [introRequestId], references: [id], onDelete: SetNull)
+  termSheetMedia     MediaFile?           @relation("CommitmentTermSheetMedia", fields: [termSheetMediaId], references: [id], onDelete: SetNull)
+
+  @@index([investorId, status])
+  @@index([entrepreneurId, status])
+  @@index([businessId])
+  @@index([introRequestId])
+  @@map("investment_commitments")
 }
 
