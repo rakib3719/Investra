@@ -61,6 +61,7 @@ export interface Campaign {
   title: string;
   slug: string;
   tagline?: string;
+  parentCompany?: string;
   pitchText: string;
   categoryId: string;
   stage: BusinessStage;
@@ -119,8 +120,10 @@ export interface PaginatedCampaigns {
 export interface CreateCampaignInput {
   title: string;
   tagline?: string;
+  parentCompany?: string;
   pitchText: string;
-  categoryId: string;
+  categoryId?: string;
+  customCategory?: string;
   stage?: BusinessStage;
   targetAmount: number;
   minInvestment: number;

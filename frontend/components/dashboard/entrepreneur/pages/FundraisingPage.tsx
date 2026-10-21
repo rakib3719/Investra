@@ -62,9 +62,11 @@ export function FundraisingPage() {
 
   // Form State - Basics
   const [title, setTitle] = useState("");
+  const [parentCompany, setParentCompany] = useState("");
   const [tagline, setTagline] = useState("");
   const [pitchText, setPitchText] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [customCategoryName, setCustomCategoryName] = useState("");
   const [stage, setStage] = useState<BusinessStage>("EARLY_STAGE");
   const [riskLevel, setRiskLevel] = useState<RiskLevel>("MEDIUM");
   const [impactMetric, setImpactMetric] = useState("");
@@ -91,19 +93,26 @@ export function FundraisingPage() {
 
   const addMilestoneMutation = useAddMilestoneMutation(selectedCampaignId || "");
 
-  const effectiveCategoryId = categoryId || (categories && categories[0]?.id) || "";
+  const isCustomCategory = categoryId === "__CUSTOM__";
+  const effectiveCategoryId = isCustomCategory
+    ? ""
+    : categoryId || (categories && categories[0]?.id) || "";
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const selectedCat = effectiveCategoryId;
-      if (!selectedCat) {
+      if (isCustomCategory) {
+        if (!customCategoryName.trim()) {
+          toast.error("Please specify your custom industry category.");
+          return;
+        }
+      } else if (!effectiveCategoryId) {
         toast.error("Please select a valid industry category.");
         return;
       }
 
       if (!title.trim()) {
-        toast.error("Company / Campaign title is required.");
+        toast.error("Company / Venture title is required.");
         return;
       }
 
@@ -115,8 +124,10 @@ export function FundraisingPage() {
       await createMutation.mutateAsync({
         title: title.trim(),
         tagline: tagline.trim() || undefined,
+        parentCompany: parentCompany.trim() || undefined,
         pitchText: pitchText.trim(),
-        categoryId: selectedCat,
+        categoryId: isCustomCategory ? undefined : effectiveCategoryId,
+        customCategory: isCustomCategory ? customCategoryName.trim() : undefined,
         stage,
         targetAmount: Number(targetAmount),
         minInvestment: Number(minInvestment),
@@ -143,8 +154,11 @@ export function FundraisingPage() {
 
   const resetForm = () => {
     setTitle("");
+    setParentCompany("");
     setTagline("");
     setPitchText("");
+    setCategoryId("");
+    setCustomCategoryName("");
     setBannerImage("");
     setCoverMediaId(undefined);
     setPitchDeckUrl("");
@@ -288,6 +302,11 @@ export function FundraisingPage() {
                         <StatusPill tone={statusTone}>
                           {camp.status.replace("_", " ")}
                         </StatusPill>
+                        {camp.parentCompany && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md border border-slate-200/80 font-heading" title="Mother / Legal Company">
+                            Parent: {camp.parentCompany}
+                          </span>
+                        )}
                         {camp.category?.name && (
                           <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200/60 font-heading">
                             {camp.category.name}
@@ -535,18 +554,40 @@ export function FundraisingPage() {
               {/* TAB 1: BASICS */}
               {activeTab === "basics" && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <div>
-                    <label className="mb-1.5 block text-[11px] font-bold text-slate-700 uppercase tracking-wider font-heading">
-                      Company / Venture Title *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Apex FinTech Core Banking API"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-1.5 block text-[11px] font-bold text-slate-700 uppercase tracking-wider font-heading">
+                        Company / Venture Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Apex FinTech or Cholo Ride"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      />
+                      <p className="mt-1 text-[10px] text-slate-400 font-body">
+                        Public name of the venture or startup project
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider font-heading">
+                        <span>Legal / Mother Company <span className="text-slate-400 font-normal lowercase">(optional)</span></span>
+                        <span className="text-[10px] text-slate-400 font-normal lowercase">leave blank if new idea</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Apex Technologies Ltd. or ABC Group"
+                        value={parentCompany}
+                        onChange={(e) => setParentCompany(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 placeholder:text-slate-400"
+                      />
+                      <p className="mt-1 text-[10px] text-slate-400 font-body">
+                        Registered trade entity if already incorporated
+                      </p>
+                    </div>
                   </div>
 
                   <div>
@@ -568,7 +609,7 @@ export function FundraisingPage() {
                         Industry Category *
                       </label>
                       <select
-                        value={effectiveCategoryId}
+                        value={categoryId || effectiveCategoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
                         required
                         className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
@@ -582,7 +623,24 @@ export function FundraisingPage() {
                         ) : (
                           <option value="">Loading categories...</option>
                         )}
+                        <option value="__CUSTOM__">➕ Other (Custom Category)</option>
                       </select>
+
+                      {isCustomCategory && (
+                        <div className="mt-2 animate-in fade-in duration-200">
+                          <label className="mb-1 block text-[10px] font-bold text-emerald-800 uppercase tracking-wider font-heading">
+                            Specify Custom Category *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. EdTech, Handicrafts, Mobility..."
+                            value={customCategoryName}
+                            onChange={(e) => setCustomCategoryName(e.target.value)}
+                            className="w-full rounded-xl border border-emerald-300 bg-emerald-50/50 px-3.5 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 placeholder:text-slate-400"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>

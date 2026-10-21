@@ -22,12 +22,20 @@ export class CreateCampaignDto {
   tagline?: string;
 
   @IsString()
+  @IsOptional()
+  parentCompany?: string;
+
+  @IsString()
   @IsNotEmpty()
   pitchText: string;
 
   @IsUUID()
-  @IsNotEmpty()
-  categoryId: string;
+  @IsOptional()
+  categoryId?: string;
+
+  @IsString()
+  @IsOptional()
+  customCategory?: string;
 
   @IsEnum(BusinessStage)
   @IsOptional()

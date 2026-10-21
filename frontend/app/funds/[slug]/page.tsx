@@ -215,6 +215,13 @@ export default function CampaignDetailPage() {
                 {campaign.title}
               </h1>
 
+              {campaign.parentCompany && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 text-emerald-200 border border-white/10 text-xs font-semibold font-heading">
+                  <Building2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Legal / Parent Entity: <strong className="text-white font-bold">{campaign.parentCompany}</strong></span>
+                </div>
+              )}
+
               <p className="text-slate-300 text-base md:text-lg font-body leading-relaxed max-w-2xl">
                 {campaign.tagline || campaign.pitchText.slice(0, 160)}
               </p>

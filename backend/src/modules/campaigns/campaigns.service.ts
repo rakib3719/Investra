@@ -109,14 +109,60 @@ export class CampaignsService {
 
     const slug = await this.generateUniqueSlug(dto.title);
 
+    // Resolve category (either existing categoryId or custom category name)
+    let finalCategoryId = dto.categoryId;
+
+    if (dto.customCategory && dto.customCategory.trim()) {
+      const catName = dto.customCategory.trim();
+      const baseSlug = catName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "category";
+
+      let existingCat = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { name: { equals: catName, mode: "insensitive" } },
+            { slug: { equals: baseSlug, mode: "insensitive" } },
+          ],
+        },
+      });
+
+      if (!existingCat) {
+        let uniqueSlug = baseSlug;
+        const slugExists = await this.prisma.category.findUnique({
+          where: { slug: uniqueSlug },
+        });
+        if (slugExists) {
+          uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
+        }
+
+        existingCat = await this.prisma.category.create({
+          data: {
+            name: catName,
+            slug: uniqueSlug,
+            status: "ACTIVE",
+            createdBy: entrepreneurId,
+          },
+        });
+      }
+
+      finalCategoryId = existingCat.id;
+    }
+
+    if (!finalCategoryId) {
+      throw new BadRequestException("Industry category is required.");
+    }
+
     return this.prisma.business.create({
       data: {
         entrepreneurId,
         title: dto.title,
         slug,
         tagline: dto.tagline,
+        parentCompany: dto.parentCompany?.trim() || null,
         pitchText: dto.pitchText,
-        categoryId: dto.categoryId,
+        categoryId: finalCategoryId,
         stage: dto.stage,
         targetAmount: dto.targetAmount,
         minInvestment: dto.minInvestment,
@@ -184,13 +230,57 @@ export class CampaignsService {
       pitchDeckTitle,
       pitchDeckMediaId,
       isPitchDeckConfidential,
+      customCategory,
       ...businessData
     } = dto;
+
+    let finalCategoryId = businessData.categoryId;
+    if (customCategory && customCategory.trim()) {
+      const catName = customCategory.trim();
+      const baseSlug = catName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "category";
+
+      let existingCat = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { name: { equals: catName, mode: "insensitive" } },
+            { slug: { equals: baseSlug, mode: "insensitive" } },
+          ],
+        },
+      });
+
+      if (!existingCat) {
+        let uniqueSlug = baseSlug;
+        const slugExists = await this.prisma.category.findUnique({
+          where: { slug: uniqueSlug },
+        });
+        if (slugExists) {
+          uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
+        }
+
+        existingCat = await this.prisma.category.create({
+          data: {
+            name: catName,
+            slug: uniqueSlug,
+            status: "ACTIVE",
+            createdBy: userId,
+          },
+        });
+      }
+
+      finalCategoryId = existingCat.id;
+    }
 
     const updated = await this.prisma.business.update({
       where: { id: campaignId },
       data: {
         ...businessData,
+        ...(finalCategoryId ? { categoryId: finalCategoryId } : {}),
+        ...(businessData.parentCompany !== undefined
+          ? { parentCompany: businessData.parentCompany?.trim() || null }
+          : {}),
       },
       include: {
         category: true,

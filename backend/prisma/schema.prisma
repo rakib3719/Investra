@@ -369,6 +369,7 @@ model Business {
   title           String              @db.VarChar(255)
   slug            String              @unique @db.VarChar(255)
   tagline         String?             @db.VarChar(500)
+  parentCompany   String?             @map("parent_company") @db.VarChar(255)
   pitchText       String              @map("pitch_text") @db.Text
   categoryId      String              @map("category_id") @db.Uuid
   stage           BusinessStage       @default(IDEA)
