@@ -166,7 +166,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
         setDeckUrl(`/api/v1/media/${res.id}/signed-url`);
       }
       setDeckUploadedFileName(file.name);
-      toast.success("Pitch deck securely uploaded to Private Cloudflare R2!");
+      toast.success("Pitch deck securely uploaded to Private Vault!");
     } catch (err: any) {
       toast.error(err?.message || "Failed to upload deck. Please try pasting a link instead.");
     } finally {
@@ -240,7 +240,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
             Verifying Investor Credentials...
           </h3>
           <p className="text-xs text-slate-500 font-body mt-1 max-w-sm">
-            Fetching verified track record, Cloudflare Private Vault documents, and portfolio analytics.
+            Fetching verified track record, secure document vault, and portfolio analytics.
           </p>
         </main>
         <Footer />
@@ -706,7 +706,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                   </li>
                   <li className="flex items-start gap-2.5">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Cloudflare Private Storage Encrypted Certificate Vault</span>
+                    <span>Encrypted Document & Certificate Vault</span>
                   </li>
                 </ul>
               </div>
@@ -911,7 +911,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                               Unlock Full Investment Performance & IRR Multiples
                             </h4>
                             <p className="text-xs text-slate-600 font-body max-w-xl">
-                              Active Entrepreneur Pro subscribers gain unredacted access to historical MOIC multiples, exact ticket allocations, and verified Cloudflare Private Vault audit documents.
+                              Active Entrepreneur Pro subscribers gain unredacted access to historical MOIC multiples, exact ticket allocations, and verified private audit documents.
                             </p>
                           </div>
                         </div>
@@ -1044,10 +1044,10 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                           </span>
                           <div className="space-y-1">
                             <h4 className="text-sm font-heading font-black text-slate-900">
-                              Cloudflare Private Vault Encrypted Documents
+                              Encrypted Private Vault Documents
                             </h4>
                             <p className="text-xs text-slate-600 font-body max-w-xl">
-                              Official verification licenses and signed CFA/SEC attestations are stored in Cloudflare Private R2 Storage. Unlock Pro to download verified files.
+                              Official verification licenses and signed CFA/SEC attestations are stored in encrypted private vault storage. Unlock Pro to download verified files.
                             </p>
                           </div>
                         </div>
@@ -1347,7 +1347,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
               <div className="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-3.5 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold font-heading text-slate-800">
-                    Pitch Deck (URL or Cloudflare Upload)
+                    Pitch Deck (URL or File Upload)
                   </label>
                   <div className="flex items-center rounded-xl bg-slate-200/80 p-0.5 text-[11px] font-bold font-heading">
                     <button
@@ -1393,7 +1393,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
                     <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-4 text-center hover:border-emerald-500 transition-colors">
                       <UploadCloud className="mx-auto h-7 w-7 text-slate-400" />
                       <p className="text-xs font-bold text-slate-700 font-heading mt-1">
-                        Securely upload to Cloudflare Private R2
+                        Securely upload to Private Vault
                       </p>
                       <p className="text-[11px] text-slate-400 font-body mb-2">
                         Supported: PDF, PPT, PPTX (max 50MB)
@@ -1533,7 +1533,7 @@ export default function InvestorProfileViewPage({ params }: PageProps) {
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>Cloudflare Private Vault signed document inspection</span>
+                <span>Private Vault signed document inspection</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />

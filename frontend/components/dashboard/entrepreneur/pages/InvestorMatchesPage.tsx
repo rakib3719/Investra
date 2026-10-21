@@ -1435,7 +1435,7 @@ export function InvestorMatchesPage() {
                         <UploadCloud className="h-5 w-5" />
                       </div>
                       <p className="text-xs font-bold font-heading text-slate-800 mt-1">
-                        {isUploadingDeck ? "Uploading to Cloudflare R2 Vault..." : "Drop Pitch Deck PDF/PPTX here"}
+                        {isUploadingDeck ? "Uploading to Secure Vault..." : "Drop Pitch Deck PDF/PPTX here"}
                       </p>
                       <p className="text-[10px] text-slate-400 font-body">
                         PDF or PowerPoint up to 50MB. Stored securely and delivered to this investor.
@@ -1588,7 +1588,7 @@ export function InvestorMatchesPage() {
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>Cloudflare Private Vault signed document inspection</span>
+                <span>Private Vault signed document inspection</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />

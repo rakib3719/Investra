@@ -143,7 +143,7 @@ export function InvestorOverviewPage() {
                 Entrepreneurs are pitching your syndicate thesis
               </h3>
               <p className="text-xs text-slate-300 font-body leading-relaxed">
-                Verified founders have submitted executive summaries, check size targets, and direct Cloudflare R2 pitch decks for your evaluation.
+                Verified founders have submitted executive summaries, check size targets, and direct pitch deck presentations for your evaluation.
               </p>
             </div>
 
@@ -258,7 +258,7 @@ export function InvestorOverviewPage() {
                   Public Dossier & Portfolio
                 </p>
                 <p className="text-[11px] text-slate-500 font-body mt-0.5">
-                  Manage track record, investment thesis, and Cloudflare vault files.
+                  Manage track record, investment thesis, and verified vault files.
                 </p>
               </div>
             </div>

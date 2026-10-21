@@ -44,7 +44,7 @@ export const adminPageMeta: Record<
     title: "Identity & KYC Moderation Vault",
     eyebrow: "Compliance Audit",
     description:
-      "Inspect government documents, passports, and selfie liveness proofs stored in encrypted Cloudflare R2 private storage.",
+      "Inspect government documents, passports, and selfie liveness proofs stored in encrypted private compliance storage.",
   },
   "pending-users": {
     title: "Pending & Incomplete Users Queue",

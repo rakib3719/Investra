@@ -68,7 +68,7 @@ export function IssueTermSheetModal({
       const confirmed = await uploadMediaPipeline(file, "TERM_SHEET_DOCUMENT");
       setTermSheetDocUrl(confirmed.url || "");
       setDocFileName(file.name);
-      toast.success("Term sheet document securely uploaded to Cloudflare R2");
+      toast.success("Term sheet document securely uploaded to vault");
     } catch (err: any) {
       toast.error(err?.message || "Failed to upload document");
     } finally {
@@ -264,7 +264,7 @@ export function IssueTermSheetModal({
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
               <label className="flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50/50 px-4 py-2.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100/60 cursor-pointer transition">
                 <Upload className="h-4 w-4" />
-                {isUploadingDoc ? "Encrypting & Uploading to R2..." : "Upload Term Sheet PDF"}
+                {isUploadingDoc ? "Encrypting & Uploading Document..." : "Upload Term Sheet PDF"}
                 <input
                   type="file"
                   accept="application/pdf"

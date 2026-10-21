@@ -817,7 +817,7 @@ export function FundraisingPage() {
                         onUploadSuccess={(media: ConfirmedMediaResponse) => {
                           setCoverMediaId(media.id);
                           if (media.url) setBannerImage(media.url);
-                          toast.success("Cover image uploaded to Cloudflare vault!");
+                          toast.success("Cover image uploaded successfully!");
                         }}
                       />
                       <div className="flex items-center gap-2">

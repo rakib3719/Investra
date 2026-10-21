@@ -262,9 +262,9 @@ export function PortfolioPage() {
 
       setUploadProgress(100);
       setItemMediaFileId(uploadedMedia.id);
-      toast.success("File securely uploaded to Cloudflare Private Vault!");
+      toast.success("File securely uploaded to Private Vault!");
     } catch (err: any) {
-      toast.error(err?.message || "Cloudflare R2 upload failed. Please try again.");
+      toast.error(err?.message || "File upload failed. Please try again.");
       setItemUploadedFileName(null);
       setItemMediaFileId(null);
     } finally {
@@ -441,7 +441,7 @@ export function PortfolioPage() {
             </h1>
 
             <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-xl font-body">
-              Manage your backed startups, upload verified accreditations to Cloudflare Private Vault,
+              Manage your backed startups, upload verified accreditations to Private Vault,
               and articulate your investment thesis. Founders inspect this portfolio during diligence.
             </p>
           </div>
@@ -653,7 +653,7 @@ export function PortfolioPage() {
               {stats.certificationsCount}
             </h4>
             <p className="text-[11px] text-slate-400 font-body mt-0.5">
-              Cloudflare Private Vault certificates
+              Private Vault certificates
             </p>
           </div>
         </div>
@@ -833,7 +833,7 @@ export function PortfolioPage() {
                 {item.signedDocumentUrl && (
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50/70 rounded-2xl p-2.5 border border-emerald-200/60 font-heading">
                     <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span className="truncate">Cloudflare Vault Attached</span>
+                    <span className="truncate">Verified Vault Attached</span>
                     <a
                       href={item.signedDocumentUrl}
                       target="_blank"
@@ -1150,7 +1150,7 @@ export function PortfolioPage() {
                       onChange={(e) => setItemVideoProvider(e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 outline-none focus:border-emerald-600 font-heading"
                     >
-                      <option value="R2_PRIVATE">Cloudflare Private Video Storage (Encrypted)</option>
+                      <option value="R2_PRIVATE">Direct Video Upload (Encrypted)</option>
                       <option value="YOUTUBE">YouTube Video Link</option>
                       <option value="VIMEO">Vimeo Link</option>
                       <option value="LOOM">Loom Link</option>
@@ -1180,7 +1180,7 @@ export function PortfolioPage() {
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold font-heading text-slate-800 flex items-center gap-1.5">
                       <Lock className="h-4 w-4 text-emerald-700" />
-                      <span>Cloudflare Private Storage Upload</span>
+                      <span>Secure Private Storage Upload</span>
                     </label>
                     <span className="text-[10px] font-bold text-slate-400 uppercase font-heading">
                       Dual-Bucket Encrypted Vault
@@ -1207,7 +1207,7 @@ export function PortfolioPage() {
 
                     <div className="mt-2 space-y-1">
                       <p className="text-xs font-bold font-heading text-slate-800">
-                        {isUploading ? "Uploading to Cloudflare R2..." : "Drag & drop file here, or browse"}
+                        {isUploading ? "Uploading file securely..." : "Drag & drop file here, or browse"}
                       </p>
                       <p className="text-[11px] text-slate-400 font-body">
                         PDF, JPG, PNG, MP4 up to 50MB. Files are strictly protected and never publicly accessible.

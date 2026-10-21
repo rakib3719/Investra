@@ -607,12 +607,12 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Course Thumbnail (Direct Cloudflare R2 Upload)
+                  Course Thumbnail Image
                 </label>
                 <FileUploadDropzone
                   category="CAMPAIGN_COVER"
                   label="Upload Course Thumbnail (JPEG, PNG, WebP up to 10MB)"
-                  description="Directly uploads to Cloudflare R2 with live progress."
+                  description="Uploads directly to secure media vault with live progress."
                   currentMedia={
                     courseForm.thumbnailUrl
                       ? {
@@ -624,7 +624,7 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
                   onUploadSuccess={(media) => {
                     if (media.url) {
                       setCourseForm((prev) => ({ ...prev, thumbnailUrl: media.url as string }));
-                      toast.success("Thumbnail uploaded directly to Cloudflare R2!");
+                      toast.success("Thumbnail uploaded successfully!");
                     }
                   }}
                   onRemove={() => {
@@ -804,7 +804,7 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
                     onChange={(e) => setLessonForm({ ...lessonForm, videoProvider: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none bg-white"
                   >
-                    <option value="HTML5">Direct MP4 / Cloudflare R2</option>
+                    <option value="HTML5">Direct Video Upload (MP4)</option>
                     <option value="YOUTUBE">YouTube Video</option>
                     <option value="VIMEO">Vimeo</option>
                   </select>
@@ -827,13 +827,13 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
               {lessonForm.videoProvider === "HTML5" ? (
                 <div className="space-y-3">
                   <label className="block text-xs font-bold text-slate-700">
-                    Lesson Video (Direct Cloudflare R2 Upload)
+                    Lesson Video File
                   </label>
                   <FileUploadDropzone
                     category="VIDEO"
                     accept="video/mp4,video/webm"
                     label="Upload Lesson Video (MP4 or WebM up to 100MB)"
-                    description="Uploads directly to Cloudflare R2 with progress."
+                    description="Uploads directly to secure media vault with live progress."
                     currentMedia={
                       lessonForm.videoUrl
                         ? {
@@ -845,7 +845,7 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
                     onUploadSuccess={(media) => {
                       if (media.url) {
                         setLessonForm((prev) => ({ ...prev, videoUrl: media.url as string }));
-                        toast.success("Lesson video uploaded to Cloudflare R2!");
+                        toast.success("Lesson video uploaded successfully!");
                       }
                     }}
                     onRemove={() => {
@@ -860,7 +860,7 @@ export function ConsultantCoursesPage({ user }: { user: AuthUser }) {
                       type="text"
                       value={lessonForm.videoUrl}
                       onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                      placeholder="https://...mp4 or Cloudflare R2 URL"
+                      placeholder="https://...mp4 or direct video URL"
                       className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs focus:border-emerald-600 focus:outline-none"
                     />
                   </div>

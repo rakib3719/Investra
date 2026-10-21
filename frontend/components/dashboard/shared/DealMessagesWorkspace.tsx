@@ -651,7 +651,7 @@ export function DealMessagesWorkspace({
 
                 <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-slate-400">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                  End-to-end encrypted deal room. Files stored in secure Cloudflare R2 vault.
+                  End-to-end encrypted deal room. Files stored in secure private vault.
                 </div>
 
                 <form onSubmit={handleSendMessage} className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white p-2 focus-within:border-emerald-600">

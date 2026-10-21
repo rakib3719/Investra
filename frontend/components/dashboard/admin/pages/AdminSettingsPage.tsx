@@ -132,7 +132,7 @@ export function AdminSettingsPage({ user }: { user: AuthUser }) {
                   <Server className="h-4 w-4 text-sky-600" />
                   Backend Framework
                 </span>
-                <span className="font-bold text-slate-900">NestJS 10 + Prisma ORM</span>
+                <span className="font-bold text-slate-900">Secure Core API Engine</span>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
