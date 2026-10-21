@@ -29,6 +29,8 @@ import type { Campaign, RiskLevel } from "@/lib/campaigns/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { ConnectFounderModal, type ConnectFounderTarget } from "@/components/deals/ConnectFounderModal";
 import { CompareFloatingDock, type DockDeal } from "@/components/deals/CompareFloatingDock";
+import { useSubscriptionGate } from "@/lib/auth/useSubscriptionGate";
+import { SubscriptionRequiredModal } from "@/components/auth/SubscriptionRequiredModal";
 
 const fallbackCampaigns: Campaign[] = [
   {
@@ -96,6 +98,28 @@ export default function InvestmentFundsDirectory() {
   const [page, setPage] = useState<number>(1);
   const [activeConnectCampaign, setActiveConnectCampaign] = useState<ConnectFounderTarget | null>(null);
   const [compareDeals, setCompareDeals] = useState<DockDeal[]>([]);
+
+  // Subscription Gate for directory connections
+  const {
+    isSubscribed,
+    isModalOpen: isSubGateOpen,
+    gateContext: subGateContext,
+    executeWithSubscriptionGate,
+    closeModal: closeSubGate,
+  } = useSubscriptionGate();
+
+  const handleOpenConnect = (camp: Campaign) => {
+    executeWithSubscriptionGate(
+      () => setActiveConnectCampaign(camp),
+      {
+        title: "Investor Subscription Required",
+        actionName: "connect with startup founders",
+        description:
+          "Connecting directly with venture founders and opening private deal room conversations requires an active Investor subscription.",
+        targetRole: "investor",
+      }
+    );
+  };
 
   const { data: bookmarkIds = [] } = useBookmarkIdsQuery();
   const toggleBookmark = useToggleBookmarkMutation();
@@ -385,8 +409,8 @@ export default function InvestmentFundsDirectory() {
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
-                            onClick={() => setActiveConnectCampaign(camp)}
-                            className="inline-flex items-center gap-1 text-xs font-bold font-heading text-slate-700 hover:text-emerald-800 bg-slate-100 hover:bg-emerald-50 px-2.5 py-1.5 rounded-lg transition-colors"
+                            onClick={() => handleOpenConnect(camp)}
+                            className="inline-flex items-center gap-1 text-xs font-bold font-heading text-slate-700 hover:text-emerald-800 bg-slate-100 hover:bg-emerald-50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
                           >
                             <Handshake className="w-3.5 h-3.5" /> Connect
                           </button>
@@ -411,6 +435,16 @@ export default function InvestmentFundsDirectory() {
             isOpen={Boolean(activeConnectCampaign)}
             onClose={() => setActiveConnectCampaign(null)}
             campaign={activeConnectCampaign}
+          />
+
+          {/* Subscription Gate Modal */}
+          <SubscriptionRequiredModal
+            isOpen={isSubGateOpen}
+            onClose={closeSubGate}
+            title={subGateContext.title}
+            actionName={subGateContext.actionName}
+            description={subGateContext.description}
+            targetRole="investor"
           />
 
           {/* Pagination Controls */}

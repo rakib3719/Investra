@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -68,8 +69,28 @@ export class CreateCampaignDto {
   @IsOptional()
   bannerImage?: string;
 
+  @IsUUID()
+  @IsOptional()
+  coverMediaId?: string;
+
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   gallery?: string[];
+
+  @IsString()
+  @IsOptional()
+  pitchDeckUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  pitchDeckTitle?: string;
+
+  @IsUUID()
+  @IsOptional()
+  pitchDeckMediaId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isPitchDeckConfidential?: boolean;
 }

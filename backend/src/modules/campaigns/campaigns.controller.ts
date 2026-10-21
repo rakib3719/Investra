@@ -17,6 +17,7 @@ import { CreateMilestoneDto } from "./dto/create-milestone.dto";
 import { UpdateCampaignStatusDto } from "./dto/update-campaign-status.dto";
 import { CampaignQueryDto } from "./dto/campaign-query.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { OptionalJwtAuthGuard } from "../auth/guards/optional-jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -42,6 +43,7 @@ export class CampaignsController {
   }
 
   @Get("campaigns/:slug")
+  @UseGuards(OptionalJwtAuthGuard)
   getCampaignBySlug(
     @Param("slug") slug: string,
     @CurrentUser("id") userId?: string,

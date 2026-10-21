@@ -275,6 +275,28 @@ export class MessagesService {
     });
 
     if (!conversation) {
+      // Check subscription requirement if sender is an Investor
+      const sender = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, role: true },
+      });
+
+      if (sender?.role === 'INVESTOR') {
+        const activeSub = await this.prisma.userSubscription.findFirst({
+          where: {
+            userId,
+            status: 'ACTIVE',
+            currentPeriodEnd: { gte: new Date() },
+          },
+        });
+
+        if (!activeSub) {
+          throw new ForbiddenException(
+            'Active Investor Subscription Required. An active subscription is required to connect with startup founders and initiate deal room discussions.',
+          );
+        }
+      }
+
       conversation = await this.prisma.conversation.create({
         data: {
           participant1Id: userId,
