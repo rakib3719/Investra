@@ -87,27 +87,30 @@ const Testimonials = () => {
         }
       `}} />
 
-      <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] space-y-8">
+      <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] space-y-[34px]">
         
-        {/* Top Grid: Testimonial cards & sidebar stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        {/* Top Grid: Golden Ratio Split (1.618fr : 1fr) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.618fr_1fr] gap-[26px] lg:gap-[34px] items-stretch">
           
-          {/* Left Large Card (2/3 width) */}
-          <div className="lg:col-span-8 bg-white rounded-[32px] p-8 md:p-10 shadow-xs border border-slate-100 flex flex-col md:grid md:grid-cols-12 gap-8 overflow-hidden items-center">
+          {/* Left Large Card (61.8% of available space) */}
+          <div className="bg-white rounded-[26px] p-[26px] md:p-[34px] shadow-xs border border-slate-200/80 flex flex-col md:grid md:grid-cols-[1fr_1.382fr] gap-[26px] overflow-hidden items-center">
             
             {/* Left Card Content Column */}
-            <div className="md:col-span-5 space-y-6 flex flex-col justify-center h-full">
-              <h2 className="text-3xl md:text-[38px] font-heading font-black text-slate-900 leading-tight">
-                Trusted By Over <span className="text-[#064e3b]">1300+</span> Loyal Clients
+            <div className="space-y-[21px] flex flex-col justify-center h-full">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#064e3b] font-heading">
+                Client Testimonials • Real Impact
+              </span>
+              <h2 className="text-[34px] md:text-[42px] font-heading font-black text-slate-900 leading-[1.15]">
+                Trusted By Over <span className="text-[#064e3b]">1,300+</span> Loyal Clients
               </h2>
-              <p className="text-xs md:text-sm text-slate-500 leading-relaxed font-body">
+              <p className="text-[13px] md:text-[14px] text-slate-500 leading-[24px] font-body">
                 Our investors&apos; trust is built on regulatory compliance, risk-managed yields, and verified environmental footprint indicators.
               </p>
               
               <div>
                 <a
                   href="/contact"
-                  className="inline-flex items-center gap-2 bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-6 py-3.5 rounded-xl transition-all duration-300 font-heading shadow-xs hover:shadow-md"
+                  className="inline-flex items-center gap-2 bg-[#064e3b] hover:bg-[#043c2e] text-white text-[13px] font-bold px-[26px] py-[13px] rounded-[10px] transition-all duration-300 font-heading shadow-xs hover:shadow-md cursor-pointer"
                 >
                   <span>Contact Us</span>
                   <ArrowRight className="w-4 h-4 text-white" />
@@ -116,7 +119,7 @@ const Testimonials = () => {
             </div>
 
             {/* Right Card Vertical Scrolling Testimonials Columns */}
-            <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 h-[400px] w-full overflow-hidden relative select-none pointer-events-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] h-[400px] w-full overflow-hidden relative select-none pointer-events-auto">
               
               {/* Fade Overlay Top/Bottom */}
               <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
@@ -218,21 +221,21 @@ const Testimonials = () => {
 
           </div>
 
-          {/* Right Cards Stack (1/3 width) */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
+          {/* Right Cards Stack (38.2% of available space) */}
+          <div className="flex flex-col gap-[21px]">
             
             {/* Top Stack Card: Ratings */}
-            <div className="bg-white rounded-[32px] p-8 shadow-xs border border-slate-100 flex flex-col justify-between flex-1 min-h-[180px]">
-              <div className="space-y-2">
-                <h3 className="text-5xl font-heading font-black text-slate-900">4.80</h3>
+            <div className="bg-white rounded-[26px] p-[26px] md:p-[34px] shadow-xs border border-slate-200/80 flex flex-col justify-between flex-1 min-h-[180px]">
+              <div className="space-y-[8px]">
+                <h3 className="text-[42px] md:text-[55px] font-heading font-black text-slate-900 leading-none">4.80</h3>
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-xs text-slate-500 font-body">2,568 Reviews and counting</p>
+                <p className="text-[12px] text-slate-500 font-body">2,568 Reviews and counting</p>
               </div>
-              <div className="flex gap-4 pt-6 text-slate-400">
+              <div className="flex gap-[16px] pt-[21px] text-slate-400">
                 <FaApple className="w-6 h-6 hover:text-slate-800 transition-colors" />
                 <FaGoogle className="w-5.5 h-5.5 hover:text-slate-800 transition-colors" />
                 <FaYoutube className="w-6 h-6 hover:text-slate-800 transition-colors" />
@@ -240,13 +243,13 @@ const Testimonials = () => {
             </div>
 
             {/* Bottom Stack Card: Group Cooperation */}
-            <div className="bg-[#064e3b] rounded-[32px] p-8 shadow-xs border border-transparent flex flex-col justify-between flex-1 min-h-[180px] text-white">
+            <div className="bg-[#064e3b] rounded-[26px] p-[26px] md:p-[34px] shadow-xs border border-transparent flex flex-col justify-between flex-1 min-h-[180px] text-white">
               <div>
-                <h3 className="text-xl md:text-2xl font-heading font-black text-white leading-tight">
+                <h3 className="text-[21px] md:text-[26px] font-heading font-black text-white leading-tight">
                   Group <br /> Cooperation
                 </h3>
               </div>
-              <div className="flex items-center gap-2 pt-6">
+              <div className="flex items-center gap-2 pt-[21px]">
                 {/* Overlapping Avatars */}
                 <div className="flex -space-x-3.5 overflow-hidden">
                   <img
