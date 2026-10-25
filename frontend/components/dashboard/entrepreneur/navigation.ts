@@ -5,6 +5,7 @@ export const entrepreneurSections = [
   "messages",
   "analytics",
   "courses",
+  "consultations",
   "subscription",
   "profile",
   "kyc",
@@ -64,6 +65,12 @@ export const entrepreneurPageMeta: Record<
     eyebrow: "Founder Education",
     description:
       "Watch video masterclasses, learn term sheet negotiations, and track syllabus completion.",
+  },
+  consultations: {
+    title: "1-on-1 Consultations",
+    eyebrow: "Live Advisory",
+    description:
+      "View your booked 1-on-1 expert advisory sessions and join video meeting rooms.",
   },
   subscription: {
     title: "Subscription & Limits",

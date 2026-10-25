@@ -62,6 +62,9 @@ model User {
   messagesSent         DirectMessage[]    @relation("SentMessages")
   investorCommitments  InvestmentCommitment[] @relation("InvestorCommitments")
   entrepreneurCommitments InvestmentCommitment[] @relation("EntrepreneurCommitments")
+  consultantSlots         ConsultantSlot[]       @relation("ConsultantSlots")
+  consultantBookings      ConsultationBooking[]  @relation("ConsultantReceivedBookings")
+  clientBookings          ConsultationBooking[]  @relation("ClientSessionBookings")
 
   @@map("users")
 }
@@ -183,6 +186,7 @@ model ConsultantProfile {
   courseFee          Decimal?           @map("course_fee") @db.Decimal
   averageRating      Decimal?           @map("average_rating") @db.Decimal
   totalReviews       Int?               @map("total_reviews")
+  defaultMeetingLink String?            @map("default_meeting_link") @db.VarChar(500)
   profileVisibility  Boolean?           @map("profile_visibility")
   verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
@@ -1021,4 +1025,74 @@ model InvestmentCommitment {
   @@index([introRequestId])
   @@map("investment_commitments")
 }
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  CANCELLED
+
+  @@map("slot_status")
+}
+
+enum ConsultationBookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+
+  @@map("consultation_booking_status")
+}
+
+model ConsultantSlot {
+  id              String        @id @default(uuid()) @db.Uuid
+  consultantId    String        @map("consultant_id") @db.Uuid
+  slotDate        DateTime      @map("slot_date") @db.Date
+  startTime       String        @map("start_time") @db.VarChar(10)
+  endTime         String        @map("end_time") @db.VarChar(10)
+  durationMinutes Int           @default(60) @map("duration_minutes")
+  status          SlotStatus    @default(AVAILABLE)
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  consultant      User          @relation("ConsultantSlots", fields: [consultantId], references: [id], onDelete: Cascade)
+  booking         ConsultationBooking?
+
+  @@unique([consultantId, slotDate, startTime])
+  @@index([consultantId, slotDate])
+  @@index([status])
+  @@map("consultant_slots")
+}
+
+model ConsultationBooking {
+  id                 String                    @id @default(uuid()) @db.Uuid
+  slotId             String                    @unique @map("slot_id") @db.Uuid
+  consultantId       String                    @map("consultant_id") @db.Uuid
+  clientId           String                    @map("client_id") @db.Uuid
+  topic              String                    @db.VarChar(255)
+  clientNotes        String?                   @map("client_notes") @db.Text
+  status             ConsultationBookingStatus @default(CONFIRMED)
+  meetingPlatform    String                    @default("GOOGLE_MEET") @map("meeting_platform") @db.VarChar(50)
+  meetingLink        String                    @map("meeting_link") @db.VarChar(500)
+  grossAmount        Decimal                   @map("gross_amount") @db.Decimal(12, 2)
+  platformFeeRate    Decimal                   @default(0.10) @map("platform_fee_rate") @db.Decimal(5, 4)
+  platformFeeAmount  Decimal                   @map("platform_fee_amount") @db.Decimal(12, 2)
+  consultantEarnings Decimal                   @map("consultant_earnings") @db.Decimal(12, 2)
+  currency           String                    @default("USD") @db.VarChar(50)
+  paymentProvider    String                    @default("STRIPE") @map("payment_provider") @db.VarChar(50)
+  transactionId      String?                   @unique @map("transaction_id") @db.VarChar(255)
+  isPaid             Boolean                   @default(true) @map("is_paid")
+  paidAt             DateTime?                 @default(now()) @map("paid_at") @db.Timestamp(6)
+  createdAt          DateTime                  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime                  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  slot               ConsultantSlot            @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  consultant         User                      @relation("ConsultantReceivedBookings", fields: [consultantId], references: [id], onDelete: Cascade)
+  client             User                      @relation("ClientSessionBookings", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([consultantId])
+  @@index([clientId])
+  @@index([status])
+  @@map("consultation_bookings")
+}
+
 

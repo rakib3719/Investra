@@ -17,9 +17,10 @@ import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorks
 import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 import { UserSubscriptionDashboardView } from "@/components/dashboard/shared/UserSubscriptionDashboardView";
 import { MyCoursesPage } from "@/components/dashboard/shared/MyCoursesPage";
+import { MyConsultationsPage } from "@/components/dashboard/shared/MyConsultationsPage";
 
 const sectionComponents: Record<
-  Exclude<EntrepreneurSection, "settings" | "profile" | "kyc" | "subscription" | "courses">,
+  Exclude<EntrepreneurSection, "settings" | "profile" | "kyc" | "subscription" | "courses" | "consultations">,
   ComponentType
 > = {
   overview: EntrepreneurOverviewPage,
@@ -53,6 +54,8 @@ export function EntrepreneurWorkspace({
     content = <UserSubscriptionDashboardView user={user} />;
   } else if (activeSection === "courses") {
     content = <MyCoursesPage user={user} />;
+  } else if (activeSection === "consultations") {
+    content = <MyConsultationsPage user={user} />;
   } else {
     const SectionComponent = sectionComponents[activeSection];
     content = <SectionComponent />;

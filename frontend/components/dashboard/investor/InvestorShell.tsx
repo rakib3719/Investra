@@ -24,6 +24,7 @@ import {
   User,
   WalletCards,
   GraduationCap,
+  Video,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -47,6 +48,7 @@ const baseNavigation: { section: InvestorSection; label: string; icon: LucideIco
   { section: "opportunities", label: "Opportunities", icon: Compass },
   { section: "impact", label: "Impact", icon: Leaf },
   { section: "courses", label: "My Courses", icon: GraduationCap },
+  { section: "consultations", label: "Consultations", icon: Video },
   { section: "reports", label: "Reports", icon: FileBarChart },
   { section: "watchlist", label: "Watchlist", icon: Bookmark, badge: "6" },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "3" },

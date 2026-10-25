@@ -8,6 +8,7 @@ import {
   buildVerificationEmail,
   buildPasswordResetEmail,
   buildPasswordChangedEmail,
+  buildSessionBookingEmail,
 } from './templates';
 
 @Injectable()
@@ -96,6 +97,65 @@ export class MailService {
       text: template.text,
       html: template.html,
     });
+  }
+
+  async sendSessionBookingEmails(payload: {
+    clientEmail: string;
+    clientName: string;
+    consultantEmail: string;
+    consultantName: string;
+    topic: string;
+    dateStr: string;
+    timeStr: string;
+    durationMinutes: number;
+    meetingLink: string;
+    meetingPlatform: string;
+    amount: string;
+  }): Promise<void> {
+    const clientTemplate = buildSessionBookingEmail({
+      recipientName: payload.clientName,
+      isConsultant: false,
+      clientName: payload.clientName,
+      consultantName: payload.consultantName,
+      topic: payload.topic,
+      dateStr: payload.dateStr,
+      timeStr: payload.timeStr,
+      durationMinutes: payload.durationMinutes,
+      meetingLink: payload.meetingLink,
+      meetingPlatform: payload.meetingPlatform,
+      amount: payload.amount,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    const consultantTemplate = buildSessionBookingEmail({
+      recipientName: payload.consultantName,
+      isConsultant: true,
+      clientName: payload.clientName,
+      consultantName: payload.consultantName,
+      topic: payload.topic,
+      dateStr: payload.dateStr,
+      timeStr: payload.timeStr,
+      durationMinutes: payload.durationMinutes,
+      meetingLink: payload.meetingLink,
+      meetingPlatform: payload.meetingPlatform,
+      amount: payload.amount,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    await Promise.allSettled([
+      this.send({
+        to: payload.clientEmail,
+        subject: clientTemplate.subject,
+        text: clientTemplate.text,
+        html: clientTemplate.html,
+      }),
+      this.send({
+        to: payload.consultantEmail,
+        subject: consultantTemplate.subject,
+        text: consultantTemplate.text,
+        html: consultantTemplate.html,
+      }),
+    ]);
   }
 
   private async send(message: {

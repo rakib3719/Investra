@@ -19,6 +19,7 @@ import {
   Users,
   CreditCard,
   GraduationCap,
+  Video,
   MessageSquare,
   X,
   type LucideIcon,
@@ -46,6 +47,7 @@ const navigation: {
   { section: "messages", label: "Deal Messages", icon: MessageSquare },
   { section: "analytics", label: "Analytics", icon: LineChart },
   { section: "courses", label: "My Courses", icon: GraduationCap },
+  { section: "consultations", label: "Consultations", icon: Video },
   { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];

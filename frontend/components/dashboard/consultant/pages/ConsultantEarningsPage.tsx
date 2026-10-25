@@ -261,6 +261,87 @@ export function ConsultantEarningsPage({ user }: { user: AuthUser }) {
         </div>
       ) : null}
 
+      {/* Revenue Stream Breakdown (Courses vs 1-on-1 Sessions) */}
+      {data && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Courses Stream */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+                <h3 className="font-heading font-bold text-base text-slate-900">
+                  Course Studio Revenue
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full">
+                {(data as any)?.breakdown?.courses?.count || data.recentSales?.length || 0} Enrollments
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs">
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Gross Sales</span>
+                <span className="font-bold text-slate-800">
+                  ${(data as any)?.breakdown?.courses?.gross !== undefined ? Number((data as any).breakdown.courses.gross).toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Admin (10%)</span>
+                <span className="font-bold text-slate-500">
+                  ${(data as any)?.breakdown?.courses?.platformFee !== undefined ? Number((data as any).breakdown.courses.platformFee).toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Your Net (90%)</span>
+                <span className="font-bold text-emerald-700">
+                  ${(data as any)?.breakdown?.courses?.netEarnings !== undefined ? Number((data as any).breakdown.courses.netEarnings).toFixed(2) : "0.00"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sessions Stream */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <h3 className="font-heading font-bold text-base text-slate-900">
+                  1-on-1 Sessions Revenue
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full">
+                {(data as any)?.breakdown?.sessions?.count || (data as any)?.recentSessions?.length || 0} Sessions
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs">
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Gross Sales</span>
+                <span className="font-bold text-slate-800">
+                  ${(data as any)?.breakdown?.sessions?.gross !== undefined ? Number((data as any).breakdown.sessions.gross).toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Admin (10%)</span>
+                <span className="font-bold text-slate-500">
+                  ${(data as any)?.breakdown?.sessions?.platformFee !== undefined ? Number((data as any).breakdown.sessions.platformFee).toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Your Net (90%)</span>
+                <span className="font-bold text-emerald-700">
+                  ${(data as any)?.breakdown?.sessions?.netEarnings !== undefined ? Number((data as any).breakdown.sessions.netEarnings).toFixed(2) : "0.00"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Payout History & Recent Sales Grids */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Payout Requests */}
@@ -360,6 +441,44 @@ export function ConsultantEarningsPage({ user }: { user: AuthUser }) {
           </div>
         </div>
       </div>
+
+      {/* 1-on-1 Session Earnings Ledger */}
+      {(data as any)?.recentSessions && (data as any).recentSessions.length > 0 && (
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-heading text-lg font-bold text-slate-900">
+                1-on-1 Session Ledger &amp; Earnings
+              </h3>
+              <p className="text-xs text-slate-500">
+                Individual advisory consultations conducted and paid (90% creator disbursement).
+              </p>
+            </div>
+            <Clock className="h-5 w-5 text-emerald-600" />
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {(data as any).recentSessions.map((sess: any) => (
+              <div key={sess.id} className="py-3.5 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <h4 className="font-bold text-slate-900 text-sm">{sess.topic}</h4>
+                  <p className="text-xs text-slate-500">
+                    Client: <span className="font-semibold text-slate-700">{sess.clientName}</span> • {sess.time} on {new Date(sess.date).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="text-left sm:text-right">
+                  <div className="font-bold text-emerald-700 text-sm">
+                    +${Number(sess.consultantEarnings).toFixed(2)}
+                  </div>
+                  <div className="text-[10px] text-slate-400">
+                    Gross: ${Number(sess.grossAmount).toFixed(2)} • 10% Fee (${Number(sess.platformFee).toFixed(2)})
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* WITHDRAWAL REQUEST MODAL */}
       {isWithdrawModalOpen && data && (

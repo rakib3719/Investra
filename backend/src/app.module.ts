@@ -19,6 +19,7 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { CommitmentsModule } from './modules/commitments/commitments.module';
+import { ConsultationsModule } from './modules/consultations/consultations.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CommitmentsModule } from './modules/commitments/commitments.module';
     PortfolioModule,
     MessagesModule,
     CommitmentsModule,
+    ConsultationsModule,
   ],
   controllers: [AppController],
   providers: [

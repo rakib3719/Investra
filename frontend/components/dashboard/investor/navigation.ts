@@ -9,6 +9,7 @@ export const investorSections = [
   "watchlist",
   "messages",
   "courses",
+  "consultations",
   "subscription",
   "profile",
   "kyc",
@@ -82,6 +83,11 @@ export const investorPageMeta: Record<
     title: "My Courses & Masterclasses",
     eyebrow: "Enrolled Curriculum",
     description: "Access your enrolled video tutorials, track syllabus progress, and resume playback.",
+  },
+  consultations: {
+    title: "1-on-1 Consultations",
+    eyebrow: "Live Advisory",
+    description: "View your booked 1-on-1 expert advisory sessions and join video meeting rooms.",
   },
   subscription: {
     title: "Subscription & Entitlements",

@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { coursesApi } from "@/lib/courses/courses-api";
+import { BookSessionModal } from "@/components/consultants/BookSessionModal";
 
 interface Consultant {
   id: string;
@@ -336,56 +337,12 @@ export default function ConsultantMarketplacePage() {
           ))}
         </div>
 
-        {/* Checkout Modal */}
+        {/* Real-time Interactive Booking Modal */}
         {selectedConsultant && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-6 relative border border-slate-100">
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#10b981]">
-                    Session Checkout
-                  </span>
-                  <h3 className="font-heading font-black text-xl text-slate-800">
-                    Book {selectedConsultant.type} Session
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setSelectedConsultant(null)}
-                  className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-4">
-                <img src={selectedConsultant.avatar} alt={selectedConsultant.name} className="w-12 h-12 rounded-xl object-cover" />
-                <div>
-                  <h4 className="font-heading font-bold text-sm text-slate-800">{selectedConsultant.name}</h4>
-                  <p className="text-xs text-slate-500">{selectedConsultant.topic}</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-2">
-                <button
-                  onClick={() => {
-                    alert(`Booking requested for ${selectedConsultant.name}! Directing to payment gateway...`);
-                    setSelectedConsultant(null);
-                  }}
-                  className="w-full bg-[#064e3b] hover:bg-[#043c2e] text-white font-heading font-bold py-3 rounded-xl text-xs transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <DollarSign className="w-4 h-4 text-[#10b981]" />
-                  <span>Proceed to Payment ({selectedConsultant.hourlyRate})</span>
-                </button>
-
-                <button
-                  onClick={() => setSelectedConsultant(null)}
-                  className="w-full bg-slate-100 text-slate-600 font-heading font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
+          <BookSessionModal
+            consultant={selectedConsultant}
+            onClose={() => setSelectedConsultant(null)}
+          />
         )}
 
       </main>

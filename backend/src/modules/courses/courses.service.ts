@@ -1074,7 +1074,7 @@ export class CoursesService {
   async getConsultantEarnings(consultantId: string) {
     await this.ensureConsultantVerified(consultantId);
 
-    const [payments, payouts] = await Promise.all([
+    const [payments, sessionBookings, payouts] = await Promise.all([
       this.prisma.coursePayment.findMany({
         where: { consultantId, status: 'PAID' },
         orderBy: { createdAt: 'desc' },
@@ -1085,24 +1085,54 @@ export class CoursesService {
           },
         },
       }),
+      this.prisma.consultationBooking.findMany({
+        where: { consultantId, isPaid: true },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          slot: true,
+          client: {
+            select: { firstName: true, lastName: true, email: true },
+          },
+        },
+      }),
       this.prisma.consultantPayout.findMany({
         where: { consultantId },
         orderBy: { createdAt: 'desc' },
       }),
     ]);
 
-    const totalGrossSales = payments.reduce(
+    // Courses calculations
+    const coursesGross = payments.reduce(
       (sum, p) => sum + Number(p.grossAmount),
       0,
     );
-    const platformFees = payments.reduce(
+    const coursesPlatformFee = payments.reduce(
       (sum, p) => sum + Number(p.platformFeeAmount),
       0,
     );
-    const netEarnings = payments.reduce(
+    const coursesNet = payments.reduce(
       (sum, p) => sum + Number(p.consultantEarnings),
       0,
     );
+
+    // Sessions calculations
+    const sessionsGross = sessionBookings.reduce(
+      (sum, b) => sum + Number(b.grossAmount),
+      0,
+    );
+    const sessionsPlatformFee = sessionBookings.reduce(
+      (sum, b) => sum + Number(b.platformFeeAmount),
+      0,
+    );
+    const sessionsNet = sessionBookings.reduce(
+      (sum, b) => sum + Number(b.consultantEarnings),
+      0,
+    );
+
+    // Combined Totals
+    const totalGrossSales = coursesGross + sessionsGross;
+    const platformFees = coursesPlatformFee + sessionsPlatformFee;
+    const netEarnings = coursesNet + sessionsNet;
 
     const totalPaidOut = payouts
       .filter((p) => p.status === PayoutStatus.PAID || p.status === PayoutStatus.APPROVED)
@@ -1125,6 +1155,32 @@ export class CoursesService {
         payoutRate: '90%',
         platformFeeRate: '10%',
       },
+      breakdown: {
+        courses: {
+          count: payments.length,
+          gross: Number(coursesGross.toFixed(2)),
+          platformFee: Number(coursesPlatformFee.toFixed(2)),
+          netEarnings: Number(coursesNet.toFixed(2)),
+        },
+        sessions: {
+          count: sessionBookings.length,
+          gross: Number(sessionsGross.toFixed(2)),
+          platformFee: Number(sessionsPlatformFee.toFixed(2)),
+          netEarnings: Number(sessionsNet.toFixed(2)),
+        },
+      },
+      recentSessions: sessionBookings.map((b) => ({
+        id: b.id,
+        topic: b.topic,
+        clientName: `${b.client.firstName || ''} ${b.client.lastName || ''}`.trim() || b.client.email,
+        date: b.slot.slotDate,
+        time: `${b.slot.startTime} - ${b.slot.endTime}`,
+        meetingLink: b.meetingLink,
+        grossAmount: Number(b.grossAmount),
+        platformFee: Number(b.platformFeeAmount),
+        consultantEarnings: Number(b.consultantEarnings),
+        createdAt: b.createdAt,
+      })),
       recentSales: payments.slice(0, 15).map((p) => ({
         id: p.id,
         courseTitle: p.course.title,

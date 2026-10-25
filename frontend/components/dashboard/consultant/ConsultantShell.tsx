@@ -51,7 +51,7 @@ const navigation: {
   { section: "advisory", label: "Advisory work", icon: Handshake },
   { section: "deal-room", label: "Deal room", icon: BriefcaseBusiness },
   { section: "reports", label: "Reports", icon: FileBarChart },
-  { section: "calendar", label: "Calendar", icon: CalendarDays },
+  { section: "calendar", label: "1-on-1 Sessions", icon: CalendarDays },
   { section: "messages", label: "Messages", icon: MessageSquare, badge: "2" },
   { section: "settings", label: "Settings", icon: Settings },
 ];
