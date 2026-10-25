@@ -19,7 +19,10 @@ import { CampaignQueryDto } from "./dto/campaign-query.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { OptionalJwtAuthGuard } from "../auth/guards/optional-jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
+import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
+import { Permissions } from "../auth/decorators/permissions.decorator";
+import { AdminPermission } from "../../common/enums/admin-permission.enum";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { CsrfOriginGuard } from "../../common/guards/csrf-origin.guard";
 
@@ -119,8 +122,9 @@ export class CampaignsController {
   }
 
   @Get("admin/campaigns")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.CAMPAIGN_MANAGEMENT)
   getAdminCampaigns(
     @Query("status") status?: CampaignStatus,
     @Query("page") page?: number,
@@ -130,8 +134,9 @@ export class CampaignsController {
   }
 
   @Patch("admin/campaigns/:id/status")
-  @UseGuards(JwtAuthGuard, RolesGuard, CsrfOriginGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard, CsrfOriginGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.CAMPAIGN_MANAGEMENT)
   updateCampaignStatus(
     @Param("id") campaignId: string,
     @Body() dto: UpdateCampaignStatusDto,

@@ -12,9 +12,12 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { AdminPermission } from '../../common/enums/admin-permission.enum';
 import { KycService } from './kyc.service';
 import { SubmitKycDto } from './dto/submit-kyc.dto';
 import { ReviewKycDto } from './dto/review-kyc.dto';
@@ -48,8 +51,9 @@ export class KycController {
   // --- ADMIN & SUB_ADMIN Moderation Endpoints ---
 
   @Get('admin/submissions')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.KYC_MODERATION)
   @ApiOperation({ summary: 'Admin: List KYC verification submissions with filtering' })
   @ApiResponse({ status: 200, description: 'List of submissions returned' })
   async listKycSubmissions(@Query() query: KycListQueryDto) {
@@ -57,8 +61,9 @@ export class KycController {
   }
 
   @Get('admin/submissions/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.KYC_MODERATION)
   @ApiOperation({ summary: 'Admin: Get KYC verification submission by ID with secure signed document preview URLs' })
   @ApiResponse({ status: 200, description: 'KYC details with private R2 signed URLs' })
   async getKycSubmissionById(
@@ -69,8 +74,9 @@ export class KycController {
   }
 
   @Patch('admin/submissions/:id/review')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.KYC_MODERATION)
   @ApiOperation({ summary: 'Admin: Approve, reject, or mark under review for a KYC submission' })
   @ApiResponse({ status: 200, description: 'KYC submission reviewed successfully' })
   async reviewKycSubmission(

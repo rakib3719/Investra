@@ -34,13 +34,16 @@ function DashboardContent() {
   useEffect(() => {
     if (!user) return;
 
-    const correctRole = params.role === user.role.toLowerCase();
+    const isAdminOrSubAdmin = user.role === "ADMIN" || user.role === "SUB_ADMIN";
+    const expectedRole = isAdminOrSubAdmin ? "admin" : user.role.toLowerCase();
+    const correctRole = params.role === expectedRole;
+
     const sectionAllowed =
       user.role === "INVESTOR"
         ? validInvestorSection
         : user.role === "ENTREPRENEUR"
           ? validEntrepreneurSection
-          : user.role === "ADMIN"
+          : isAdminOrSubAdmin
             ? validAdminSection
             : user.role === "CONSULTANT"
               ? validConsultantSection
@@ -60,16 +63,19 @@ function DashboardContent() {
     validConsultantSection,
   ]);
 
+  const isAdminOrSubAdmin = user?.role === "ADMIN" || user?.role === "SUB_ADMIN";
+  const expectedRole = isAdminOrSubAdmin ? "admin" : user?.role.toLowerCase();
+
   if (
     !user ||
-    params.role !== user.role.toLowerCase() ||
+    params.role !== expectedRole ||
     (user.role === "INVESTOR" && !validInvestorSection) ||
     (user.role === "ENTREPRENEUR" && !validEntrepreneurSection) ||
-    (user.role === "ADMIN" && !validAdminSection) ||
+    (isAdminOrSubAdmin && !validAdminSection) ||
     (user.role === "CONSULTANT" && !validConsultantSection) ||
-    (user.role !== "INVESTOR" &&
+    (!isAdminOrSubAdmin &&
+      user.role !== "INVESTOR" &&
       user.role !== "ENTREPRENEUR" &&
-      user.role !== "ADMIN" &&
       user.role !== "CONSULTANT" &&
       section)
   ) {
@@ -92,7 +98,7 @@ function DashboardContent() {
     );
   }
 
-  if (user.role === "ADMIN") {
+  if (user.role === "ADMIN" || user.role === "SUB_ADMIN") {
     return (
       <AdminWorkspace
         user={user}

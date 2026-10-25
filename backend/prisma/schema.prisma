@@ -66,6 +66,7 @@ model User {
   consultantBookings      ConsultationBooking[]  @relation("ConsultantReceivedBookings")
   clientBookings          ConsultationBooking[]  @relation("ClientSessionBookings")
   notifications           Notification[]         @relation("UserNotifications")
+  subAdminProfile         SubAdminProfile?
 
   @@map("users")
 }
@@ -1128,6 +1129,33 @@ model Notification {
   @@index([userId, createdAt])
   @@map("notifications")
 }
+
+enum AdminPermission {
+  USER_MANAGEMENT
+  KYC_MODERATION
+  CAMPAIGN_MANAGEMENT
+  SUBSCRIPTION_MANAGEMENT
+  ANALYTICS_ACCESS
+  CATEGORY_MANAGEMENT
+
+  @@map("admin_permission")
+}
+
+model SubAdminProfile {
+  id          String            @id @default(uuid()) @db.Uuid
+  userId      String            @unique @map("user_id") @db.Uuid
+  permissions AdminPermission[] @default([]) @map("permissions")
+  department  String?           @map("department") @db.VarChar
+  notes       String?           @map("notes")
+  createdBy   String?           @map("created_by") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sub_admin_profiles")
+}
+
 
 
 

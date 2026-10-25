@@ -20,8 +20,11 @@ import { CreatePlanTierDto, UpdatePlanTierDto } from './dto/plan-tier.dto';
 import { QueryPlansDto } from './dto/query-plans.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { AdminPermission } from '../../common/enums/admin-permission.enum';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
@@ -101,8 +104,9 @@ export class SubscriptionsPublicController {
 }
 
 @Controller('admin/subscriptions')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+@Permissions(AdminPermission.SUBSCRIPTION_MANAGEMENT)
 export class SubscriptionsAdminController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 

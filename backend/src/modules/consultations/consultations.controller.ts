@@ -18,9 +18,12 @@ import {
 } from './dto/book-session.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { AdminPermission } from '../../common/enums/admin-permission.enum';
 
 @Controller('consultations')
 export class ConsultationsController {
@@ -136,8 +139,9 @@ export class ConsultationsController {
   // 6. ADMIN: ALL SESSIONS & 10% PLATFORM REVENUE
   // ==========================================
   @Get('admin/overview')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.ANALYTICS_ACCESS)
   async getAdminSessionOverview() {
     return this.consultationsService.getAdminSessionOverview();
   }

@@ -9,6 +9,14 @@ export type AuthenticatedUserRole = (typeof authenticatedUserRoles)[number];
 
 export type AccountStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'BLOCKED';
 
+export type AdminPermission =
+  | 'USER_MANAGEMENT'
+  | 'KYC_MODERATION'
+  | 'CAMPAIGN_MANAGEMENT'
+  | 'SUBSCRIPTION_MANAGEMENT'
+  | 'ANALYTICS_ACCESS'
+  | 'CATEGORY_MANAGEMENT';
+
 export interface AuthUser {
   id: string;
   firstName: string | null;
@@ -19,6 +27,8 @@ export interface AuthUser {
   image?: string | null;
   coverImage?: string | null;
   role: AuthenticatedUserRole;
+  permissions?: AdminPermission[];
+  department?: string | null;
   accountStatus: AccountStatus;
   createdAt: string;
   updatedAt: string;

@@ -5,7 +5,7 @@ const paths: Record<AuthenticatedUserRole, string> = {
   ENTREPRENEUR: '/dashboard/entrepreneur',
   CONSULTANT: '/dashboard/consultant',
   ADMIN: '/dashboard/admin',
-  SUB_ADMIN: '/dashboard/sub_admin',
+  SUB_ADMIN: '/dashboard/admin',
 };
 
 export function getDashboardPath(role: AuthenticatedUserRole): string {
