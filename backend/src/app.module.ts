@@ -20,6 +20,7 @@ import { PortfolioModule } from './modules/portfolio/portfolio.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { CommitmentsModule } from './modules/commitments/commitments.module';
 import { ConsultationsModule } from './modules/consultations/consultations.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ConsultationsModule } from './modules/consultations/consultations.modul
     MessagesModule,
     CommitmentsModule,
     ConsultationsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

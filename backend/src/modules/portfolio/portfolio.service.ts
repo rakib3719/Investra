@@ -11,12 +11,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { MediaService } from '../media/media.service';
 import { R2StorageService } from '../media/r2-storage.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreatePortfolioItemDto } from './dto/create-portfolio-item.dto';
 import { UpdateInvestorPortfolioMetaDto } from './dto/update-investor-portfolio-meta.dto';
 import { UpdatePortfolioItemDto } from './dto/update-portfolio-item.dto';
 import { CreateIntroRequestDto } from './dto/create-intro-request.dto';
 import { UpdateIntroStatusDto } from './dto/update-intro-status.dto';
-import { IntroRequestStatus } from '@prisma/client';
+import { IntroRequestStatus, NotificationType } from '@prisma/client';
 
 @Injectable()
 export class PortfolioService {
@@ -27,6 +28,7 @@ export class PortfolioService {
     private readonly mediaService: MediaService,
     private readonly r2StorageService: R2StorageService,
     private readonly subscriptionsService: SubscriptionsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -838,6 +840,16 @@ export class PortfolioService {
         },
       },
     });
+
+    // In-app & email notification to Investor
+    this.notificationsService.notify({
+      userId: targetInvestorUserId,
+      type: NotificationType.INTRO_REQUEST_RECEIVED,
+      title: `New Founder Intro Request: ${dto.startupName}`,
+      message: `A founder has submitted an investment pitch brief for ${dto.startupName} ($${dto.raisingAmount} raise in ${dto.targetSector}).`,
+      actionUrl: '/dashboard/investor/intros',
+      metadata: { introId: intro.id, startupName: dto.startupName, sector: dto.targetSector },
+    }).catch(() => {});
 
     return {
       message: 'Introduction request submitted successfully to investor!',

@@ -8,12 +8,15 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCommitmentDto } from './dto/create-commitment.dto';
 import { RespondCommitmentDto } from './dto/respond-commitment.dto';
 import { MessagesService } from '../messages/messages.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '@prisma/client';
 
 @Injectable()
 export class CommitmentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly messagesService: MessagesService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -65,6 +68,12 @@ export class CommitmentsService {
       },
     });
 
+    const formattedAmount = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: dto.currency || 'USD',
+      maximumFractionDigits: 0,
+    }).format(dto.amount);
+
     // If there is an active conversation between these users, post an automated notice in the chat
     try {
       const conv = await this.prisma.conversation.findFirst({
@@ -78,11 +87,6 @@ export class CommitmentsService {
 
       if (conv) {
         const instrumentLabel = dto.instrument.replace('_', ' ');
-        const formattedAmount = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: dto.currency || 'USD',
-          maximumFractionDigits: 0,
-        }).format(dto.amount);
 
         const noticeText = `💼 Formal Term Sheet Issued: ${formattedAmount} via ${instrumentLabel} for ${dto.startupName}. Terms: ${dto.termsSummary.slice(0, 150)}...`;
 
@@ -93,6 +97,16 @@ export class CommitmentsService {
           mediaFileId: dto.termSheetMediaId || undefined,
         });
       }
+
+      // In-app & email notification to Entrepreneur
+      this.notificationsService.notify({
+        userId: dto.entrepreneurId,
+        type: NotificationType.TERM_SHEET_RECEIVED,
+        title: `Investment Term Sheet Proposed: ${formattedAmount}`,
+        message: `An investor has proposed a ${dto.instrument.replace('_', ' ')} investment of ${formattedAmount} for ${dto.startupName}. Review terms and issue response.`,
+        actionUrl: '/dashboard/entrepreneur/campaigns',
+        metadata: { commitmentId: commitment.id, amount: dto.amount, currency: dto.currency },
+      }).catch(() => {});
     } catch (err) {
       // Non-fatal if chat notice fails
       console.error('Failed to notify conversation on term sheet creation', err);
@@ -348,6 +362,16 @@ export class CommitmentsService {
           content: noticeText,
         });
       }
+
+      // In-app & email notification to Investor
+      this.notificationsService.notify({
+        userId: commitment.investorId,
+        type: NotificationType.TERM_SHEET_RESPONDED,
+        title: `Term Sheet ${dto.action === 'ACCEPT' ? 'Accepted' : dto.action === 'DECLINE' ? 'Declined' : 'Negotiation Requested'}`,
+        message: `The founder for ${commitment.startupName} has ${dto.action.toLowerCase()}ed your proposed investment commitment.${dto.notes ? ` Note: "${dto.notes}"` : ''}`,
+        actionUrl: '/dashboard/investor/investments',
+        metadata: { commitmentId: commitment.id, status: updated.status },
+      }).catch(() => {});
     } catch (err) {
       console.error('Failed to post deal response notice in conversation', err);
     }

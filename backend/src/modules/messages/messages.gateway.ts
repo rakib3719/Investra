@@ -270,4 +270,12 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
       readByUserId,
     });
   }
+
+  /**
+   * Broadcast real-time in-app notification to a specific user's private socket room
+   */
+  sendNotificationToUser(userId: string, notification: any) {
+    if (!this.server) return;
+    this.server.to(`user_${userId}`).emit('notification:new', notification);
+  }
 }

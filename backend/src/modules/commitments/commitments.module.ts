@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { MessagesModule } from '../messages/messages.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { CommitmentsController } from './commitments.controller';
 import { CommitmentsService } from './commitments.service';
 
 @Module({
-  imports: [PrismaModule, MessagesModule],
+  imports: [PrismaModule, MessagesModule, NotificationsModule],
   controllers: [CommitmentsController],
   providers: [CommitmentsService],
   exports: [CommitmentsService],

@@ -65,6 +65,7 @@ model User {
   consultantSlots         ConsultantSlot[]       @relation("ConsultantSlots")
   consultantBookings      ConsultationBooking[]  @relation("ConsultantReceivedBookings")
   clientBookings          ConsultationBooking[]  @relation("ClientSessionBookings")
+  notifications           Notification[]         @relation("UserNotifications")
 
   @@map("users")
 }
@@ -1094,5 +1095,39 @@ model ConsultationBooking {
   @@index([status])
   @@map("consultation_bookings")
 }
+
+enum NotificationType {
+  TERM_SHEET_RECEIVED
+  TERM_SHEET_RESPONDED
+  INTRO_REQUEST_RECEIVED
+  KYC_APPROVED
+  KYC_REJECTED
+  SESSION_BOOKED
+  COURSE_ENROLLED
+  SYSTEM_ANNOUNCEMENT
+  NEW_MESSAGE
+
+  @@map("notification_type")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType @default(SYSTEM_ANNOUNCEMENT)
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
+  actionUrl String?          @map("action_url") @db.VarChar(500)
+  isRead    Boolean          @default(false) @map("is_read")
+  readAt    DateTime?        @map("read_at") @db.Timestamp(6)
+  metadata  Json?            @default("{}")
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
 
 

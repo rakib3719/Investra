@@ -8,9 +8,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   SlotStatus,
   ConsultationBookingStatus,
+  NotificationType,
   PayoutStatus,
   UserRole,
 } from '@prisma/client';
@@ -28,6 +30,7 @@ export class ConsultationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ==========================================
@@ -296,6 +299,28 @@ export class ConsultationsService {
       .catch((err) => {
         this.logger.error(`Failed to send session booking emails: ${err?.message || err}`);
       });
+
+    // In-app real-time notification to Consultant
+    this.notificationsService.notify({
+      userId: slot.consultantId,
+      type: NotificationType.SESSION_BOOKED,
+      title: `New 1-on-1 Session Booked: ${dto.topic}`,
+      message: `${clientFullName} has scheduled and paid for a session on ${slotDateStr} (${timeStr}). Earned $${consultantEarningsNumber.toFixed(2)} (90%).`,
+      actionUrl: '/dashboard/consultant/calendar',
+      metadata: { bookingId: booking.id, meetingLink },
+      sendEmail: false, // Already sent detailed custom email above
+    }).catch(() => {});
+
+    // In-app real-time notification to Client
+    this.notificationsService.notify({
+      userId: clientId,
+      type: NotificationType.SESSION_BOOKED,
+      title: `1-on-1 Session Confirmed with ${consultantFullName}`,
+      message: `Your session on ${slotDateStr} (${timeStr}) is confirmed. Room: ${meetingLink}`,
+      actionUrl: '/dashboard/investor/consultations',
+      metadata: { bookingId: booking.id, meetingLink },
+      sendEmail: false, // Already sent detailed custom email above
+    }).catch(() => {});
 
     return booking;
   }

@@ -9,6 +9,7 @@ import {
   buildPasswordResetEmail,
   buildPasswordChangedEmail,
   buildSessionBookingEmail,
+  buildGeneralNotificationEmail,
 } from './templates';
 
 @Injectable()
@@ -156,6 +157,33 @@ export class MailService {
         html: consultantTemplate.html,
       }),
     ]);
+  }
+
+  async sendNotificationEmail(payload: {
+    to: string;
+    recipientName: string;
+    title: string;
+    message: string;
+    actionUrl?: string;
+    actionText?: string;
+    category?: string;
+  }): Promise<boolean> {
+    const template = buildGeneralNotificationEmail({
+      recipientName: payload.recipientName,
+      title: payload.title,
+      message: payload.message,
+      actionUrl: payload.actionUrl,
+      actionText: payload.actionText,
+      category: payload.category,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    return this.send({
+      to: payload.to,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+    });
   }
 
   private async send(message: {

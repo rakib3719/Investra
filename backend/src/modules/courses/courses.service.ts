@@ -7,8 +7,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { StripeService } from '../subscriptions/stripe.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { env } from '../../common/config/env.config';
-import { CourseStatus, CourseLevel, PayoutStatus, UserRole, AccountStatus } from '@prisma/client';
+import { CourseStatus, CourseLevel, PayoutStatus, UserRole, AccountStatus, NotificationType } from '@prisma/client';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
@@ -22,6 +23,7 @@ export class CoursesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ==========================================
@@ -377,6 +379,26 @@ export class CoursesService {
         },
       });
 
+      // In-app & email notification to Student
+      this.notificationsService.notify({
+        userId,
+        type: NotificationType.COURSE_ENROLLED,
+        title: `Enrolled in ${course.title}`,
+        message: `You now have lifetime access to ${course.title}. Start learning anytime.`,
+        actionUrl: `/courses/${course.slug}/learn`,
+        metadata: { courseId: course.id, isFree: true },
+      }).catch(() => {});
+
+      // In-app & email notification to Consultant
+      this.notificationsService.notify({
+        userId: course.consultantId,
+        type: NotificationType.COURSE_ENROLLED,
+        title: `New Student Enrolled in ${course.title}`,
+        message: `A new student has enrolled in your masterclass "${course.title}".`,
+        actionUrl: '/dashboard/consultant/courses',
+        metadata: { courseId: course.id, studentId: userId },
+      }).catch(() => {});
+
       return {
         isFree: true,
         enrolled: true,
@@ -533,6 +555,26 @@ export class CoursesService {
       this.logger.log(
         `Recorded course purchase: course ${course.id}, buyer ${userId}, net consultant earnings $${consultantEarnings}, fee $${platformFeeAmount}`,
       );
+
+      // In-app & email notification to Buyer
+      this.notificationsService.notify({
+        userId,
+        type: NotificationType.COURSE_ENROLLED,
+        title: `Payment Confirmed: ${course.title}`,
+        message: `Your payment of $${grossAmount.toFixed(2)} for ${course.title} was successful. Full curriculum streaming is now unlocked.`,
+        actionUrl: `/courses/${course.slug}/learn`,
+        metadata: { courseId: course.id, transactionId },
+      }).catch(() => {});
+
+      // In-app & email notification to Consultant
+      this.notificationsService.notify({
+        userId: course.consultantId,
+        type: NotificationType.COURSE_ENROLLED,
+        title: `New Student Purchase: $${consultantEarnings.toFixed(2)} (90%)`,
+        message: `A new student purchased your course "${course.title}". $${consultantEarnings.toFixed(2)} net has been added to your available balance.`,
+        actionUrl: '/dashboard/consultant/earnings',
+        metadata: { courseId: course.id, consultantEarnings },
+      }).catch(() => {});
     }
 
     return enrollment;

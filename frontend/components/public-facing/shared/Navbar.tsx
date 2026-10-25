@@ -33,6 +33,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useLogoutMutation } from "@/lib/auth/auth-hooks";
 import { getDashboardPath } from "@/lib/auth/role";
+import { NotificationBellDropdown } from "@/components/notifications/NotificationBellDropdown";
 
 interface MenuItem {
   name: string;
@@ -623,6 +624,7 @@ export default function Navbar() {
             ><InvestraInlineLoader /></div>
           ) : user ? (
             <>
+              <NotificationBellDropdown />
               <Link
                 href={getDashboardPath(user.role)}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#065f46] transition-colors hover:bg-emerald-100"

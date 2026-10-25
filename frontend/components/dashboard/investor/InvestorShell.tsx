@@ -31,6 +31,7 @@ import {
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
+import { NotificationBellDropdown } from "@/components/notifications/NotificationBellDropdown";
 import {
   investorPageMeta,
   investorSectionPath,
@@ -204,7 +205,7 @@ export function InvestorShell({
                 )}
               </Link>
               <button type="button" aria-label="Search" className="hidden rounded-xl p-2.5 text-slate-500 hover:bg-slate-50 sm:block"><Search className="h-5 w-5" /></button>
-              <button type="button" aria-label="Notifications" className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-50"><Bell className="h-5 w-5" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-emerald-500" /></button>
+              <NotificationBellDropdown />
               <div className="hidden h-8 w-px bg-slate-200 sm:block" />
               <div className="relative">
                 <button type="button" onClick={() => setAccountOpen((open) => !open)} className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-slate-50" aria-expanded={accountOpen} aria-haspopup="menu">
