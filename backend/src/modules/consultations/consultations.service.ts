@@ -196,16 +196,10 @@ export class ConsultationsService {
     const platformFeeAmountNumber = Number((grossAmountNumber * platformFeeRateNumber).toFixed(2));
     const consultantEarningsNumber = Number((grossAmountNumber - platformFeeAmountNumber).toFixed(2));
 
-    // Determine Meeting Link
-    // If consultant configured a default Google Meet / Zoom link, use that!
-    // Otherwise, generate a clean, free room link using Jitsi / Meet format
+    // When a session is booked, meeting link starts as null.
+    // The consultant will provide the specific Google Meet or Zoom link for this session.
     const platform = dto.meetingPlatform || 'GOOGLE_MEET';
-    let meetingLink = profile?.defaultMeetingLink?.trim();
-
-    if (!meetingLink) {
-      const roomSlug = `investra-${slot.id.replace(/-/g, '').slice(0, 10)}`;
-      meetingLink = `https://meet.jit.si/${roomSlug}`;
-    }
+    const meetingLink: string | null = null;
 
     const transactionId = `TXN-SES-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -292,7 +286,7 @@ export class ConsultationsService {
         dateStr: slotDateStr,
         timeStr,
         durationMinutes: slot.durationMinutes,
-        meetingLink,
+        meetingLink: meetingLink || 'PENDING',
         meetingPlatform: platform,
         amount: `$${grossAmountNumber.toFixed(2)} USD`,
       })
@@ -304,11 +298,11 @@ export class ConsultationsService {
     this.notificationsService.notify({
       userId: slot.consultantId,
       type: NotificationType.SESSION_BOOKED,
-      title: `New 1-on-1 Session Booked: ${dto.topic}`,
-      message: `${clientFullName} has scheduled and paid for a session on ${slotDateStr} (${timeStr}). Earned $${consultantEarningsNumber.toFixed(2)} (90%).`,
+      title: `Action Required: New Session Booked (${dto.topic})`,
+      message: `${clientFullName} scheduled a session on ${slotDateStr} (${timeStr}). Please add your Google Meet or Zoom link.`,
       actionUrl: '/dashboard/consultant/calendar',
-      metadata: { bookingId: booking.id, meetingLink },
-      sendEmail: false, // Already sent detailed custom email above
+      metadata: { bookingId: booking.id },
+      sendEmail: false,
     }).catch(() => {});
 
     // In-app real-time notification to Client
@@ -316,10 +310,10 @@ export class ConsultationsService {
       userId: clientId,
       type: NotificationType.SESSION_BOOKED,
       title: `1-on-1 Session Confirmed with ${consultantFullName}`,
-      message: `Your session on ${slotDateStr} (${timeStr}) is confirmed. Room: ${meetingLink}`,
+      message: `Your session on ${slotDateStr} (${timeStr}) is confirmed. Your advisor will provide the Google Meet / Zoom link shortly.`,
       actionUrl: '/dashboard/investor/consultations',
-      metadata: { bookingId: booking.id, meetingLink },
-      sendEmail: false, // Already sent detailed custom email above
+      metadata: { bookingId: booking.id },
+      sendEmail: false,
     }).catch(() => {});
 
     return booking;
@@ -389,6 +383,15 @@ export class ConsultationsService {
   ) {
     const booking = await this.prisma.consultationBooking.findUnique({
       where: { id: bookingId },
+      include: {
+        slot: true,
+        consultant: {
+          select: { firstName: true, lastName: true },
+        },
+        client: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
     });
 
     if (!booking) {
@@ -399,13 +402,45 @@ export class ConsultationsService {
       throw new ForbiddenException('Only the session consultant can update the meeting link.');
     }
 
-    return this.prisma.consultationBooking.update({
+    const updated = await this.prisma.consultationBooking.update({
       where: { id: bookingId },
       data: {
         meetingLink: dto.meetingLink.trim(),
         meetingPlatform: dto.meetingPlatform || booking.meetingPlatform,
       },
+      include: {
+        slot: true,
+        consultant: {
+          select: { firstName: true, lastName: true },
+        },
+        client: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
     });
+
+    const consultantName =
+      `${updated.consultant.firstName || ''} ${updated.consultant.lastName || ''}`.trim() || 'Your Advisor';
+    const slotDateStr = new Date(updated.slot.slotDate).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+
+    // Notify client in real-time that meeting link is available
+    this.notificationsService
+      .notify({
+        userId: updated.clientId,
+        type: NotificationType.SESSION_BOOKED,
+        title: `Meeting Link Ready: 1-on-1 Session with ${consultantName}`,
+        message: `${consultantName} has provided the meeting link for your session on ${slotDateStr} (${updated.slot.startTime} - ${updated.slot.endTime}). Link: ${dto.meetingLink.trim()}`,
+        actionUrl: '/dashboard/investor/consultations',
+        metadata: { bookingId: updated.id, meetingLink: dto.meetingLink.trim() },
+        sendEmail: true,
+      })
+      .catch(() => {});
+
+    return updated;
   }
 
   async updateDefaultMeetingPreference(

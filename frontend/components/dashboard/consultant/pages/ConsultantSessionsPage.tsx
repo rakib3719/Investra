@@ -308,6 +308,15 @@ export function ConsultantSessionsPage({ user }: { user: AuthUser }) {
                           <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                             {sess.client?.role || "CLIENT"}
                           </span>
+                          {sess.meetingLink ? (
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">
+                              Link Active
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200">
+                              Link Needed
+                            </span>
+                          )}
                         </div>
                         <p className="text-xs text-slate-500 font-body">{sess.client?.email}</p>
                       </div>
@@ -349,70 +358,134 @@ export function ConsultantSessionsPage({ user }: { user: AuthUser }) {
                   </div>
 
                   {/* Meeting Room Action Bar */}
-                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Video className="w-4 h-4 text-emerald-600 shrink-0" />
-                      {!isEditingLink ? (
-                        <>
-                          <span className="text-xs font-mono text-slate-700 truncate max-w-sm">
-                            {sess.meetingLink}
+                  {!sess.meetingLink ? (
+                    <div className="bg-amber-50/70 border border-amber-200/90 rounded-xl p-4 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span className="text-xs font-bold text-amber-950 font-heading">
+                            Meeting Link Required: Add Link for this Session
                           </span>
-                          <button
-                            onClick={() => handleCopyLink(sess.meetingLink, sess.id)}
-                            className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition"
-                            title="Copy link"
-                          >
-                            {copiedId === sess.id ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-600" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => {
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                          Action Needed
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-amber-800/90 font-body">
+                        Please provide a Google Meet or Zoom link for this session so {sess.client?.firstName || "the client"} can join. They will receive an instant notification once saved.
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                        <input
+                          type="url"
+                          placeholder="https://meet.google.com/xxx-yyyy-zzz or Zoom link"
+                          value={editingBookingId === sess.id ? customMeetingLink : ""}
+                          onFocus={() => {
+                            if (editingBookingId !== sess.id) {
                               setEditingBookingId(sess.id);
-                              setCustomMeetingLink(sess.meetingLink);
-                            }}
-                            className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline ml-1 cursor-pointer font-heading"
-                          >
-                            Change Link
-                          </button>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2 flex-1">
-                          <input
-                            type="url"
-                            value={customMeetingLink}
-                            onChange={(e) => setCustomMeetingLink(e.target.value)}
-                            className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:border-emerald-600 w-full font-mono"
-                          />
+                              setCustomMeetingLink("");
+                            }
+                          }}
+                          onChange={(e) => {
+                            setEditingBookingId(sess.id);
+                            setCustomMeetingLink(e.target.value);
+                          }}
+                          className="text-xs px-3 py-2 rounded-xl border border-amber-300 focus:outline-none focus:border-emerald-600 bg-white w-full font-mono"
+                        />
+                        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                          {defaultMeetingLink && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingBookingId(sess.id);
+                                setCustomMeetingLink(defaultMeetingLink);
+                              }}
+                              className="px-2.5 py-2 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-xl transition font-heading cursor-pointer whitespace-nowrap"
+                              title="Paste default meeting preference"
+                            >
+                              Use Default
+                            </button>
+                          )}
                           <button
+                            type="button"
                             onClick={() => handleSaveBookingMeetingLink(sess.id)}
-                            disabled={isUpdatingBookingLink}
-                            className="px-2.5 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold font-heading cursor-pointer disabled:opacity-50"
+                            disabled={isUpdatingBookingLink || (editingBookingId === sess.id && !customMeetingLink.trim())}
+                            className="w-full sm:w-auto px-4 py-2 bg-[#064e3b] hover:bg-[#043c2e] text-white rounded-xl text-xs font-bold font-heading transition shrink-0 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-xs"
                           >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingBookingId(null)}
-                            className="px-2 py-1.5 text-slate-500 text-xs font-bold cursor-pointer font-heading"
-                          >
-                            Cancel
+                            <Video className="w-3.5 h-3.5 text-emerald-300" />
+                            <span>Save &amp; Send to Client</span>
                           </button>
                         </div>
-                      )}
+                      </div>
                     </div>
+                  ) : (
+                    <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Video className="w-4 h-4 text-emerald-600 shrink-0" />
+                        {!isEditingLink ? (
+                          <>
+                            <span className="text-xs font-mono text-slate-700 truncate max-w-sm">
+                              {sess.meetingLink}
+                            </span>
+                            <button
+                              onClick={() => handleCopyLink(sess.meetingLink!, sess.id)}
+                              className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition cursor-pointer"
+                              title="Copy link"
+                            >
+                              {copiedId === sess.id ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingBookingId(sess.id);
+                                setCustomMeetingLink(sess.meetingLink || "");
+                              }}
+                              className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline ml-1 cursor-pointer font-heading"
+                            >
+                              Change Link
+                            </button>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 flex-1">
+                            <input
+                              type="url"
+                              value={customMeetingLink}
+                              onChange={(e) => setCustomMeetingLink(e.target.value)}
+                              className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:border-emerald-600 w-full font-mono bg-white"
+                            />
+                            <button
+                              onClick={() => handleSaveBookingMeetingLink(sess.id)}
+                              disabled={isUpdatingBookingLink}
+                              className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold font-heading cursor-pointer disabled:opacity-50"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingBookingId(null);
+                                setCustomMeetingLink("");
+                              }}
+                              className="px-2 py-1.5 text-slate-500 hover:text-slate-700 text-xs font-bold cursor-pointer font-heading"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+                      </div>
 
-                    <a
-                      href={sess.meetingLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-1.5 bg-[#064e3b] hover:bg-[#043c2e] text-white px-4 py-2 rounded-xl text-xs font-bold font-heading transition shadow-xs shrink-0 cursor-pointer"
-                    >
-                      <span>Join Meeting Room</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
-                    </a>
-                  </div>
+                      <a
+                        href={sess.meetingLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center gap-1.5 bg-[#064e3b] hover:bg-[#043c2e] text-white px-4 py-2 rounded-xl text-xs font-bold font-heading transition shadow-xs shrink-0 cursor-pointer"
+                      >
+                        <span>Join Meeting Room</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
+                      </a>
+                    </div>
+                  )}
                 </div>
               );
             })}

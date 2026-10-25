@@ -193,45 +193,62 @@ export function BookSessionModal({ consultant, onClose }: BookSessionModalProps)
                 </div>
               </div>
 
-              {/* Direct Video Call Meeting Link */}
+              {/* Direct Video Call Meeting Link or Pending Notice */}
               <div className="pt-2">
-                <span className="text-slate-500 font-bold block text-[11px] uppercase mb-1.5 flex items-center gap-1.5">
-                  <Video className="w-3.5 h-3.5 text-emerald-600" />
-                  Your Video Call Meeting Room
-                </span>
-                <div className="flex items-center gap-2 bg-white rounded-xl border border-slate-200 p-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={confirmedBooking.meetingLink}
-                    className="text-xs text-slate-700 bg-transparent flex-1 outline-none font-mono"
-                  />
-                  <button
-                    onClick={handleCopyLink}
-                    className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition"
-                    title="Copy Link"
-                  >
-                    {isCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                  <a
-                    href={confirmedBooking.meetingLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold font-heading transition"
-                  >
-                    <span>Join Now</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
+                {confirmedBooking.meetingLink ? (
+                  <>
+                    <span className="text-slate-500 font-bold block text-[11px] uppercase mb-1.5 flex items-center gap-1.5 font-heading">
+                      <Video className="w-3.5 h-3.5 text-emerald-600" />
+                      Your Video Call Meeting Room
+                    </span>
+                    <div className="flex items-center gap-2 bg-white rounded-xl border border-slate-200 p-2">
+                      <input
+                        type="text"
+                        readOnly
+                        value={confirmedBooking.meetingLink}
+                        className="text-xs text-slate-700 bg-transparent flex-1 outline-none font-mono"
+                      />
+                      <button
+                        onClick={handleCopyLink}
+                        className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition cursor-pointer"
+                        title="Copy Link"
+                      >
+                        {isCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                      <a
+                        href={confirmedBooking.meetingLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold font-heading transition cursor-pointer"
+                      >
+                        <span>Join Now</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3 text-left space-y-1">
+                    <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs font-heading">
+                      <Clock className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Meeting Link Pending from Advisor</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800/80 font-body">
+                      {consultant.name} will provide the Google Meet / Zoom link for your session. You will receive an in-app notification and email as soon as it is posted.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            <button
-              onClick={onClose}
-              className="w-full bg-slate-900 hover:bg-black text-white font-heading font-bold py-3 rounded-xl text-xs transition"
-            >
-              Done & Return to Marketplace
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-slate-900 hover:bg-black text-white font-heading font-bold py-3 rounded-xl text-xs transition cursor-pointer text-center"
+              >
+                Done &amp; Return
+              </button>
+            </div>
           </div>
         ) : (
           /* Booking Form */

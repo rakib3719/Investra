@@ -133,6 +133,15 @@ export function MyConsultationsPage({ user }: { user: AuthUser }) {
                         <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
                           Confirmed
                         </span>
+                        {booking.meetingLink ? (
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
+                            Room Ready
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full border border-amber-200">
+                            Link Pending
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-slate-500 font-body">
                         {booking.consultant?.consultantProfile?.headline || "Strategic Advisor"}
@@ -174,35 +183,55 @@ export function MyConsultationsPage({ user }: { user: AuthUser }) {
                 </div>
 
                 {/* Meeting Link Bar */}
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <Video className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span className="text-xs font-mono text-slate-700 truncate max-w-sm">
-                      {booking.meetingLink}
-                    </span>
-                    <button
-                      onClick={() => handleCopyLink(booking.meetingLink, booking.id)}
-                      className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition"
-                      title="Copy meeting link"
-                    >
-                      {copiedId === booking.id ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  </div>
+                {booking.meetingLink ? (
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <Video className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span className="text-xs font-mono text-slate-700 truncate max-w-sm">
+                        {booking.meetingLink}
+                      </span>
+                      <button
+                        onClick={() => handleCopyLink(booking.meetingLink!, booking.id)}
+                        className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition cursor-pointer"
+                        title="Copy meeting link"
+                      >
+                        {copiedId === booking.id ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
 
-                  <a
-                    href={booking.meetingLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 bg-[#064e3b] hover:bg-[#043c2e] text-white px-5 py-2.5 rounded-xl text-xs font-bold font-heading transition shadow-xs shrink-0 cursor-pointer"
-                  >
-                    <span>Join Meeting Room</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
-                  </a>
-                </div>
+                    <a
+                      href={booking.meetingLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 bg-[#064e3b] hover:bg-[#043c2e] text-white px-5 py-2.5 rounded-xl text-xs font-bold font-heading transition shadow-xs shrink-0 cursor-pointer"
+                    >
+                      <span>Join Meeting Room</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
+                    </a>
+                  </div>
+                ) : (
+                  <div className="bg-amber-50/70 border border-amber-200/90 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <div className="p-2 rounded-xl bg-amber-100 text-amber-800 shrink-0 mt-0.5 sm:mt-0">
+                        <Clock className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-amber-950 font-heading">
+                            Meeting Link Pending from Advisor
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-amber-800 font-body mt-0.5">
+                          {consultantName} will provide the Google Meet or Zoom link for this session. You will be notified in-app and via email as soon as it is posted.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
