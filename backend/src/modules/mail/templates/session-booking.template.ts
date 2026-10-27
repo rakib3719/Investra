@@ -83,6 +83,9 @@ export function buildSessionBookingEmail(options: SessionBookingEmailOptions): {
       </tr>
     </table>
 
+    ${
+      options.meetingLink && options.meetingLink !== 'PENDING'
+        ? `
     <!-- CTA Button to Join Meeting -->
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 0 0 28px 0;">
       <tr>
@@ -97,6 +100,18 @@ export function buildSessionBookingEmail(options: SessionBookingEmailOptions): {
     <p style="margin: 0 0 16px 0; font-size: 12px; line-height: 1.6; color: #64748B;">
       Meeting Link: <a href="${options.meetingLink}" target="_blank" style="color: #064E3B; font-weight: 600; word-break: break-all;">${options.meetingLink}</a>
     </p>
+    `
+        : `
+    <div style="background-color: #FEF3C7; border: 1px solid #FCD34D; border-radius: 12px; padding: 16px; margin-bottom: 24px; color: #92400E; font-size: 13px; line-height: 1.5;">
+      <strong>⚠️ Video Meeting Link Status:</strong><br/>
+      ${
+        options.isConsultant
+          ? 'Please go to your <a href="https://investra.com/dashboard?section=calendar" style="color: #B45309; font-weight: 700;">Consultant Sessions Manager</a> to provide your Google Meet or Zoom link for this session.'
+          : 'Your advisor will generate and add their Google Meet or Zoom link prior to the session. You will be notified immediately once it is available in your dashboard.'
+      }
+    </div>
+    `
+    }
 
     <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #94A3B8;">
       Tip: Please join the room 2-3 minutes before the scheduled time. You can also access this session directly from your Investra dashboard.

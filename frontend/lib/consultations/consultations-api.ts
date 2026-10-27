@@ -24,7 +24,7 @@ export interface ConsultationBookingItem {
   clientNotes?: string | null;
   status: BookingStatus;
   meetingPlatform: string;
-  meetingLink: string;
+  meetingLink?: string | null;
   grossAmount: number | string;
   platformFeeRate: number | string;
   platformFeeAmount: number | string;

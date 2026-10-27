@@ -1074,7 +1074,7 @@ model ConsultationBooking {
   clientNotes        String?                   @map("client_notes") @db.Text
   status             ConsultationBookingStatus @default(CONFIRMED)
   meetingPlatform    String                    @default("GOOGLE_MEET") @map("meeting_platform") @db.VarChar(50)
-  meetingLink        String                    @map("meeting_link") @db.VarChar(500)
+  meetingLink        String?                   @map("meeting_link") @db.VarChar(500)
   grossAmount        Decimal                   @map("gross_amount") @db.Decimal(12, 2)
   platformFeeRate    Decimal                   @default(0.10) @map("platform_fee_rate") @db.Decimal(5, 4)
   platformFeeAmount  Decimal                   @map("platform_fee_amount") @db.Decimal(12, 2)

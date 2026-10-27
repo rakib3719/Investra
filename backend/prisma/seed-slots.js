@@ -33,13 +33,12 @@ async function seedSlots() {
     ];
 
     for (const c of consultants) {
-      // Ensure fees & default meeting link exist
+      // Ensure fees exist
       await prisma.consultantProfile.update({
         where: { userId: c.id },
         data: {
           sessionFee: c.consultantProfile?.sessionFee || 150.0,
           consultationFee: c.consultantProfile?.consultationFee || 150.0,
-          defaultMeetingLink: c.consultantProfile?.defaultMeetingLink || `https://meet.google.com/inv-sess-${c.id.slice(0, 6)}`,
         },
       });
 
