@@ -10,6 +10,8 @@ export const MediaCategory = {
   PORTFOLIO_DOCUMENT: 'PORTFOLIO_DOCUMENT',
   PORTFOLIO_CERTIFICATE: 'PORTFOLIO_CERTIFICATE',
   PORTFOLIO_VIDEO: 'PORTFOLIO_VIDEO',
+  CHAT_ATTACHMENT: 'CHAT_ATTACHMENT',
+  TERM_SHEET_DOCUMENT: 'TERM_SHEET_DOCUMENT',
 } as const;
 
 export type MediaCategory = (typeof MediaCategory)[keyof typeof MediaCategory];

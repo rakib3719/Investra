@@ -22,7 +22,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-export default function PlatformArchitecturePage() {
+export default function PlatformServicesPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between selection:bg-[#10b981]/20">
       <Navbar />
@@ -35,22 +35,25 @@ export default function PlatformArchitecturePage() {
           <div className="lg:col-span-6 space-y-6 text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#10b981]/15 text-[#064e3b] text-xs font-extrabold uppercase tracking-wider font-heading">
               <Layers className="w-3.5 h-3.5" />
-              <span>Platform Architecture & Tech Stack</span>
+              <span>Platform Services & Ecosystem Solutions</span>
             </div>
 
             <h1 className="font-heading font-black text-3xl md:text-[42px] lg:text-[48px] text-[#064e3b] leading-[1.1] tracking-tight">
-              High-Performance Tech.<br />
-              NestJS & PostgreSQL,<br />
-              <ShinyText text="Real-Time Scalability." speed={4.5} />
+              Unified Venture Ecosystem.<br />
+              Secure Capital Pipeline,<br />
+              <ShinyText text="End-to-End Growth." speed={4.5} />
             </h1>
 
             <p className="font-body text-slate-700 text-sm md:text-base xl:text-lg max-w-lg leading-relaxed">
-              Engineered with modern software design patterns, NestJS REST API, PostgreSQL, Redis caching, and real-time WebSockets for institutional security.
+              Investra brings verified founders, accredited angel and institutional investors, and certified business advisors together into one streamlined, regulated visual ecosystem.
             </p>
 
             <div className="flex items-center gap-3 pt-2">
-              <Link href="/subscription" className="bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-xs">
-                View Subscriptions
+              <Link href="/funds" className="bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-xs">
+                Explore Investment Opportunities
+              </Link>
+              <Link href="/subscription" className="border border-slate-200 hover:border-[#064e3b] text-slate-700 hover:text-[#064e3b] text-xs md:text-sm font-bold px-6 py-3 rounded-lg transition-colors">
+                View Membership Plans
               </Link>
             </div>
           </div>
@@ -67,17 +70,17 @@ export default function PlatformArchitecturePage() {
         </div>
       </section>
 
-      {/* Main Architecture Content */}
+      {/* Main Services Content */}
       <main className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] py-16 flex-1 space-y-16">
         
-        {/* End-to-End Pipeline */}
+        {/* End-to-End Core Services */}
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <h2 className="font-heading font-black text-2xl md:text-3xl text-slate-800">
-              End-to-End System Pipeline
+              End-to-End Platform Services
             </h2>
             <p className="text-xs md:text-sm text-slate-500 font-body max-w-xl mx-auto">
-              How data flows seamlessly from Next.js frontend clients to PostgreSQL and Redis.
+              How Investra guides you from startup discovery to deal closing and ongoing portfolio growth.
             </p>
           </div>
 
@@ -86,40 +89,40 @@ export default function PlatformArchitecturePage() {
               <div className="w-10 h-10 rounded-xl bg-[#064e3b] text-[#10b981] flex items-center justify-center font-bold">
                 <Globe className="w-5 h-5" />
               </div>
-              <h3 className="font-heading font-bold text-sm text-slate-800">1. Next.js Client</h3>
-              <p className="text-xs text-slate-500 font-body">App Router, SSR deal discovery, Tailwind v4 global design system.</p>
+              <h3 className="font-heading font-bold text-sm text-slate-800">1. Deal Discovery</h3>
+              <p className="text-xs text-slate-500 font-body">Curated pipeline of high-growth ventures with audited pitch summaries and KPIs.</p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 relative hover:border-[#10b981] transition-colors">
               <div className="w-10 h-10 rounded-xl bg-[#064e3b] text-[#10b981] flex items-center justify-center font-bold">
                 <Server className="w-5 h-5" />
               </div>
-              <h3 className="font-heading font-bold text-sm text-slate-800">2. NestJS REST API</h3>
-              <p className="text-xs text-slate-500 font-body">Modular controllers, DTO validation, service layer & guards.</p>
+              <h3 className="font-heading font-bold text-sm text-slate-800">2. Due Diligence Vault</h3>
+              <p className="text-xs text-slate-500 font-body">Confidential pitch decks, audited financial projections, and compliance audits.</p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 relative hover:border-[#10b981] transition-colors">
               <div className="w-10 h-10 rounded-xl bg-[#064e3b] text-[#10b981] flex items-center justify-center font-bold">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="font-heading font-bold text-sm text-slate-800">3. Redis Cache</h3>
-              <p className="text-xs text-slate-500 font-body">Rate limiting, session store, high-frequency query caching.</p>
+              <h3 className="font-heading font-bold text-sm text-slate-800">3. Milestone Roadmap</h3>
+              <p className="text-xs text-slate-500 font-body">Step-by-step progress benchmarks with verified proof of completion.</p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 relative hover:border-[#10b981] transition-colors">
               <div className="w-10 h-10 rounded-xl bg-[#064e3b] text-[#10b981] flex items-center justify-center font-bold">
                 <Database className="w-5 h-5" />
               </div>
-              <h3 className="font-heading font-bold text-sm text-slate-800">4. PostgreSQL</h3>
-              <p className="text-xs text-slate-500 font-body">Prisma ORM schema, indexed relational model & foreign keys.</p>
+              <h3 className="font-heading font-bold text-sm text-slate-800">4. Direct Founder Match</h3>
+              <p className="text-xs text-slate-500 font-body">Verified intro requests and term sheet negotiations between accredited parties.</p>
             </div>
 
             <div className="bg-[#064e3b] text-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 relative">
               <div className="w-10 h-10 rounded-xl bg-[#10b981] text-[#064e3b] flex items-center justify-center font-bold">
                 <MessageSquare className="w-5 h-5" />
               </div>
-              <h3 className="font-heading font-bold text-sm">5. Socket.IO Engine</h3>
-              <p className="text-xs text-slate-200 font-body">Real-time WebSocket chat rooms & instant notifications.</p>
+              <h3 className="font-heading font-bold text-sm">5. Expert Advisory</h3>
+              <p className="text-xs text-slate-200 font-body">Live 1-on-1 mentorship, cohort sessions, and video training from certified consultants.</p>
             </div>
           </div>
         </div>
@@ -131,10 +134,10 @@ export default function PlatformArchitecturePage() {
               <Lock className="w-5 h-5" />
             </div>
             <h3 className="font-heading font-extrabold text-base text-slate-800">
-              Dynamic RBAC & Sub-Admin PBAC
+              Institutional Security & Privacy
             </h3>
             <p className="text-xs text-slate-600 font-body leading-relaxed">
-              Granular authorization guards enforcing unique rights for Investors, Entrepreneurs, Consultants, Admins, and Sub-Admins.
+              Encrypted private data vaults protecting founder pitch decks, investor credentials, and regulatory KYC records.
             </p>
           </div>
 
@@ -143,10 +146,10 @@ export default function PlatformArchitecturePage() {
               <CreditCard className="w-5 h-5" />
             </div>
             <h3 className="font-heading font-extrabold text-base text-slate-800">
-              Stripe & SSLCommerz Webhooks
+              Frictionless Payment Settlement
             </h3>
             <p className="text-xs text-slate-600 font-body leading-relaxed">
-              Dual payment processor support handling international cards via Stripe Checkout and Bangladesh local banking via SSLCommerz.
+              Multi-currency financial gateway supporting international debit/credit cards and local bank transfers with automated invoicing.
             </p>
           </div>
 
@@ -155,10 +158,10 @@ export default function PlatformArchitecturePage() {
               <Cpu className="w-5 h-5" />
             </div>
             <h3 className="font-heading font-extrabold text-base text-slate-800">
-              80/20 Consultant Revenue Ledger
+              Advisor Monetization & Workshops
             </h3>
             <p className="text-xs text-slate-600 font-body leading-relaxed">
-              Automated calculation split allocating 80% to consultant balances and 20% to platform fees with payout tracking.
+              Certified mentors monetize their industry expertise through paid live Q&A sessions, structured cohorts, and masterclasses.
             </p>
           </div>
         </div>

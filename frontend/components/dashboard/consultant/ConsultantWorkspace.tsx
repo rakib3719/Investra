@@ -11,6 +11,7 @@ import { ConsultantProfileKycView } from "./pages/ConsultantProfileKycView";
 import { ConsultantOverviewPage } from "./pages/ConsultantOverviewPage";
 import { ConsultantCoursesPage } from "./pages/ConsultantCoursesPage";
 import { ConsultantEarningsPage } from "./pages/ConsultantEarningsPage";
+import { ConsultantSessionsPage } from "./pages/ConsultantSessionsPage";
 
 export function ConsultantWorkspace({
   user,
@@ -31,6 +32,8 @@ export function ConsultantWorkspace({
     content = <ConsultantCoursesPage user={user} />;
   } else if (activeSection === "earnings") {
     content = <ConsultantEarningsPage user={user} />;
+  } else if (activeSection === "calendar") {
+    content = <ConsultantSessionsPage user={user} />;
   } else if (activeSection === "profile") {
     content = <ConsultantProfileKycView user={user} initialTab="profile" />;
   } else if (activeSection === "kyc") {

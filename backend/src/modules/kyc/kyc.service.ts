@@ -7,11 +7,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MediaService } from '../media/media.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { SubmitKycDto } from './dto/submit-kyc.dto';
 import { ReviewKycDto } from './dto/review-kyc.dto';
 import { KycListQueryDto } from './dto/kyc-list-query.dto';
 import { UserRole } from '../../common/enums/user-role.enum';
-import { VerificationStatus, MediaUploadStatus, MediaCategory } from '@prisma/client';
+import { VerificationStatus, MediaUploadStatus, MediaCategory, NotificationType } from '@prisma/client';
 
 @Injectable()
 export class KycService {
@@ -20,6 +21,7 @@ export class KycService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mediaService: MediaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -529,6 +531,21 @@ export class KycService {
     });
 
     this.logger.log(`Admin ${adminId} reviewed KYC ${verificationId} -> ${status}`);
+
+    // In-app & email notification to the user
+    const isApproved = status === VerificationStatus.VERIFIED;
+    this.notificationsService.notify({
+      userId: targetUserId,
+      type: isApproved ? NotificationType.KYC_APPROVED : NotificationType.KYC_REJECTED,
+      title: isApproved
+        ? 'Identity & KYC Verification Approved!'
+        : 'KYC Verification Update Required',
+      message: isApproved
+        ? 'Congratulations! Your identity and verification documents have been fully approved by compliance. All platform features and deal workspaces are now unlocked.'
+        : `Your verification documents could not be approved. Reason: ${rejectionReason || 'Please resubmit documents according to guidelines'}.`,
+      actionUrl: `/dashboard/${userRole.toLowerCase()}/kyc`,
+      metadata: { verificationId, status, rejectionReason },
+    }).catch(() => {});
 
     return {
       message: `KYC submission successfully updated to ${status}.`,

@@ -22,9 +22,11 @@ import {
   Mail,
   MapPin,
   MessageSquare,
+  Download,
   Phone,
   Plus,
   RefreshCw,
+  Scale,
   Search,
   Send,
   ShieldCheck,
@@ -48,13 +50,19 @@ import {
 import { uploadMediaPipeline } from "@/lib/api/media";
 import { useMySubscriptionQuery } from "@/lib/admin/admin-subscription-hooks";
 import { toast } from "@/lib/toast";
+import { CommitmentsApi, type InvestmentCommitmentItem } from "@/lib/api/commitments";
 
 export function InvestorMatchesPage() {
-  const [activeMainTab, setActiveMainTab] = useState<"EXPLORE" | "SENT_INTROS">("EXPLORE");
+  const [activeMainTab, setActiveMainTab] = useState<"EXPLORE" | "SENT_INTROS" | "TERM_SHEETS">("EXPLORE");
   const [loading, setLoading] = useState(true);
   const [investors, setInvestors] = useState<any[]>([]);
   const [sentIntros, setSentIntros] = useState<InvestorIntroRequestItem[]>([]);
   const [loadingSent, setLoadingSent] = useState(false);
+  const [commitments, setCommitments] = useState<InvestmentCommitmentItem[]>([]);
+  const [loadingCommitments, setLoadingCommitments] = useState(false);
+  const [respondingCommitmentId, setRespondingCommitmentId] = useState<string | null>(null);
+  const [respondNotes, setRespondNotes] = useState("");
+  const [isSubmittingResponse, setIsSubmittingResponse] = useState(false);
 
   // Filters & search
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,11 +127,14 @@ export function InvestorMatchesPage() {
   useEffect(() => {
     fetchInvestors();
     fetchSentIntros();
+    fetchCommitments();
   }, []);
 
   useEffect(() => {
     if (activeMainTab === "SENT_INTROS") {
       fetchSentIntros();
+    } else if (activeMainTab === "TERM_SHEETS") {
+      fetchCommitments();
     }
   }, [activeMainTab]);
 
@@ -150,6 +161,44 @@ export function InvestorMatchesPage() {
       toast.error(err?.response?.data?.message || "Failed to load sent intros.");
     } finally {
       setLoadingSent(false);
+    }
+  }
+
+  async function fetchCommitments() {
+    try {
+      setLoadingCommitments(true);
+      const res = await CommitmentsApi.getEntrepreneurCommitments();
+      setCommitments(res || []);
+    } catch (err: any) {
+      console.error("Failed to load commitments", err);
+    } finally {
+      setLoadingCommitments(false);
+    }
+  }
+
+  async function handleRespondCommitment(commitmentId: string, action: "ACCEPT" | "DECLINE" | "NEGOTIATE") {
+    setIsSubmittingResponse(true);
+    try {
+      await CommitmentsApi.respondToCommitment(commitmentId, {
+        action,
+        notes: respondNotes.trim() || undefined,
+      });
+
+      const actionText =
+        action === "ACCEPT"
+          ? "Term Sheet accepted! Next: Legal due diligence and closing."
+          : action === "DECLINE"
+          ? "Term Sheet declined."
+          : "Negotiation note sent to investor.";
+
+      toast.success(actionText);
+      setRespondingCommitmentId(null);
+      setRespondNotes("");
+      fetchCommitments();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to submit response");
+    } finally {
+      setIsSubmittingResponse(false);
     }
   }
 
@@ -418,6 +467,31 @@ export function InvestorMatchesPage() {
               {!sentIntros.some((i) => i.status === "ACCEPTED") &&
                 sentIntros.some((i) => i.status === "DECLINED") &&
                 " • Responded"}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveMainTab("TERM_SHEETS")}
+          className={`inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold font-heading transition-all cursor-pointer ${
+            activeMainTab === "TERM_SHEETS"
+              ? "bg-[#064e3b] text-white shadow-md shadow-emerald-950/10"
+              : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80"
+          }`}
+        >
+          <Scale className="h-4 w-4" />
+          <span>Incoming Term Sheets</span>
+          {commitments.length > 0 && (
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                commitments.some((c) => c.status === "PROPOSED" || c.status === "NEGOTIATING")
+                  ? "bg-emerald-600 text-white animate-pulse"
+                  : "bg-emerald-100 text-emerald-800"
+              }`}
+            >
+              {commitments.length}
+              {commitments.some((c) => c.status === "PROPOSED") && " • New Offer"}
             </span>
           )}
         </button>
@@ -766,22 +840,31 @@ export function InvestorMatchesPage() {
                   {/* Detailed Investor Decision & Feedback Section */}
                   {intro.status === "ACCEPTED" ? (
                     <div className="rounded-2xl bg-emerald-50/90 p-4 border border-emerald-300 text-xs space-y-2 text-emerald-950 shadow-xs">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="font-bold font-heading flex items-center gap-1.5 text-emerald-900 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                           <span>Pitch Accepted by Investor!</span>
                         </span>
-                        {intro.investor?.email && (
-                          <a
-                            href={`mailto:${intro.investor.email}?subject=Next Steps: ${encodeURIComponent(
-                              intro.startupName
-                            )} & Syndicate Review`}
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] text-white px-3 py-1.5 text-[11px] font-bold font-heading shadow-xs transition-all"
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href="/dashboard/entrepreneur/messages"
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 text-[11px] font-bold font-heading shadow-xs transition-all"
                           >
-                            <Mail className="h-3.5 w-3.5" />
-                            <span>Email Investor</span>
-                          </a>
-                        )}
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            <span>Open Deal Room Chat</span>
+                          </Link>
+                          {intro.investor?.email && (
+                            <a
+                              href={`mailto:${intro.investor.email}?subject=Next Steps: ${encodeURIComponent(
+                                intro.startupName
+                              )} & Syndicate Review`}
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-900 px-3 py-1.5 text-[11px] font-semibold font-heading shadow-xs transition-all"
+                            >
+                              <Mail className="h-3.5 w-3.5" />
+                              <span>Email</span>
+                            </a>
+                          )}
+                        </div>
                       </div>
                       <div className="bg-white/90 p-3 rounded-xl border border-emerald-200 font-body">
                         <p className="text-[11px] font-bold text-emerald-900 font-heading mb-0.5">
@@ -845,6 +928,323 @@ export function InvestorMatchesPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 3: INCOMING TERM SHEETS & COMMITMENTS                     */}
+      {/* ============================================================== */}
+      {activeMainTab === "TERM_SHEETS" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 font-heading">
+                Incoming Term Sheets & Indicative Offers
+              </h3>
+              <p className="text-xs text-slate-500 font-body">
+                Formal non-binding capital offers issued by accredited investors who accepted your pitch.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={fetchCommitments}
+              className="p-2 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+              title="Refresh term sheets"
+            >
+              <RefreshCw className={`h-4 w-4 ${loadingCommitments ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+
+          {loadingCommitments ? (
+            <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center space-y-3">
+              <RefreshCw className="h-6 w-6 animate-spin mx-auto text-emerald-700" />
+              <p className="text-xs text-slate-500 font-body">Loading your term sheets...</p>
+            </div>
+          ) : commitments.length === 0 ? (
+            <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-12 text-center space-y-3">
+              <Scale className="h-10 w-10 text-slate-400 mx-auto" />
+              <h4 className="text-base font-black text-slate-900 font-heading">
+                No term sheets received yet
+              </h4>
+              <p className="text-xs text-slate-500 font-body max-w-sm mx-auto">
+                Once an investor accepts your pitch introduction, they can issue formal SAFE notes or equity terms directly to your company.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {commitments.map((c) => {
+                const formattedAmt = new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: c.currency || "USD",
+                  maximumFractionDigits: 0,
+                }).format(c.amount);
+
+                const formattedVal = c.valuation
+                  ? new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      maximumFractionDigits: 0,
+                    }).format(c.valuation)
+                  : null;
+
+                const isAccepted = c.status === "ACCEPTED";
+                const isDeclined = c.status === "DECLINED";
+                const isNegotiating = c.status === "NEGOTIATING";
+                const isResponding = respondingCommitmentId === c.id;
+
+                return (
+                  <div
+                    key={c.id}
+                    className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs space-y-4 hover:border-emerald-300 transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-3">
+                        {c.investor?.image ? (
+                          <img
+                            src={c.investor.image}
+                            alt={c.investor.name}
+                            className="h-11 w-11 rounded-2xl object-cover border border-emerald-200"
+                          />
+                        ) : (
+                          <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-800 grid place-items-center font-heading font-black">
+                            <Scale className="h-5 w-5" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-base font-black text-slate-900 font-heading">
+                              {c.investor?.name || "Verified Investor"}
+                            </h4>
+                            {c.investor?.isVerified && (
+                              <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500 font-body">
+                            {c.investor?.company} · {c.investor?.designation}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Status */}
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold font-heading ${
+                          isAccepted
+                            ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                            : isDeclined
+                            ? "bg-rose-100 text-rose-900 border border-rose-200"
+                            : isNegotiating
+                            ? "bg-blue-100 text-blue-900 border border-blue-200"
+                            : "bg-amber-100 text-amber-900 border border-amber-200 animate-pulse"
+                        }`}
+                      >
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>
+                          {isAccepted
+                            ? "Term Sheet Accepted"
+                            : isDeclined
+                            ? "Term Sheet Declined"
+                            : isNegotiating
+                            ? "In Terms Negotiation"
+                            : "Awaiting Your Decision"}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Financial Terms highlight */}
+                    <div className="grid gap-3 sm:grid-cols-3 bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                          Offered Ticket Size
+                        </span>
+                        <div className="text-xl font-bold font-heading text-emerald-900 mt-0.5">
+                          {formattedAmt}
+                        </div>
+                        <span className="text-[11px] font-semibold text-emerald-700">
+                          Vehicle: {c.instrument.replace("_", " ")}
+                        </span>
+                      </div>
+
+                      {formattedVal && (
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                            Valuation Cap
+                          </span>
+                          <div className="text-xl font-bold font-heading text-slate-900 mt-0.5">
+                            {formattedVal}
+                          </div>
+                          <span className="text-[11px] text-slate-500">Post-money SAFE</span>
+                        </div>
+                      )}
+
+                      {c.equityPercentage && (
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                            Equity Ownership
+                          </span>
+                          <div className="text-xl font-bold font-heading text-slate-900 mt-0.5">
+                            {c.equityPercentage}%
+                          </div>
+                          <span className="text-[11px] text-slate-500">Target equity allocation</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Terms Summary */}
+                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs text-slate-700 space-y-1">
+                      <strong className="block text-slate-900 font-bold font-heading">
+                        Proposed Governance & Covenants:
+                      </strong>
+                      <p className="font-body leading-relaxed whitespace-pre-wrap">
+                        {c.termsSummary}
+                      </p>
+                    </div>
+
+                    {/* Investor Note if provided */}
+                    {c.investorNotes && (
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs italic text-slate-600">
+                        <span className="font-bold text-slate-800 not-italic mr-1.5 font-heading">
+                          Investor Note:
+                        </span>
+                        &ldquo;{c.investorNotes}&rdquo;
+                      </div>
+                    )}
+
+                    {/* Founder response notes if already answered */}
+                    {c.entrepreneurNotes && (
+                      <div className="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200 text-xs italic text-emerald-900">
+                        <span className="font-bold text-emerald-950 not-italic mr-1.5 font-heading">
+                          Your Recorded Note:
+                        </span>
+                        &ldquo;{c.entrepreneurNotes}&rdquo;
+                      </div>
+                    )}
+
+                    {/* Response Controls (If pending or negotiating) */}
+                    {!isAccepted && !isDeclined && (
+                      <div className="pt-2 border-t border-slate-100 space-y-3">
+                        {isResponding ? (
+                          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <label className="block text-xs font-bold text-slate-700 font-heading">
+                              Add Note / Counter-Proposal to Investor (Optional):
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={respondNotes}
+                              onChange={(e) => setRespondNotes(e.target.value)}
+                              placeholder="e.g. We are ready to sign, or we would like to negotiate valuation cap..."
+                              className="w-full rounded-xl border border-slate-300 p-2.5 text-xs text-slate-800 outline-none focus:border-emerald-600 bg-white"
+                            />
+                            <div className="flex flex-wrap items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setRespondingCommitmentId(null)}
+                                className="rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSubmittingResponse}
+                                onClick={() => handleRespondCommitment(c.id, "DECLINE")}
+                                className="rounded-xl bg-rose-50 text-rose-700 border border-rose-200 px-3.5 py-1.5 text-xs font-bold font-heading hover:bg-rose-100"
+                              >
+                                Decline
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSubmittingResponse}
+                                onClick={() => handleRespondCommitment(c.id, "NEGOTIATE")}
+                                className="rounded-xl bg-blue-50 text-blue-700 border border-blue-200 px-3.5 py-1.5 text-xs font-bold font-heading hover:bg-blue-100"
+                              >
+                                Request Negotiation
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSubmittingResponse}
+                                onClick={() => handleRespondCommitment(c.id, "ACCEPT")}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] text-white px-4 py-1.5 text-xs font-bold font-heading hover:bg-[#043d2e] shadow-sm"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+                                <span>Accept Term Sheet</span>
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                              {c.termSheetDocUrl && (
+                                <a
+                                  href={c.termSheetDocUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-800 underline"
+                                >
+                                  <Download className="h-3.5 w-3.5" />
+                                  <span>Download Term Sheet PDF</span>
+                                </a>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href="/dashboard/entrepreneur/messages"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3.5 py-1.5 text-xs font-bold font-heading text-slate-700 transition"
+                              >
+                                <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
+                                <span>Deal Chat</span>
+                              </Link>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setRespondingCommitmentId(c.id);
+                                  setRespondNotes("");
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] text-white px-4 py-1.5 text-xs font-bold font-heading shadow-sm transition"
+                              >
+                                <Scale className="h-3.5 w-3.5 text-emerald-300" />
+                                <span>Respond to Term Sheet</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Actions if already accepted */}
+                    {isAccepted && (
+                      <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <span>Offer Accepted · Proceed to Legal Closing & Syndicate Wire</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {c.termSheetDocUrl && (
+                            <a
+                              href={c.termSheetDocUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700"
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                              <span>View Executed PDF</span>
+                            </a>
+                          )}
+                          <Link
+                            href="/dashboard/entrepreneur/messages"
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-[#064e3b] hover:bg-[#043d2e] text-white px-3.5 py-1.5 text-xs font-bold font-heading shadow-xs"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5 text-emerald-300" />
+                            <span>Open Deal Room Chat</span>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -1035,7 +1435,7 @@ export function InvestorMatchesPage() {
                         <UploadCloud className="h-5 w-5" />
                       </div>
                       <p className="text-xs font-bold font-heading text-slate-800 mt-1">
-                        {isUploadingDeck ? "Uploading to Cloudflare R2 Vault..." : "Drop Pitch Deck PDF/PPTX here"}
+                        {isUploadingDeck ? "Uploading to Secure Vault..." : "Drop Pitch Deck PDF/PPTX here"}
                       </p>
                       <p className="text-[10px] text-slate-400 font-body">
                         PDF or PowerPoint up to 50MB. Stored securely and delivered to this investor.
@@ -1188,7 +1588,7 @@ export function InvestorMatchesPage() {
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>Cloudflare Private Vault signed document inspection</span>
+                <span>Private Vault signed document inspection</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 font-semibold font-body">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />

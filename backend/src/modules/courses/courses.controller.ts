@@ -20,9 +20,12 @@ import { RequestPayoutDto, UpdatePayoutStatusDto } from './dto/payout.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { AdminPermission } from '../../common/enums/admin-permission.enum';
 import { CourseLevel, CourseStatus, PayoutStatus } from '@prisma/client';
 
 @Controller('courses')
@@ -223,15 +226,17 @@ export class CoursesController {
   // 5. ADMIN MANAGEMENT & PAYOUTS
   // ==========================================
   @Get('admin/all')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.CAMPAIGN_MANAGEMENT, AdminPermission.ANALYTICS_ACCESS)
   async getAdminAllCourses() {
     return this.coursesService.getAdminCourses();
   }
 
   @Patch('admin/:id/status')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.CAMPAIGN_MANAGEMENT)
   async updateCourseStatusByAdmin(
     @Param('id', ParseUUIDPipe) courseId: string,
     @Body('status') status?: CourseStatus,
@@ -241,15 +246,17 @@ export class CoursesController {
   }
 
   @Get('admin/payouts')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.ANALYTICS_ACCESS, AdminPermission.SUBSCRIPTION_MANAGEMENT)
   async getAdminPayouts(@Query('status') status?: PayoutStatus) {
     return this.coursesService.getAdminPayouts(status);
   }
 
   @Patch('admin/payouts/:id/status')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Permissions(AdminPermission.ANALYTICS_ACCESS, AdminPermission.SUBSCRIPTION_MANAGEMENT)
   async updatePayoutStatus(
     @Param('id', ParseUUIDPipe) payoutId: string,
     @CurrentUser('id') adminUserId: string,

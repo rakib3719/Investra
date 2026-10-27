@@ -26,10 +26,32 @@ import {
   ConnectFounderModal,
   type ConnectFounderTarget,
 } from "@/components/deals/ConnectFounderModal";
+import { useSubscriptionGate } from "@/lib/auth/useSubscriptionGate";
+import { SubscriptionRequiredModal } from "@/components/auth/SubscriptionRequiredModal";
 
 export function WatchlistPage() {
   const [activeConnectCampaign, setActiveConnectCampaign] =
     useState<ConnectFounderTarget | null>(null);
+
+  const {
+    isModalOpen: isSubGateOpen,
+    gateContext: subGateContext,
+    executeWithSubscriptionGate,
+    closeModal: closeSubGate,
+  } = useSubscriptionGate();
+
+  const handleConnectClick = (deal: ConnectFounderTarget) => {
+    executeWithSubscriptionGate(
+      () => setActiveConnectCampaign(deal),
+      {
+        title: "Investor Subscription Required",
+        actionName: "connect with startup founders",
+        description:
+          "An active Investor subscription is required to open deal rooms and message founders directly.",
+        targetRole: "investor",
+      }
+    );
+  };
 
   const { data: bookmarks = [], isLoading } = useBookmarksQuery();
   const toggleBookmark = useToggleBookmarkMutation();
@@ -212,8 +234,8 @@ export function WatchlistPage() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => setActiveConnectCampaign(camp)}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700/20 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition"
+                        onClick={() => handleConnectClick(camp)}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700/20 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
                       >
                         <Handshake className="h-3.5 w-3.5" />
                         Connect
@@ -247,6 +269,16 @@ export function WatchlistPage() {
         isOpen={Boolean(activeConnectCampaign)}
         onClose={() => setActiveConnectCampaign(null)}
         campaign={activeConnectCampaign}
+      />
+
+      {/* Subscription Required Modal */}
+      <SubscriptionRequiredModal
+        isOpen={isSubGateOpen}
+        onClose={closeSubGate}
+        title={subGateContext.title}
+        actionName={subGateContext.actionName}
+        description={subGateContext.description}
+        targetRole="investor"
       />
     </div>
   );

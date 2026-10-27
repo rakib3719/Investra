@@ -17,6 +17,10 @@ import { KycModule } from './modules/kyc/kyc.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { CoursesModule } from './modules/courses/courses.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { CommitmentsModule } from './modules/commitments/commitments.module';
+import { ConsultationsModule } from './modules/consultations/consultations.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { PortfolioModule } from './modules/portfolio/portfolio.module';
     SubscriptionsModule,
     CoursesModule,
     PortfolioModule,
+    MessagesModule,
+    CommitmentsModule,
+    ConsultationsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -15,6 +15,10 @@ describe('BookmarksService', () => {
       findUnique: jest.fn(),
       delete: jest.fn(),
       findMany: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
+    },
+    userSubscription: {
+      findFirst: jest.fn().mockResolvedValue(null),
     },
   };
 

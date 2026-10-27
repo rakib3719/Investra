@@ -10,20 +10,23 @@ import {
 import { EntrepreneurOverviewPage } from "./pages/EntrepreneurOverviewPage";
 import { FundraisingPage } from "./pages/FundraisingPage";
 import { InvestorMatchesPage } from "./pages/InvestorMatchesPage";
+import { EntrepreneurMessagesPage } from "./pages/EntrepreneurMessagesPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { EntrepreneurSettingsPage } from "./pages/EntrepreneurSettingsPage";
 import { ProfileWorkspaceCard } from "@/components/dashboard/shared/ProfileWorkspaceCard";
 import { KycVerificationCard } from "@/components/dashboard/shared/KycVerificationCard";
 import { UserSubscriptionDashboardView } from "@/components/dashboard/shared/UserSubscriptionDashboardView";
 import { MyCoursesPage } from "@/components/dashboard/shared/MyCoursesPage";
+import { MyConsultationsPage } from "@/components/dashboard/shared/MyConsultationsPage";
 
 const sectionComponents: Record<
-  Exclude<EntrepreneurSection, "settings" | "profile" | "kyc" | "subscription" | "courses">,
+  Exclude<EntrepreneurSection, "settings" | "profile" | "kyc" | "subscription" | "courses" | "consultations">,
   ComponentType
 > = {
   overview: EntrepreneurOverviewPage,
   campaigns: FundraisingPage,
   matches: InvestorMatchesPage,
+  messages: EntrepreneurMessagesPage,
   analytics: AnalyticsPage,
 };
 
@@ -51,6 +54,8 @@ export function EntrepreneurWorkspace({
     content = <UserSubscriptionDashboardView user={user} />;
   } else if (activeSection === "courses") {
     content = <MyCoursesPage user={user} />;
+  } else if (activeSection === "consultations") {
+    content = <MyConsultationsPage user={user} />;
   } else {
     const SectionComponent = sectionComponents[activeSection];
     content = <SectionComponent />;

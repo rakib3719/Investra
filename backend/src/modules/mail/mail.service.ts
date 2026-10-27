@@ -8,6 +8,8 @@ import {
   buildVerificationEmail,
   buildPasswordResetEmail,
   buildPasswordChangedEmail,
+  buildSessionBookingEmail,
+  buildGeneralNotificationEmail,
 } from './templates';
 
 @Injectable()
@@ -92,6 +94,92 @@ export class MailService {
 
     return this.send({
       to: email,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+    });
+  }
+
+  async sendSessionBookingEmails(payload: {
+    clientEmail: string;
+    clientName: string;
+    consultantEmail: string;
+    consultantName: string;
+    topic: string;
+    dateStr: string;
+    timeStr: string;
+    durationMinutes: number;
+    meetingLink: string;
+    meetingPlatform: string;
+    amount: string;
+  }): Promise<void> {
+    const clientTemplate = buildSessionBookingEmail({
+      recipientName: payload.clientName,
+      isConsultant: false,
+      clientName: payload.clientName,
+      consultantName: payload.consultantName,
+      topic: payload.topic,
+      dateStr: payload.dateStr,
+      timeStr: payload.timeStr,
+      durationMinutes: payload.durationMinutes,
+      meetingLink: payload.meetingLink,
+      meetingPlatform: payload.meetingPlatform,
+      amount: payload.amount,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    const consultantTemplate = buildSessionBookingEmail({
+      recipientName: payload.consultantName,
+      isConsultant: true,
+      clientName: payload.clientName,
+      consultantName: payload.consultantName,
+      topic: payload.topic,
+      dateStr: payload.dateStr,
+      timeStr: payload.timeStr,
+      durationMinutes: payload.durationMinutes,
+      meetingLink: payload.meetingLink,
+      meetingPlatform: payload.meetingPlatform,
+      amount: payload.amount,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    await Promise.allSettled([
+      this.send({
+        to: payload.clientEmail,
+        subject: clientTemplate.subject,
+        text: clientTemplate.text,
+        html: clientTemplate.html,
+      }),
+      this.send({
+        to: payload.consultantEmail,
+        subject: consultantTemplate.subject,
+        text: consultantTemplate.text,
+        html: consultantTemplate.html,
+      }),
+    ]);
+  }
+
+  async sendNotificationEmail(payload: {
+    to: string;
+    recipientName: string;
+    title: string;
+    message: string;
+    actionUrl?: string;
+    actionText?: string;
+    category?: string;
+  }): Promise<boolean> {
+    const template = buildGeneralNotificationEmail({
+      recipientName: payload.recipientName,
+      title: payload.title,
+      message: payload.message,
+      actionUrl: payload.actionUrl,
+      actionText: payload.actionText,
+      category: payload.category,
+      frontendUrl: env.FRONTEND_URL,
+    });
+
+    return this.send({
+      to: payload.to,
       subject: template.subject,
       text: template.text,
       html: template.html,

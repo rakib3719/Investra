@@ -48,51 +48,50 @@ const blogData: BlogPost[] = [
 
 const BlogHome = () => {
   return (
-    <section className="w-full bg-white py-16 md:py-24 border-b border-slate-100 relative overflow-hidden">
+    <section className="w-full bg-white py-[55px] md:py-[89px] border-b border-slate-100 relative overflow-hidden">
       
-      {/* Very clean layout - no heavy colorful blobs, just pure white and structured grids */}
       <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px]">
         
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="max-w-xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#064e3b] font-heading">
-              Latest Insights
+        {/* Header Section: Golden Ratio 1.618fr : 1fr Split */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.618fr_1fr] items-end justify-between gap-[26px] mb-[42px]">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#064e3b] font-heading">
+              Latest Insights • Thought Leadership
             </span>
-            <h2 className="text-3xl md:text-4xl font-heading font-black text-[#1e293b] leading-tight mt-2">
+            <h2 className="text-[34px] md:text-[42px] font-heading font-black text-[#1e293b] leading-[1.15] mt-2">
               Your Go-To Resource for <span className="text-[#064e3b] italic">Sustainable Wealth</span>
             </h2>
           </div>
-          <div className="max-w-md">
-            <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
+          <div>
+            <p className="text-[13px] md:text-[14px] text-slate-600 leading-[24px] font-body">
               Stay ahead with financial analyses, regulatory ESG changes, and real performance metrics from eco-friendly projects worldwide.
             </p>
           </div>
         </div>
 
-        {/* Blogs Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        {/* Blogs Grid: Golden Ratio Split (1fr : 1.618fr) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.618fr] gap-[26px] lg:gap-[34px] items-stretch">
           
-          {/* Left Column - Large Main Blog Post (40% space on desktop) */}
-          <article className="lg:col-span-5 border border-slate-100 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-200/60 transition-all duration-300 flex flex-col justify-between bg-slate-50/30 group">
-            <div className="space-y-4">
-              {/* Image box */}
-              <div className="h-[240px] sm:h-[300px] w-full relative overflow-hidden bg-slate-50 border-b border-slate-100">
+          {/* Left Column - Large Main Blog Post (38.2% space on desktop) */}
+          <article className="border border-slate-200/80 rounded-[26px] overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between bg-slate-50/40 group">
+            <div className="space-y-[16px]">
+              {/* Image box: Golden Rectangle Aspect Ratio */}
+              <div className="w-full aspect-[1.618/1] relative overflow-hidden bg-slate-100 border-b border-slate-200/80">
                 <Image
                   alt={blogData[0].title}
                   src={blogData[0].image}
                   fill
                   sizes="(max-w-768px) 100vw, 40vw"
-                  className="object-cover transition-transform duration-[1s] group-hover:scale-103"
+                  className="object-cover transition-transform duration-[1s] group-hover:scale-105"
                 />
-                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-xs text-[#064e3b] text-[10px] font-heading font-bold px-2.5 py-1 rounded-full shadow-xs">
+                <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs text-[#064e3b] text-[10px] font-heading font-bold px-[10px] py-[4px] rounded-full shadow-xs">
                   {blogData[0].category}
                 </span>
               </div>
               
               {/* Text box */}
-              <div className="p-6 space-y-3">
-                <div className="flex items-center gap-4 text-[10px] md:text-xs text-slate-400 font-body">
+              <div className="p-[26px] space-y-[13px]">
+                <div className="flex items-center gap-4 text-[11px] text-slate-400 font-body">
                   <div className="flex items-center gap-1.5">
                     <CiCalendar className="w-3.5 h-3.5" />
                     <span>{blogData[0].date}</span>
@@ -103,21 +102,21 @@ const BlogHome = () => {
                   </div>
                 </div>
                 
-                <h3 className="text-lg md:text-xl font-heading font-bold text-[#1e293b] leading-tight group-hover:text-[#064e3b] transition-colors">
+                <h3 className="text-[18px] md:text-[21px] font-heading font-black text-[#1e293b] leading-tight group-hover:text-[#064e3b] transition-colors">
                   {blogData[0].title}
                 </h3>
                 
-                <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
+                <p className="text-[13px] text-slate-600 leading-[21px] font-body">
                   {blogData[0].description}
                 </p>
               </div>
             </div>
 
             {/* Read more footer */}
-            <div className="p-6 pt-0">
+            <div className="p-[26px] pt-0">
               <a 
                 href={`/blog/${blogData[0].id}`}
-                className="inline-flex items-center gap-1.5 text-[#064e3b] hover:text-[#043c2e] text-xs font-bold font-heading group/link"
+                className="inline-flex items-center gap-1.5 text-[#064e3b] hover:text-[#043c2e] text-[13px] font-bold font-heading group/link"
               >
                 <span>Read Full Analysis</span>
                 <FiArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
@@ -125,31 +124,31 @@ const BlogHome = () => {
             </div>
           </article>
 
-          {/* Right Column - Two Smaller Blog Posts (60% space on desktop) */}
-          <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
+          {/* Right Column - Two Smaller Blog Posts (61.8% space on desktop) */}
+          <div className="flex flex-col gap-[26px] justify-between">
             {blogData.slice(1).map((blog) => (
               <article 
                 key={blog.id} 
-                className="border border-slate-100 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-200/60 transition-all duration-300 flex flex-col md:flex-row bg-slate-50/30 group flex-1"
+                className="border border-slate-200/80 rounded-[21px] overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row bg-slate-50/40 group flex-1"
               >
                 {/* Image */}
-                <div className="md:w-[40%] h-[180px] md:h-full relative overflow-hidden bg-slate-50 border-b md:border-b-0 md:border-r border-slate-100 flex-shrink-0">
+                <div className="md:w-[38.2%] h-[200px] md:h-full relative overflow-hidden bg-slate-100 border-b md:border-b-0 md:border-r border-slate-200/80 flex-shrink-0">
                   <Image
                     alt={blog.title}
                     src={blog.image}
                     fill
                     sizes="(max-w-768px) 100vw, 25vw"
-                    className="object-cover transition-transform duration-[1s] group-hover:scale-103"
+                    className="object-cover transition-transform duration-[1s] group-hover:scale-105"
                   />
-                  <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-xs text-[#064e3b] text-[10px] font-heading font-bold px-2.5 py-1 rounded-full shadow-xs">
+                  <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs text-[#064e3b] text-[10px] font-heading font-bold px-[10px] py-[4px] rounded-full shadow-xs">
                     {blog.category}
                   </span>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 flex flex-col justify-between flex-1 space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-4 text-[10px] md:text-xs text-slate-400 font-body">
+                <div className="p-[26px] flex flex-col justify-between flex-1 space-y-[13px]">
+                  <div className="space-y-[8px]">
+                    <div className="flex items-center gap-4 text-[11px] text-slate-400 font-body">
                       <div className="flex items-center gap-1.5">
                         <CiCalendar className="w-3.5 h-3.5" />
                         <span>{blog.date}</span>
@@ -160,11 +159,11 @@ const BlogHome = () => {
                       </div>
                     </div>
                     
-                    <h3 className="text-base md:text-lg font-heading font-bold text-[#1e293b] leading-snug group-hover:text-[#064e3b] transition-colors">
+                    <h3 className="text-[17px] md:text-[19px] font-heading font-bold text-[#1e293b] leading-snug group-hover:text-[#064e3b] transition-colors">
                       {blog.title}
                     </h3>
                     
-                    <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
+                    <p className="text-[13px] text-slate-600 leading-[21px] font-body line-clamp-2">
                       {blog.description}
                     </p>
                   </div>
@@ -172,7 +171,7 @@ const BlogHome = () => {
                   <div>
                     <a 
                       href={`/blog/${blog.id}`}
-                      className="inline-flex items-center gap-1.5 text-[#064e3b] hover:text-[#043c2e] text-xs font-bold font-heading group/link"
+                      className="inline-flex items-center gap-1.5 text-[#064e3b] hover:text-[#043c2e] text-[13px] font-bold font-heading group/link"
                     >
                       <span>Read Article</span>
                       <FiArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />

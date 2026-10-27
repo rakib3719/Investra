@@ -78,21 +78,21 @@ const PlatformPillars = () => {
   ];
 
   return (
-    <section className="w-full bg-[#f4f5f6] py-16 md:py-24">
+    <section className="w-full bg-[#f4f5f6]/80 py-[55px] md:py-[89px]">
       <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px]">
         
-        {/* Top Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
-          <div className="space-y-3">
+        {/* Top Header Section with Golden Ratio Spacing */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-[21px] mb-[42px]">
+          <div className="space-y-[10px]">
             {/* Pill tag style */}
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-slate-800 font-heading">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
-              <span>Core Modules</span>
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-800 font-heading uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-700" />
+              <span>Core Platform Modules</span>
               <span className="text-slate-400 font-normal">➔</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+              <span>Phi Balance</span>
             </div>
             
-            <h2 className="text-3xl md:text-[42px] font-heading font-black text-slate-900 leading-tight">
+            <h2 className="text-[34px] md:text-[42px] font-heading font-black text-slate-900 leading-[1.15]">
               Our Four Pillars of <br className="hidden md:block" />
               Venture Connection.
             </h2>
@@ -101,7 +101,7 @@ const PlatformPillars = () => {
           <div>
             <a
               href="/funds"
-              className="inline-flex items-center gap-2 bg-[#064e3b] hover:bg-[#043c2e] text-white text-xs font-bold px-6 py-3 rounded-xl transition-all duration-300 font-heading shadow-xs hover:shadow-md"
+              className="inline-flex items-center gap-[8px] bg-[#064e3b] hover:bg-[#043c2e] text-white text-[13px] font-bold px-[26px] py-[13px] rounded-[10px] transition-all duration-300 font-heading shadow-xs hover:shadow-md cursor-pointer"
             >
               <span>View All Campaigns</span>
               <ArrowRight className="w-4 h-4 text-white" />
@@ -109,11 +109,11 @@ const PlatformPillars = () => {
           </div>
         </div>
 
-        {/* Dynamic Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-12">
+        {/* Dynamic Content Layout: Golden Ratio Split (1fr : 1.618fr) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.618fr] gap-[26px] lg:gap-[34px] items-center">
           
-          {/* Left Column - Pillar Selector List */}
-          <div className="lg:col-span-4 flex flex-col gap-3.5">
+          {/* Left Column (38.2%) - Pillar Selector List */}
+          <div className="flex flex-col gap-[13px]">
             {pillarsData.map((item) => {
               const isActive = activeTab === item.id;
               const Icon = item.icon;
@@ -123,15 +123,15 @@ const PlatformPillars = () => {
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   className={cn(
-                    "flex items-center gap-4 px-6 py-4.5 rounded-[20px] transition-all duration-300 font-heading font-bold text-xs md:text-sm text-left w-full shadow-xs border",
+                    "flex items-center gap-[16px] px-[21px] py-[16px] rounded-[16px] transition-all duration-300 font-heading font-bold text-xs md:text-sm text-left w-full shadow-2xs border cursor-pointer",
                     isActive
-                      ? "bg-[#064e3b]/10 border-[#064e3b]/20 text-[#064e3b] font-extrabold shadow-md scale-102"
-                      : "bg-white border-transparent text-slate-700 hover:text-slate-900 hover:bg-white/80"
+                      ? "bg-[#064e3b] border-[#064e3b] text-white font-extrabold shadow-md scale-102"
+                      : "bg-white border-slate-200/80 text-slate-700 hover:text-slate-900 hover:bg-white/90"
                   )}
                 >
                   <span className={cn(
                     "p-2.5 rounded-xl flex items-center justify-center transition-colors duration-300",
-                    isActive ? "bg-white text-[#064e3b]" : "bg-slate-50 text-slate-500"
+                    isActive ? "bg-white/20 text-white" : "bg-slate-50 text-slate-500"
                   )}>
                     <Icon className="w-5 h-5" />
                   </span>
@@ -141,12 +141,12 @@ const PlatformPillars = () => {
             })}
           </div>
 
-          {/* Right Column - Unified Card Layout */}
-          <div className="lg:col-span-8 bg-white rounded-[32px] p-6 md:p-8 shadow-xs border border-slate-100/50">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          {/* Right Column (61.8%) - Unified Card Layout */}
+          <div className="bg-white rounded-[26px] p-[26px] md:p-[34px] shadow-sm border border-slate-200/80">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_1.382fr] gap-[26px] items-center">
               
-              {/* Card Image */}
-              <div className="md:col-span-5 relative w-full h-[220px] md:h-[320px] rounded-[24px] overflow-hidden shadow-xs">
+              {/* Card Image: Golden Rectangle Proportion */}
+              <div className="relative w-full aspect-[1.2/1] md:aspect-[1.382/1] rounded-[21px] overflow-hidden shadow-xs border border-slate-100">
                 <Image
                   src={pillarsData[activeTab].image}
                   alt={pillarsData[activeTab].title}
@@ -158,23 +158,23 @@ const PlatformPillars = () => {
               </div>
 
               {/* Card Text & Bullets */}
-              <div className="md:col-span-7 space-y-5">
-                <h3 className="text-xl md:text-2xl font-heading font-black text-slate-900 leading-tight">
+              <div className="space-y-[16px]">
+                <h3 className="text-[21px] md:text-[26px] font-heading font-black text-slate-900 leading-tight">
                   {pillarsData[activeTab].heading}
                 </h3>
                 
-                <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-body">
+                <p className="text-[13px] md:text-[14px] text-slate-600 leading-[22px] font-body">
                   {pillarsData[activeTab].details}
                 </p>
 
                 {/* Bullet Points with check inside circle */}
-                <ul className="space-y-3 pt-2">
+                <ul className="space-y-[10px] pt-[6px]">
                   {pillarsData[activeTab].points.map((point, index) => (
-                    <li key={index} className="flex items-center gap-3 text-xs md:text-sm text-slate-700">
+                    <li key={index} className="flex items-center gap-[10px] text-[12px] md:text-[13px] text-slate-700">
                       <span className="w-5 h-5 rounded-full bg-[#064e3b] text-white flex items-center justify-center text-[10px] flex-shrink-0">
                         <Check className="w-3 h-3 text-white" strokeWidth={3} />
                       </span>
-                      <span className="font-body leading-none">{point}</span>
+                      <span className="font-body leading-tight">{point}</span>
                     </li>
                   ))}
                 </ul>

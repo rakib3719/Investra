@@ -22,6 +22,9 @@ describe("AdminUsersService", () => {
       count: jest.fn<any>(),
       aggregate: jest.fn<any>(),
     },
+    userVerification: {
+      count: jest.fn<any>().mockResolvedValue(0),
+    },
     $transaction: jest.fn<any>(),
   };
 

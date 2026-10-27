@@ -189,7 +189,7 @@ export function AdminKycPage() {
               </h2>
             </div>
             <p className="mt-1 text-xs text-slate-500 max-w-2xl leading-relaxed">
-              Compliance officers review private NID documents, passports, and liveness selfies stored in encrypted Cloudflare R2 private bucket (<code className="text-[#064e3b] font-mono font-bold">investra-private</code>). Files are rendered on-demand with cryptographically signed 15-minute access tickets.
+              Compliance officers review private NID documents, passports, and liveness selfies stored in encrypted compliance vault storage. Files are rendered on-demand with cryptographically signed access tickets.
             </p>
           </div>
 
@@ -451,7 +451,7 @@ export function AdminKycPage() {
                     KYC Document Audit Dossier
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Encrypted Cloudflare R2 Private Bucket Access
+                    Encrypted Private Compliance Vault Access
                   </p>
                 </div>
               </div>

@@ -94,6 +94,16 @@ const CATEGORY_LIMITS: Record<MediaCategory, { maxBytes: number; label: string; 
     label: 'Upload Pitch / Introduction Video (MP4, WebM, MOV up to 150MB)',
     accept: 'video/mp4,video/webm,video/quicktime',
   },
+  CHAT_ATTACHMENT: {
+    maxBytes: 50 * 1024 * 1024,
+    label: 'Upload Chat Attachment (PDF, Image, Zip, Doc up to 50MB)',
+    accept: 'application/pdf,image/jpeg,image/png,image/webp,application/zip,application/x-zip-compressed,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword',
+  },
+  TERM_SHEET_DOCUMENT: {
+    maxBytes: 25 * 1024 * 1024,
+    label: 'Upload Term Sheet Document (PDF, Doc up to 25MB)',
+    accept: 'application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword',
+  },
 };
 
 export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
@@ -304,7 +314,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
           <div className="space-y-4 py-2">
             <div className="flex items-center justify-center space-x-2 text-[#064e3b]">
               <Loader2 className="w-5 h-5 animate-spin text-[#064e3b]" />
-              <span className="text-xs font-bold text-slate-800">Direct Uploading to Cloudflare R2...</span>
+              <span className="text-xs font-bold text-slate-800">Uploading file securely...</span>
             </div>
 
             {/* Progress Bar */}

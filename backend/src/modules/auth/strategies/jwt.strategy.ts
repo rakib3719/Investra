@@ -61,6 +61,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         accountStatus: true,
         createdAt: true,
         updatedAt: true,
+        subAdminProfile: {
+          select: {
+            permissions: true,
+            department: true,
+          },
+        },
       },
     });
 
@@ -80,7 +86,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           : user.coverImage)
       : user.coverImage;
 
-    const { avatarMedia: _avatarMedia, coverMedia: _coverMedia, ...userData } = user;
+    const {
+      avatarMedia: _avatarMedia,
+      coverMedia: _coverMedia,
+      subAdminProfile,
+      ...userData
+    } = user;
 
     if (!user.isEmailVerified || user.accountStatus !== 'ACTIVE') {
       throw new UnauthorizedException('Your account is not active');
@@ -94,6 +105,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ...userData,
       image: resolvedImage,
       coverImage: resolvedCoverImage,
+      permissions: subAdminProfile?.permissions ?? [],
+      department: subAdminProfile?.department ?? null,
     };
   }
 }

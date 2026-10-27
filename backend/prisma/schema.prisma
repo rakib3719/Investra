@@ -57,6 +57,16 @@ model User {
   payoutRequests      ConsultantPayout[]     @relation("ConsultantPayoutRequests")
   sentIntroRequests   InvestorIntroRequest[] @relation("SentIntroRequests")
   receivedIntroRequests InvestorIntroRequest[] @relation("ReceivedIntroRequests")
+  conversationsAsUser1 Conversation[]     @relation("ConversationUser1")
+  conversationsAsUser2 Conversation[]     @relation("ConversationUser2")
+  messagesSent         DirectMessage[]    @relation("SentMessages")
+  investorCommitments  InvestmentCommitment[] @relation("InvestorCommitments")
+  entrepreneurCommitments InvestmentCommitment[] @relation("EntrepreneurCommitments")
+  consultantSlots         ConsultantSlot[]       @relation("ConsultantSlots")
+  consultantBookings      ConsultationBooking[]  @relation("ConsultantReceivedBookings")
+  clientBookings          ConsultationBooking[]  @relation("ClientSessionBookings")
+  notifications           Notification[]         @relation("UserNotifications")
+  subAdminProfile         SubAdminProfile?
 
   @@map("users")
 }
@@ -178,6 +188,7 @@ model ConsultantProfile {
   courseFee          Decimal?           @map("course_fee") @db.Decimal
   averageRating      Decimal?           @map("average_rating") @db.Decimal
   totalReviews       Int?               @map("total_reviews")
+  defaultMeetingLink String?            @map("default_meeting_link") @db.VarChar(500)
   profileVisibility  Boolean?           @map("profile_visibility")
   verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
@@ -364,6 +375,7 @@ model Business {
   title           String              @db.VarChar(255)
   slug            String              @unique @db.VarChar(255)
   tagline         String?             @db.VarChar(500)
+  parentCompany   String?             @map("parent_company") @db.VarChar(255)
   pitchText       String              @map("pitch_text") @db.Text
   categoryId      String              @map("category_id") @db.Uuid
   stage           BusinessStage       @default(IDEA)
@@ -393,6 +405,7 @@ model Business {
   milestones      CampaignMilestone[]
   pitchDecks      PitchDeck[]
   bookmarks       Bookmark[]
+  commitments     InvestmentCommitment[]
 
   @@index([categoryId, status])
   @@index([entrepreneurId])
@@ -485,6 +498,8 @@ enum MediaCategory {
   PORTFOLIO_DOCUMENT
   PORTFOLIO_CERTIFICATE
   PORTFOLIO_VIDEO
+  CHAT_ATTACHMENT
+  TERM_SHEET_DOCUMENT
 
   @@map("media_category")
 }
@@ -536,6 +551,8 @@ model MediaFile {
   verificationTinCertificate   UserVerification? @relation("VerificationTinCertificateMedia")
   portfolioItems               InvestorPortfolioItem[] @relation("PortfolioItemMedia")
   investorVideoIntro           InvestorProfile?        @relation("InvestorVideoIntroMedia")
+  messageAttachments           DirectMessage[]         @relation("MessageMedia")
+  commitmentTermSheets         InvestmentCommitment[]  @relation("CommitmentTermSheetMedia")
 
   @@index([uploadedById])
   @@index([category, status])
@@ -897,10 +914,248 @@ model InvestorIntroRequest {
   entrepreneur       User               @relation("SentIntroRequests", fields: [entrepreneurId], references: [id], onDelete: Cascade)
   investor           User               @relation("ReceivedIntroRequests", fields: [investorId], references: [id], onDelete: Cascade)
   investorProfile    InvestorProfile?   @relation(fields: [investorProfileId], references: [id], onDelete: SetNull)
+  conversations      Conversation[]
+  commitments        InvestmentCommitment[]
 
   @@index([investorId])
   @@index([entrepreneurId])
   @@index([status])
   @@map("investor_intro_requests")
 }
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Conversation {
+  id                 String             @id @default(uuid()) @db.Uuid
+  introRequestId     String?            @map("intro_request_id") @db.Uuid
+  participant1Id     String             @map("participant1_id") @db.Uuid
+  participant2Id     String             @map("participant2_id") @db.Uuid
+  subject            String             @db.VarChar(255)
+  lastMessageAt      DateTime           @default(now()) @map("last_message_at") @db.Timestamp(6)
+  lastMessageText    String?            @map("last_message_text") @db.Text
+  unreadCountUser1   Int                @default(0) @map("unread_count_user1")
+  unreadCountUser2   Int                @default(0) @map("unread_count_user2")
+  status             ConversationStatus @default(ACTIVE)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  participant1       User               @relation("ConversationUser1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2       User               @relation("ConversationUser2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  introRequest       InvestorIntroRequest? @relation(fields: [introRequestId], references: [id], onDelete: SetNull)
+  messages           DirectMessage[]
+
+  @@index([participant1Id, lastMessageAt])
+  @@index([participant2Id, lastMessageAt])
+  @@index([introRequestId])
+  @@map("conversations")
+}
+
+model DirectMessage {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  senderId       String       @map("sender_id") @db.Uuid
+  content        String       @db.Text
+  mediaFileId    String?      @map("media_file_id") @db.Uuid
+  attachmentName String?      @map("attachment_name") @db.VarChar(255)
+  attachmentUrl  String?      @map("attachment_url") @db.VarChar(500)
+  isRead         Boolean      @default(false) @map("is_read")
+  readAt         DateTime?    @map("read_at") @db.Timestamp(6)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  mediaFile      MediaFile?   @relation("MessageMedia", fields: [mediaFileId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("direct_messages")
+}
+
+enum InvestmentInstrument {
+  EQUITY
+  SAFE
+  CONVERTIBLE_NOTE
+  DEBT
+  REVENUE_SHARE
+}
+
+enum CommitmentStatus {
+  DRAFT
+  PROPOSED
+  NEGOTIATING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+model InvestmentCommitment {
+  id                 String               @id @default(uuid()) @db.Uuid
+  investorId         String               @map("investor_id") @db.Uuid
+  entrepreneurId     String               @map("entrepreneur_id") @db.Uuid
+  businessId         String?              @map("business_id") @db.Uuid
+  introRequestId     String?              @map("intro_request_id") @db.Uuid
+  startupName        String               @map("startup_name") @db.VarChar(255)
+  amount             Decimal              @db.Decimal(14, 2)
+  currency           String               @default("USD") @db.VarChar(50)
+  instrument         InvestmentInstrument @default(SAFE)
+  valuation          Decimal?             @db.Decimal(14, 2)
+  equityPercentage   Decimal?             @map("equity_percentage") @db.Decimal(5, 2)
+  termSheetDocUrl    String?              @map("term_sheet_doc_url") @db.VarChar(500)
+  termSheetMediaId   String?              @map("term_sheet_media_id") @db.Uuid
+  termsSummary       String               @map("terms_summary") @db.Text
+  status             CommitmentStatus     @default(PROPOSED)
+  investorNotes      String?              @map("investor_notes") @db.Text
+  entrepreneurNotes  String?              @map("entrepreneur_notes") @db.Text
+  issuedAt           DateTime             @default(now()) @map("issued_at") @db.Timestamp(6)
+  respondedAt        DateTime?            @map("responded_at") @db.Timestamp(6)
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  investor           User                 @relation("InvestorCommitments", fields: [investorId], references: [id], onDelete: Cascade)
+  entrepreneur       User                 @relation("EntrepreneurCommitments", fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  business           Business?            @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  introRequest       InvestorIntroRequest? @relation(fields: [introRequestId], references: [id], onDelete: SetNull)
+  termSheetMedia     MediaFile?           @relation("CommitmentTermSheetMedia", fields: [termSheetMediaId], references: [id], onDelete: SetNull)
+
+  @@index([investorId, status])
+  @@index([entrepreneurId, status])
+  @@index([businessId])
+  @@index([introRequestId])
+  @@map("investment_commitments")
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  CANCELLED
+
+  @@map("slot_status")
+}
+
+enum ConsultationBookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+
+  @@map("consultation_booking_status")
+}
+
+model ConsultantSlot {
+  id              String        @id @default(uuid()) @db.Uuid
+  consultantId    String        @map("consultant_id") @db.Uuid
+  slotDate        DateTime      @map("slot_date") @db.Date
+  startTime       String        @map("start_time") @db.VarChar(10)
+  endTime         String        @map("end_time") @db.VarChar(10)
+  durationMinutes Int           @default(60) @map("duration_minutes")
+  status          SlotStatus    @default(AVAILABLE)
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  consultant      User          @relation("ConsultantSlots", fields: [consultantId], references: [id], onDelete: Cascade)
+  booking         ConsultationBooking?
+
+  @@unique([consultantId, slotDate, startTime])
+  @@index([consultantId, slotDate])
+  @@index([status])
+  @@map("consultant_slots")
+}
+
+model ConsultationBooking {
+  id                 String                    @id @default(uuid()) @db.Uuid
+  slotId             String                    @unique @map("slot_id") @db.Uuid
+  consultantId       String                    @map("consultant_id") @db.Uuid
+  clientId           String                    @map("client_id") @db.Uuid
+  topic              String                    @db.VarChar(255)
+  clientNotes        String?                   @map("client_notes") @db.Text
+  status             ConsultationBookingStatus @default(CONFIRMED)
+  meetingPlatform    String                    @default("GOOGLE_MEET") @map("meeting_platform") @db.VarChar(50)
+  meetingLink        String                    @map("meeting_link") @db.VarChar(500)
+  grossAmount        Decimal                   @map("gross_amount") @db.Decimal(12, 2)
+  platformFeeRate    Decimal                   @default(0.10) @map("platform_fee_rate") @db.Decimal(5, 4)
+  platformFeeAmount  Decimal                   @map("platform_fee_amount") @db.Decimal(12, 2)
+  consultantEarnings Decimal                   @map("consultant_earnings") @db.Decimal(12, 2)
+  currency           String                    @default("USD") @db.VarChar(50)
+  paymentProvider    String                    @default("STRIPE") @map("payment_provider") @db.VarChar(50)
+  transactionId      String?                   @unique @map("transaction_id") @db.VarChar(255)
+  isPaid             Boolean                   @default(true) @map("is_paid")
+  paidAt             DateTime?                 @default(now()) @map("paid_at") @db.Timestamp(6)
+  createdAt          DateTime                  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime                  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  slot               ConsultantSlot            @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  consultant         User                      @relation("ConsultantReceivedBookings", fields: [consultantId], references: [id], onDelete: Cascade)
+  client             User                      @relation("ClientSessionBookings", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([consultantId])
+  @@index([clientId])
+  @@index([status])
+  @@map("consultation_bookings")
+}
+
+enum NotificationType {
+  TERM_SHEET_RECEIVED
+  TERM_SHEET_RESPONDED
+  INTRO_REQUEST_RECEIVED
+  KYC_APPROVED
+  KYC_REJECTED
+  SESSION_BOOKED
+  COURSE_ENROLLED
+  SYSTEM_ANNOUNCEMENT
+  NEW_MESSAGE
+
+  @@map("notification_type")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType @default(SYSTEM_ANNOUNCEMENT)
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
+  actionUrl String?          @map("action_url") @db.VarChar(500)
+  isRead    Boolean          @default(false) @map("is_read")
+  readAt    DateTime?        @map("read_at") @db.Timestamp(6)
+  metadata  Json?            @default("{}")
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+enum AdminPermission {
+  USER_MANAGEMENT
+  KYC_MODERATION
+  CAMPAIGN_MANAGEMENT
+  SUBSCRIPTION_MANAGEMENT
+  ANALYTICS_ACCESS
+  CATEGORY_MANAGEMENT
+
+  @@map("admin_permission")
+}
+
+model SubAdminProfile {
+  id          String            @id @default(uuid()) @db.Uuid
+  userId      String            @unique @map("user_id") @db.Uuid
+  permissions AdminPermission[] @default([]) @map("permissions")
+  department  String?           @map("department") @db.VarChar
+  notes       String?           @map("notes")
+  createdBy   String?           @map("created_by") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sub_admin_profiles")
+}
+
+
+
 

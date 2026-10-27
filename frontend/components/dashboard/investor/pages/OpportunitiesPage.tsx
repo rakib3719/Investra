@@ -31,6 +31,8 @@ import {
 import { CompareFloatingDock, type DockDeal } from "@/components/deals/CompareFloatingDock";
 import { useKycGate } from "@/lib/kyc/useKycGate";
 import { VerificationRequiredModal } from "@/components/auth/VerificationRequiredModal";
+import { useSubscriptionGate } from "@/lib/auth/useSubscriptionGate";
+import { SubscriptionRequiredModal } from "@/components/auth/SubscriptionRequiredModal";
 
 export function OpportunitiesPage() {
   const [search, setSearch] = useState("");
@@ -45,14 +47,32 @@ export function OpportunitiesPage() {
     closeModal: closeKycGate,
   } = useKycGate();
 
+  const {
+    isModalOpen: isSubGateOpen,
+    gateContext: subGateContext,
+    executeWithSubscriptionGate,
+    closeModal: closeSubGate,
+  } = useSubscriptionGate();
+
   const handleConnectClick = (deal: ConnectFounderTarget) => {
-    executeWithGate(
-      () => setActiveConnectCampaign(deal),
+    executeWithSubscriptionGate(
+      () => {
+        executeWithGate(
+          () => setActiveConnectCampaign(deal),
+          {
+            title: "Identity Verification Required",
+            actionName: "direct intro calls with startup founders",
+            description:
+              "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+          }
+        );
+      },
       {
-        title: "Identity Verification Required",
-        actionName: "direct intro calls with startup founders",
+        title: "Investor Subscription Required",
+        actionName: "connect with startup founders",
         description:
-          "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+          "An active Investor subscription is required to initiate deal room conversations with venture founders.",
+        targetRole: "investor",
       }
     );
   };
@@ -390,6 +410,16 @@ export function OpportunitiesPage() {
         title={kycGateContext.title}
         actionName={kycGateContext.actionName}
         description={kycGateContext.description}
+      />
+
+      {/* Subscription Action Gate Modal */}
+      <SubscriptionRequiredModal
+        isOpen={isSubGateOpen}
+        onClose={closeSubGate}
+        title={subGateContext.title}
+        actionName={subGateContext.actionName}
+        description={subGateContext.description}
+        targetRole="investor"
       />
 
       {/* Floating Compare Dock */}

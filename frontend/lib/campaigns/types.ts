@@ -31,10 +31,11 @@ export interface PitchDeck {
   id: string;
   businessId: string;
   title: string;
-  fileUrl: string;
+  fileUrl: string | null;
   fileSize?: number;
   version: number;
   isConfidential: boolean;
+  isLocked?: boolean;
   createdAt: string;
 }
 
@@ -60,6 +61,7 @@ export interface Campaign {
   title: string;
   slug: string;
   tagline?: string;
+  parentCompany?: string;
   pitchText: string;
   categoryId: string;
   stage: BusinessStage;
@@ -72,6 +74,11 @@ export interface Campaign {
   esgRating?: string;
   impactMetric?: string;
   bannerImage?: string;
+  coverMediaId?: string;
+  coverMedia?: {
+    id: string;
+    url: string;
+  };
   gallery: string[];
   status: CampaignStatus;
   rejectionReason?: string;
@@ -82,6 +89,7 @@ export interface Campaign {
   entrepreneur?: CampaignEntrepreneur;
   milestones?: CampaignMilestone[];
   pitchDecks?: PitchDeck[];
+  viewerHasSubscription?: boolean;
   _count?: {
     bookmarks?: number;
   };
@@ -112,8 +120,10 @@ export interface PaginatedCampaigns {
 export interface CreateCampaignInput {
   title: string;
   tagline?: string;
+  parentCompany?: string;
   pitchText: string;
-  categoryId: string;
+  categoryId?: string;
+  customCategory?: string;
   stage?: BusinessStage;
   targetAmount: number;
   minInvestment: number;
@@ -123,7 +133,12 @@ export interface CreateCampaignInput {
   esgRating?: string;
   impactMetric?: string;
   bannerImage?: string;
+  coverMediaId?: string;
   gallery?: string[];
+  pitchDeckUrl?: string;
+  pitchDeckTitle?: string;
+  pitchDeckMediaId?: string;
+  isPitchDeckConfidential?: boolean;
 }
 
 export interface CreateMilestoneInput {

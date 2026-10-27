@@ -11,13 +11,17 @@ import { useCampaignDetailQuery } from "@/lib/campaigns/campaigns-hooks";
 import { curatedFallbackCampaigns } from "@/lib/deals/compare-utils";
 import {
   ArrowLeft,
+  ArrowRight,
   Bookmark,
   Briefcase,
   Building2,
   Calendar,
   CheckCircle2,
   Clock,
+  Crown,
   DollarSign,
+  Download,
+  ExternalLink,
   FileText,
   Globe,
   Handshake,
@@ -26,6 +30,7 @@ import {
   LineChart,
   Lock,
   MessageSquare,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -36,6 +41,8 @@ import { useBookmarkIdsQuery, useToggleBookmarkMutation } from "@/lib/bookmarks/
 import { ConnectFounderModal } from "@/components/deals/ConnectFounderModal";
 import { useKycGate } from "@/lib/kyc/useKycGate";
 import { VerificationRequiredModal } from "@/components/auth/VerificationRequiredModal";
+import { useSubscriptionGate } from "@/lib/auth/useSubscriptionGate";
+import { SubscriptionRequiredModal } from "@/components/auth/SubscriptionRequiredModal";
 
 export default function CampaignDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -43,6 +50,8 @@ export default function CampaignDetailPage() {
   const slug = params?.slug || "";
 
   const [isConnectOpen, setIsConnectOpen] = React.useState(false);
+
+  // KYC Verification Gate
   const {
     isModalOpen: isKycGateOpen,
     gateContext: kycGateContext,
@@ -50,14 +59,34 @@ export default function CampaignDetailPage() {
     closeModal: closeKycGate,
   } = useKycGate();
 
+  // Subscription Gate
+  const {
+    isSubscribed,
+    isModalOpen: isSubGateOpen,
+    gateContext: subGateContext,
+    executeWithSubscriptionGate,
+    closeModal: closeSubGate,
+  } = useSubscriptionGate();
+
   const handleConnectClick = () => {
-    executeWithGate(
-      () => setIsConnectOpen(true),
+    executeWithSubscriptionGate(
+      () => {
+        executeWithGate(
+          () => setIsConnectOpen(true),
+          {
+            title: "Identity Verification Required",
+            actionName: "direct intro calls with startup founders",
+            description:
+              "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+          }
+        );
+      },
       {
-        title: "Identity Verification Required",
-        actionName: "direct intro calls with startup founders",
+        title: "Investor Subscription Required",
+        actionName: "connect with startup founders and open deal rooms",
         description:
-          "Under capital market compliance rules, verified investor status is required before booking introductory pitch sessions or accessing diligence rooms.",
+          "An active Investor Pro subscription is required to initiate direct conversations with founders and conduct deal negotiations.",
+        targetRole: "investor",
       }
     );
   };
@@ -124,6 +153,10 @@ export default function CampaignDetailPage() {
     ? `${founder.firstName || ""} ${founder.lastName || ""}`.trim() || "Verified Founder"
     : "Verified Founder";
 
+  const bannerImageUrl = campaign.coverMedia?.url || campaign.bannerImage;
+  const hasPitchDecks = Boolean(campaign.pitchDecks && campaign.pitchDecks.length > 0);
+  const canAccessConfidential = isSubscribed || campaign.viewerHasSubscription;
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       <Navbar />
@@ -134,7 +167,7 @@ export default function CampaignDetailPage() {
         <div>
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-2 text-xs font-bold font-heading text-slate-500 hover:text-emerald-700 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-bold font-heading text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Back to campaigns
           </button>
@@ -142,6 +175,13 @@ export default function CampaignDetailPage() {
 
         {/* Header Hero Banner */}
         <section className="bg-[#182B45] text-white rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-xl">
+          {bannerImageUrl && (
+            <div
+              className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay pointer-events-none"
+              style={{ backgroundImage: `url(${bannerImageUrl})` }}
+            />
+          )}
+
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             <div className="lg:col-span-8 space-y-4">
@@ -158,7 +198,7 @@ export default function CampaignDetailPage() {
                 <button
                   type="button"
                   onClick={handleToggleBookmark}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading transition ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading transition cursor-pointer ${
                     isBookmarked
                       ? "bg-white text-emerald-800 shadow-sm"
                       : "bg-white/15 text-white hover:bg-white/25"
@@ -175,8 +215,15 @@ export default function CampaignDetailPage() {
                 {campaign.title}
               </h1>
 
+              {campaign.parentCompany && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 text-emerald-200 border border-white/10 text-xs font-semibold font-heading">
+                  <Building2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Legal / Parent Entity: <strong className="text-white font-bold">{campaign.parentCompany}</strong></span>
+                </div>
+              )}
+
               <p className="text-slate-300 text-base md:text-lg font-body leading-relaxed max-w-2xl">
-                {campaign.tagline || campaign.pitchText.slice(0, 150)}
+                {campaign.tagline || campaign.pitchText.slice(0, 160)}
               </p>
             </div>
 
@@ -195,7 +242,7 @@ export default function CampaignDetailPage() {
                   <span className="text-emerald-300">{percent}%</span>
                 </div>
                 <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden">
-                  <div className="bg-emerald-400 h-full rounded-full" style={{ width: `${percent}%` }} />
+                  <div className="bg-emerald-400 h-full rounded-full transition-all duration-500" style={{ width: `${percent}%` }} />
                 </div>
               </div>
 
@@ -207,6 +254,11 @@ export default function CampaignDetailPage() {
                 >
                   <Handshake className="w-4 h-4" /> Connect with Founder
                 </button>
+                {!isSubscribed && (
+                  <p className="text-[11px] text-center text-slate-300/80 mt-1.5 font-body">
+                    Active subscription required to message founder
+                  </p>
+                )}
               </div>
             </div>
 
@@ -244,7 +296,7 @@ export default function CampaignDetailPage() {
         {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
-          {/* Left Column: Pitch Overview & Milestones */}
+          {/* Left Column: Pitch Overview, Pitch Decks & Milestones */}
           <div className="lg:col-span-8 space-y-8">
             
             {/* Pitch Text Card */}
@@ -256,6 +308,93 @@ export default function CampaignDetailPage() {
                 {campaign.pitchText}
               </div>
             </div>
+
+            {/* Pitch Decks & Due Diligence Presentation */}
+            {hasPitchDecks && (
+              <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h2 className="text-xl font-bold font-heading text-[#182B45] flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-emerald-600" /> Investor Pitch Deck & Materials
+                  </h2>
+                  {!canAccessConfidential && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 font-heading">
+                      <Lock className="w-3 h-3" /> Subscription Required
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {campaign.pitchDecks!.map((deck) => {
+                    const isLocked = deck.isLocked ?? (!canAccessConfidential && deck.isConfidential);
+
+                    return (
+                      <div
+                        key={deck.id}
+                        className={`p-5 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                          isLocked
+                            ? "bg-amber-50/40 border-amber-200/70"
+                            : "bg-slate-50 border-slate-200/80 hover:bg-slate-50/80"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                            isLocked ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
+                          }`}>
+                            {isLocked ? <Lock className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-bold font-heading text-slate-900">
+                                {deck.title}
+                              </h4>
+                              {deck.isConfidential && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                                  Confidential
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 font-body mt-0.5">
+                              {isLocked
+                                ? "Full deck contains cap table, financial forecasts, and audited milestones."
+                                : `Version ${deck.version} · Verified Platform Pitch Deck`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          {isLocked ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                executeWithSubscriptionGate(() => {}, {
+                                  title: "Investor Subscription Required",
+                                  actionName: "download confidential pitch decks",
+                                  description:
+                                    "Confidential pitch presentations and due diligence models are protected under platform NDA and require an active Investor subscription.",
+                                  targetRole: "investor",
+                                })
+                              }
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer shadow-xs"
+                            >
+                              <Crown className="w-3.5 h-3.5" /> Unlock Deck
+                            </button>
+                          ) : (
+                            <a
+                              href={deck.fileUrl || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#053D2E] text-white font-bold text-xs transition shadow-xs"
+                            >
+                              <Download className="w-3.5 h-3.5" /> Download PDF
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Milestones Card */}
             <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-6">
@@ -340,41 +479,87 @@ export default function CampaignDetailPage() {
                   </span>
                 </div>
               )}
+
+              <button
+                type="button"
+                onClick={handleConnectClick}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold font-heading text-xs transition cursor-pointer"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Message Founder Directly</span>
+              </button>
             </div>
 
             {/* Deal Room Access Card */}
             <div className="bg-emerald-950 text-white rounded-3xl p-6 space-y-4 shadow-md">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold font-heading text-emerald-400">
-                <ShieldCheck className="w-4 h-4" /> Confidential Data Room
+              <div className="flex items-center justify-between">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold font-heading text-emerald-400">
+                  <ShieldCheck className="w-4 h-4" /> Confidential Data Room
+                </div>
+                {canAccessConfidential ? (
+                  <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full uppercase">
+                    Unlocked
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full uppercase flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Pro Only
+                  </span>
+                )}
               </div>
               <h4 className="text-lg font-bold font-heading">Cap Table & Due Diligence</h4>
               <p className="text-xs text-slate-300 font-body leading-relaxed">
-                Access audited financials, term sheets, cap table breakdowns, and investor decks by signing the platform NDA.
+                {canAccessConfidential
+                  ? "Your accredited subscription gives you full access to startup diligence documents, direct Q&A, and deal comparisons."
+                  : "Access audited financials, term sheets, cap table breakdowns, and investor decks by activating an Investor subscription."}
               </p>
-              <Link
-                href="/compare"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white text-[#182B45] font-bold font-heading text-xs hover:bg-slate-100 transition-colors"
-              >
-                Compare Side-by-Side
-              </Link>
+              
+              <div className="space-y-2 pt-1">
+                {!canAccessConfidential ? (
+                  <Link
+                    href="/subscription?role=investor"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold font-heading text-xs transition-colors"
+                  >
+                    <Crown className="w-4 h-4" /> Unlock Diligence Room
+                  </Link>
+                ) : null}
+
+                <Link
+                  href="/compare"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold font-heading text-xs transition-colors border border-white/10"
+                >
+                  Compare Side-by-Side
+                </Link>
+              </div>
             </div>
 
           </div>
 
         </div>
 
+        {/* Real Connect Founder Modal */}
         <ConnectFounderModal
           isOpen={isConnectOpen}
           onClose={() => setIsConnectOpen(false)}
           campaign={campaign}
         />
 
+        {/* KYC Gate Modal */}
         <VerificationRequiredModal
           isOpen={isKycGateOpen}
           onClose={closeKycGate}
           title={kycGateContext.title}
           actionName={kycGateContext.actionName}
           description={kycGateContext.description}
+        />
+
+        {/* Subscription Gate Modal */}
+        <SubscriptionRequiredModal
+          isOpen={isSubGateOpen}
+          onClose={closeSubGate}
+          title={subGateContext.title}
+          actionName={subGateContext.actionName}
+          description={subGateContext.description}
+          targetRole="investor"
         />
       </main>
 

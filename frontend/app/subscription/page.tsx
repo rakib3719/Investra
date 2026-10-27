@@ -825,7 +825,7 @@ export default function MasterpieceSubscriptionPage() {
               Detailed Feature & Guard Breakdown ({currentTargetRole})
             </h3>
             <p className="text-xs text-slate-500 font-body leading-relaxed">
-              Enforced dynamically by NestJS backend Guards & PostgreSQL subscription state.
+              Enforced dynamically based on your active membership tier and account status.
             </p>
           </div>
 

@@ -66,7 +66,7 @@ export function VerificationRequiredModal({
         <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
           <Lock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Verification is private, encrypted with 256-bit AES in our Cloudflare R2 vault, and audited by compliance officers.
+            Verification is private, encrypted with 256-bit AES in our secure compliance vault, and audited by compliance officers.
           </p>
         </div>
 

@@ -135,6 +135,14 @@ export class AuthService {
     // 1. Find user by email
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.trim().toLowerCase() },
+      include: {
+        subAdminProfile: {
+          select: {
+            permissions: true,
+            department: true,
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -174,8 +182,14 @@ export class AuthService {
       user.tokenVersion,
     );
 
+    const { subAdminProfile, ...safeUser } = this.withoutPassword(user);
+
     return {
-      user: this.withoutPassword(user),
+      user: {
+        ...safeUser,
+        permissions: subAdminProfile?.permissions ?? [],
+        department: subAdminProfile?.department ?? null,
+      },
       ...tokens,
     };
   }

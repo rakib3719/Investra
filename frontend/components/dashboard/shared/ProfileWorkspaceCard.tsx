@@ -84,7 +84,7 @@ export function ProfileWorkspaceCard({
         avatarMediaId: media.id,
         image: media.url || undefined,
       });
-      toast.success("Profile avatar uploaded and synced with Cloudflare R2!", {
+      toast.success("Profile avatar updated successfully!", {
         title: "Avatar Updated",
       });
     } catch (err) {
@@ -98,7 +98,7 @@ export function ProfileWorkspaceCard({
         coverMediaId: media.id,
         coverImage: media.url || undefined,
       });
-      toast.success("Cover banner uploaded and synced with Cloudflare R2!", {
+      toast.success("Cover banner updated successfully!", {
         title: "Cover Updated",
       });
     } catch (err) {

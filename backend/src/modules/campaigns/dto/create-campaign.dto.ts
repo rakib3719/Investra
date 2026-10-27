@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -21,12 +22,20 @@ export class CreateCampaignDto {
   tagline?: string;
 
   @IsString()
+  @IsOptional()
+  parentCompany?: string;
+
+  @IsString()
   @IsNotEmpty()
   pitchText: string;
 
   @IsUUID()
-  @IsNotEmpty()
-  categoryId: string;
+  @IsOptional()
+  categoryId?: string;
+
+  @IsString()
+  @IsOptional()
+  customCategory?: string;
 
   @IsEnum(BusinessStage)
   @IsOptional()
@@ -68,8 +77,28 @@ export class CreateCampaignDto {
   @IsOptional()
   bannerImage?: string;
 
+  @IsUUID()
+  @IsOptional()
+  coverMediaId?: string;
+
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   gallery?: string[];
+
+  @IsString()
+  @IsOptional()
+  pitchDeckUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  pitchDeckTitle?: string;
+
+  @IsUUID()
+  @IsOptional()
+  pitchDeckMediaId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isPitchDeckConfidential?: boolean;
 }

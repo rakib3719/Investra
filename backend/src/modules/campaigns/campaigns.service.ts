@@ -48,12 +48,14 @@ export class CampaignsService {
 
   async createCampaign(entrepreneurId: string, dto: CreateCampaignDto) {
     // 1. Check user role and active subscription / free plan campaign limit
-    const user = await this.prisma.user.findUnique({
-      where: { id: entrepreneurId },
-      select: { role: true },
-    });
+    const user = this.prisma.user
+      ? await this.prisma.user.findUnique({
+          where: { id: entrepreneurId },
+          select: { role: true },
+        })
+      : null;
 
-    if (user && user.role === 'ENTREPRENEUR') {
+    if (user && user.role === 'ENTREPRENEUR' && this.prisma.business && this.prisma.userSubscription) {
       const activeCampaignsCount = await this.prisma.business.count({
         where: {
           entrepreneurId,
@@ -107,14 +109,60 @@ export class CampaignsService {
 
     const slug = await this.generateUniqueSlug(dto.title);
 
+    // Resolve category (either existing categoryId or custom category name)
+    let finalCategoryId = dto.categoryId;
+
+    if (dto.customCategory && dto.customCategory.trim()) {
+      const catName = dto.customCategory.trim();
+      const baseSlug = catName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "category";
+
+      let existingCat = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { name: { equals: catName, mode: "insensitive" } },
+            { slug: { equals: baseSlug, mode: "insensitive" } },
+          ],
+        },
+      });
+
+      if (!existingCat) {
+        let uniqueSlug = baseSlug;
+        const slugExists = await this.prisma.category.findUnique({
+          where: { slug: uniqueSlug },
+        });
+        if (slugExists) {
+          uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
+        }
+
+        existingCat = await this.prisma.category.create({
+          data: {
+            name: catName,
+            slug: uniqueSlug,
+            status: "ACTIVE",
+            createdBy: entrepreneurId,
+          },
+        });
+      }
+
+      finalCategoryId = existingCat.id;
+    }
+
+    if (!finalCategoryId) {
+      throw new BadRequestException("Industry category is required.");
+    }
+
     return this.prisma.business.create({
       data: {
         entrepreneurId,
         title: dto.title,
         slug,
         tagline: dto.tagline,
+        parentCompany: dto.parentCompany?.trim() || null,
         pitchText: dto.pitchText,
-        categoryId: dto.categoryId,
+        categoryId: finalCategoryId,
         stage: dto.stage,
         targetAmount: dto.targetAmount,
         minInvestment: dto.minInvestment,
@@ -124,12 +172,27 @@ export class CampaignsService {
         esgRating: dto.esgRating,
         impactMetric: dto.impactMetric,
         bannerImage: dto.bannerImage,
+        coverMediaId: dto.coverMediaId || undefined,
         gallery: dto.gallery || [],
         status: CampaignStatus.DRAFT,
+        ...(dto.pitchDeckUrl
+          ? {
+              pitchDecks: {
+                create: {
+                  title: dto.pitchDeckTitle || `${dto.title} Pitch Deck`,
+                  fileUrl: dto.pitchDeckUrl,
+                  mediaFileId: dto.pitchDeckMediaId || undefined,
+                  isConfidential: dto.isPitchDeckConfidential ?? false,
+                },
+              },
+            }
+          : {}),
       },
       include: {
         category: true,
+        coverMedia: true,
         milestones: true,
+        pitchDecks: true,
       },
     });
   }
@@ -162,16 +225,93 @@ export class CampaignsService {
       );
     }
 
-    return this.prisma.business.update({
+    const {
+      pitchDeckUrl,
+      pitchDeckTitle,
+      pitchDeckMediaId,
+      isPitchDeckConfidential,
+      customCategory,
+      ...businessData
+    } = dto;
+
+    let finalCategoryId = businessData.categoryId;
+    if (customCategory && customCategory.trim()) {
+      const catName = customCategory.trim();
+      const baseSlug = catName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "category";
+
+      let existingCat = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { name: { equals: catName, mode: "insensitive" } },
+            { slug: { equals: baseSlug, mode: "insensitive" } },
+          ],
+        },
+      });
+
+      if (!existingCat) {
+        let uniqueSlug = baseSlug;
+        const slugExists = await this.prisma.category.findUnique({
+          where: { slug: uniqueSlug },
+        });
+        if (slugExists) {
+          uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
+        }
+
+        existingCat = await this.prisma.category.create({
+          data: {
+            name: catName,
+            slug: uniqueSlug,
+            status: "ACTIVE",
+            createdBy: userId,
+          },
+        });
+      }
+
+      finalCategoryId = existingCat.id;
+    }
+
+    const updated = await this.prisma.business.update({
       where: { id: campaignId },
       data: {
-        ...dto,
+        ...businessData,
+        ...(finalCategoryId ? { categoryId: finalCategoryId } : {}),
+        ...(businessData.parentCompany !== undefined
+          ? { parentCompany: businessData.parentCompany?.trim() || null }
+          : {}),
       },
       include: {
         category: true,
+        coverMedia: true,
         milestones: true,
+        pitchDecks: true,
       },
     });
+
+    if (pitchDeckUrl && this.prisma.pitchDeck) {
+      await this.prisma.pitchDeck.create({
+        data: {
+          businessId: campaignId,
+          title: pitchDeckTitle || `${campaign.title} Pitch Deck`,
+          fileUrl: pitchDeckUrl,
+          mediaFileId: pitchDeckMediaId || undefined,
+          isConfidential: isPitchDeckConfidential ?? false,
+        },
+      });
+      return this.prisma.business.findUnique({
+        where: { id: campaignId },
+        include: {
+          category: true,
+          coverMedia: true,
+          milestones: true,
+          pitchDecks: true,
+        },
+      });
+    }
+
+    return updated;
   }
 
   async submitForReview(userId: string, campaignId: string) {
@@ -279,6 +419,10 @@ export class CampaignsService {
       where: { entrepreneurId: userId },
       include: {
         category: true,
+        coverMedia: true,
+        pitchDecks: {
+          include: { mediaFile: true },
+        },
         milestones: {
           orderBy: { sortOrder: "asc" },
         },
@@ -395,6 +539,7 @@ export class CampaignsService {
       where: isUuid ? { OR: [{ id: slug }, { slug }] } : { slug },
       include: {
         category: true,
+        coverMedia: true,
         entrepreneur: {
           select: {
             id: true,
@@ -408,7 +553,11 @@ export class CampaignsService {
         milestones: {
           orderBy: { sortOrder: "asc" },
         },
-        pitchDecks: true,
+        pitchDecks: {
+          include: {
+            mediaFile: true,
+          },
+        },
         _count: {
           select: { bookmarks: true },
         },
@@ -428,7 +577,49 @@ export class CampaignsService {
       throw new NotFoundException("Campaign not found");
     }
 
-    return campaign;
+    let viewerHasSubscription = false;
+    if (userId) {
+      if (
+        userRole === "ADMIN" ||
+        userRole === "SUB_ADMIN" ||
+        campaign.entrepreneurId === userId
+      ) {
+        viewerHasSubscription = true;
+      } else {
+        const activeSub = await this.prisma.userSubscription.findFirst({
+          where: {
+            userId,
+            status: "ACTIVE",
+            currentPeriodEnd: { gte: new Date() },
+          },
+        });
+        if (activeSub) {
+          viewerHasSubscription = true;
+        }
+      }
+    }
+
+    const pitchDecksSanitized = (campaign.pitchDecks || []).map((deck) => {
+      const isLocked = Boolean(deck.isConfidential && !viewerHasSubscription);
+      return {
+        id: deck.id,
+        businessId: deck.businessId,
+        title: deck.title,
+        fileUrl: isLocked ? null : deck.fileUrl,
+        fileSize: deck.fileSize,
+        version: deck.version,
+        isConfidential: deck.isConfidential,
+        isLocked,
+        createdAt: deck.createdAt,
+        updatedAt: deck.updatedAt,
+      };
+    });
+
+    return {
+      ...campaign,
+      pitchDecks: pitchDecksSanitized,
+      viewerHasSubscription,
+    };
   }
 
   async addMilestone(

@@ -61,13 +61,21 @@ export function MyCoursesPage({ user }: { user: AuthUser }) {
           </p>
         </div>
 
-        <Link
-          href="/courses"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#078457] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#06734d] shadow-emerald-700/20 transition"
-        >
-          <BookOpen className="h-4 w-4" />
-          Browse Course Catalog
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/dashboard/${user.role.toLowerCase()}/consultations`}
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 px-4 py-3 text-xs font-bold text-slate-700 transition"
+          >
+            <span>My Consultations &rarr;</span>
+          </Link>
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#078457] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#06734d] shadow-emerald-700/20 transition"
+          >
+            <BookOpen className="h-4 w-4" />
+            Browse Course Catalog
+          </Link>
+        </div>
       </div>
 
       {/* Courses List */}

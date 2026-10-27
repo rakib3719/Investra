@@ -19,12 +19,15 @@ import {
   Users,
   CreditCard,
   GraduationCap,
+  Video,
+  MessageSquare,
   X,
   type LucideIcon,
 } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
 import { useMyKycQuery } from "@/lib/kyc/kyc-hooks";
+import { NotificationBellDropdown } from "@/components/notifications/NotificationBellDropdown";
 import {
   entrepreneurPageMeta,
   entrepreneurSectionPath,
@@ -42,8 +45,10 @@ const navigation: {
   { section: "profile", label: "Company Profile", icon: User },
   { section: "campaigns", label: "Fundraising", icon: Rocket },
   { section: "matches", label: "Investor matches", icon: Users, badge: "8" },
+  { section: "messages", label: "Deal Messages", icon: MessageSquare },
   { section: "analytics", label: "Analytics", icon: LineChart },
   { section: "courses", label: "My Courses", icon: GraduationCap },
+  { section: "consultations", label: "Consultations", icon: Video },
   { section: "subscription", label: "Subscription", icon: CreditCard },
   { section: "settings", label: "Settings", icon: Settings },
 ];
@@ -248,14 +253,7 @@ export function EntrepreneurShell({
               >
                 <Search className="h-5 w-5" />
               </button>
-              <button
-                type="button"
-                aria-label="Notifications"
-                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-50"
-              >
-                <Bell className="h-5 w-5" />
-                <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-emerald-500" />
-              </button>
+              <NotificationBellDropdown />
               <div className="hidden h-8 w-px bg-slate-200 sm:block" />
               <div className="relative">
                 <button

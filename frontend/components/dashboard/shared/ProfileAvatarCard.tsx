@@ -32,7 +32,7 @@ export function ProfileAvatarCard({ user, className = "" }: ProfileAvatarCardPro
         avatarMediaId: media.id,
         image: media.url || undefined,
       });
-      toast.success("Profile photo uploaded to Cloudflare R2!", {
+      toast.success("Profile photo updated successfully!", {
         title: "Photo Updated",
       });
     } catch (err) {
@@ -46,7 +46,7 @@ export function ProfileAvatarCard({ user, className = "" }: ProfileAvatarCardPro
         coverMediaId: media.id,
         coverImage: media.url || undefined,
       });
-      toast.success("Cover banner uploaded to Cloudflare R2!", {
+      toast.success("Cover banner updated successfully!", {
         title: "Cover Updated",
       });
     } catch (err) {
@@ -110,7 +110,7 @@ export function ProfileAvatarCard({ user, className = "" }: ProfileAvatarCardPro
         <div className="absolute top-4 right-4 flex items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20">
             <Cloud className="w-3.5 h-3.5 text-emerald-400" />
-            Cloudflare R2 Public Media
+            Verified Cloud Media
           </span>
           {currentCoverUrl && (
             <button

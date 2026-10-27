@@ -19,15 +19,19 @@ import {
   Settings,
   ShieldAlert,
   ShieldCheck,
+  UserCheck,
+  UserCog,
   Users,
   X,
   type LucideIcon,
 } from "lucide-react";
 import type { AuthUser } from "@/lib/auth/types";
 import { InvestraInlineLoader } from "@/components/ui/InvestraLoader";
+import { NotificationBellDropdown } from "@/components/notifications/NotificationBellDropdown";
 import {
   adminPageMeta,
   adminSectionPath,
+  hasSectionAccess,
   type AdminSection,
 } from "./navigation";
 
@@ -42,6 +46,7 @@ const navigation: {
   { section: "kyc", label: "KYC Vault", icon: ShieldCheck },
   { section: "pending-users", label: "Pending Users", icon: Clock },
   { section: "users", label: "User Directory", icon: Users },
+  { section: "subadmins", label: "Sub-Admins (PBAC)", icon: UserCog },
   { section: "categories", label: "Categories", icon: FolderTree },
   { section: "subscriptions", label: "Subscriptions", icon: CreditCard },
   { section: "visitors", label: "Traffic & Telemetry", icon: Activity },
@@ -84,6 +89,9 @@ export function AdminShell({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const meta = adminPageMeta[activeSection];
+  const visibleNavigation = navigation.filter((item) =>
+    hasSectionAccess(user, item.section),
+  );
 
   return (
     <main className="min-h-screen bg-[#f9fbfa] text-slate-900">
@@ -138,7 +146,7 @@ export function AdminShell({
             className="flex-1 space-y-1 overflow-y-auto px-4 py-6"
             aria-label="Admin dashboard navigation"
           >
-            {navigation.map(({ section, label, icon: Icon, badge }) => {
+            {visibleNavigation.map(({ section, label, icon: Icon, badge }) => {
               const active = section === activeSection;
               return (
                 <Link
@@ -175,11 +183,13 @@ export function AdminShell({
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-emerald-600" />
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-                  Platform Security
+                  {user.role === "ADMIN" ? "Super Admin Access" : "PBAC Restricted Access"}
                 </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-slate-600">
-                Logged in with superuser privileges. Audit logging is active.
+                {user.role === "ADMIN"
+                  ? "Master permissions active. Full platform governance and user audit enabled."
+                  : `Sub-Admin session • ${user.permissions?.length ?? 0} authorized modules.`}
               </p>
             </div>
             <Link
@@ -238,14 +248,7 @@ export function AdminShell({
               >
                 <Search className="h-5 w-5" />
               </button>
-              <button
-                type="button"
-                aria-label="Notifications"
-                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-50"
-              >
-                <Bell className="h-5 w-5" />
-                <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-emerald-500" />
-              </button>
+              <NotificationBellDropdown />
               <div className="hidden h-8 w-px bg-slate-200 sm:block" />
               <div className="relative">
                 <button
@@ -261,7 +264,7 @@ export function AdminShell({
                       {user.firstName || "Administrator"} {user.lastName || ""}
                     </span>
                     <span className="block text-xs font-semibold text-emerald-600">
-                      Platform Admin
+                      {user.role === "ADMIN" ? "Super Admin" : (user.department || "Sub-Admin")}
                     </span>
                   </span>
                   <ChevronDown

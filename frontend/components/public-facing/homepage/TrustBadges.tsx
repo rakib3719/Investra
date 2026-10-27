@@ -4,8 +4,8 @@ import React from "react";
 
 export default function TrustBadges() {
   return (
-    <section className="w-full bg-slate-50 border-y border-slate-100 py-5">
-      <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] flex flex-wrap items-center justify-between gap-6">
+    <section className="w-full bg-slate-50/80 border-y border-slate-100 py-[21px] md:py-[26px]">
+      <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 lg:px-24 xl:px-[100px] flex flex-wrap items-center justify-between gap-[21px] md:gap-[34px]">
         
         {/* Badge 1: Certified B Corp */}
         <div className="flex flex-col items-center justify-center text-[#0f172a] font-sans scale-90">
